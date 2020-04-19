@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 _____, ___
@@ -24,7 +24,7 @@ import random, string
 import subprocess
 
 from itertools import permutations
-from modvles.query import query
+from core.query import query
 from core.parser import build_parser
 from core.print import banner
 
@@ -94,7 +94,6 @@ def main() -> int:
         diri=''.join(elem)
         sdirs.append(diri)
     splitted = listsplit(sdirs, round(len(sdirs)/processes))
-
     if (args.attack == 1):
         if not opt["param"]:
             parser.print_usage()

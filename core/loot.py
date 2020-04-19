@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 _____, ___
@@ -51,4 +51,4 @@ def download(url, file):
         response = requests.get(url)
         loot.write(response.content)
     loot.close()
-    print('{}[LOOT]{} {}'.format(color.RD, color.END, file))
+    print('{}[LOOT]{} {}'.format(color.RD, color.END+color.O+color.BOLD, file+color.END))
