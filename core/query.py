@@ -62,7 +62,6 @@ def query(url,url2,keyword,files,dirs,depth,verbose,dl,summary):
                         if str(r.status_code).startswith("2") or r.status_code == 302:
                             if filecheck(r.content, con2):
                                 print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
-                                print(query)
                                 if dl and dir+file not in found:
                                     download(r.url,file)
                                 found.append(dir+file)
@@ -74,6 +73,6 @@ def query(url,url2,keyword,files,dirs,depth,verbose,dl,summary):
                             urls.append(color.RD + "[path]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
                         else:
                             if verbose:
-                                print(r.url,r.status_code)
+                                print(color.RD+"{}|: ".format(r.status_code)+color.END+color.RC+r.url+color.END)
                 d+=1
     return (found, urls)
