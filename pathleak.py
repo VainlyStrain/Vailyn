@@ -17,14 +17,15 @@ _____, ___
 └──╼ VainlyStrain
 """
 
-import treelib, argparse
 from multiprocessing.pool import ThreadPool as Pool
+import treelib, argparse
 import requests, sys
 import random, string
 import subprocess
 
 from itertools import permutations
 from core.query import query
+from core.inpath import inpath
 from core.parser import build_parser
 from core.print import banner
 
@@ -71,8 +72,8 @@ def main() -> int:
     if opt["loot"]:
         loot = True
 
-    if opt["v2"]:
-        victim2 = args.v2
+    if opt["vic2"]:
+        victim2 = args.vic2
 
     if opt["depth"]:
         depth = args.depth
@@ -105,19 +106,27 @@ def main() -> int:
                 restuple = i.get()
                 foundfiles += restuple[0]
                 foundurls += restuple[1]
-        if summary:
-            banner()
-            if foundfiles:
-                create_tree(filetree, foundfiles)
-                filetree.show()
-            if foundurls:
-                fnd = []
-                for i in foundurls:
-                    if i not in fnd:
-                        print(color.END+i)
-                        fnd.append(i)
-            else:
-                print("nothing found")
+    elif (args.attack == 2):
+        with Pool(processes=processes) as pool:
+            res = [pool.apply_async(inpath, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,)) for l in splitted]
+            for i in res:
+                restuple = i.get()
+                foundfiles += restuple[0]
+                foundurls += restuple[1]
+                
+    if summary:
+        banner()
+        if foundfiles:
+            create_tree(filetree, foundfiles)
+            filetree.show()
+        if foundurls:
+            fnd = []
+            for i in foundurls:
+                if i not in fnd:
+                    print(color.END+i)
+                    fnd.append(i)
+        else:
+            print("nothing found")
 
 
 if __name__ == "__main__":

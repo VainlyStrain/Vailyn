@@ -40,23 +40,17 @@ def query(url,url2,keyword,files,dirs,depth,verbose,dl,summary):
                         traverse+=i
                         j+=1
                     requestlist = []
-                    #query=keyword+"="+traverse+dir+file+url2
                     query = "?"+keyword+"="+traverse+dir+file+url2
                     req = requests.Request(method='GET', url=url)
                     prep = req.prepare()
                     prep.url = url + query
                     r = s.send(prep)
-                    #requestlist.append(requests.get(url,params=query))
-                    #requestlist.append(requests.get(req))
                     requestlist.append(r)
-                    #query2=keyword+"="+traverse+dir+file+"%00"+url2
                     query2="?"+keyword+"="+traverse+dir+file+"%00"+url2
-                    #req = url + query2
                     req = requests.Request(method='GET', url=url)
                     prep = req.prepare()
                     prep.url = url + query2
                     r = s.send(prep)
-                    #requestlist.append(requests.get(url,params=query2))
                     requestlist.append(r)
                     for r in requestlist:
                         if str(r.status_code).startswith("2") or r.status_code == 302:
@@ -67,7 +61,6 @@ def query(url,url2,keyword,files,dirs,depth,verbose,dl,summary):
                                 found.append(dir+file)
                                 urls.append(color.RD + "[path]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
                         elif r.status_code == 403:
-                            #if not summary:
                             print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
                             found.append(dir+file)
                             urls.append(color.RD + "[path]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))

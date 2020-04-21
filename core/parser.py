@@ -28,9 +28,9 @@ class ArgumentParser(argparse.ArgumentParser):
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
         if prefix is None:
-            prefix = color.RD + 'Vsynta ' + color.END
-            #return super(VainFormatter, self).add_usage("{}pathleak{} [-v VIC] [-a ATTACK] [-p PARAM] [-q] [--loot]\n          [--lists FILES DIRS] [-f] [-d DEPTH]\n        [-h] [--victim2 VIC2]".format(color.RB,color.END), actions, groups, prefix)
-            return super(VainFormatter, self).add_usage("{}pathleak{} [-v VIC] [-a ACK] [-p PARAM] [-s]\n          [-l FIL PATH] [-d INT] [--loot]\n        [-f] [-h] [--v2 VIC2]".format(color.RB,color.END), actions, groups, prefix)
+            prefix = color.RC + 'Vsynta.: ' + color.END
+            #return super(VainFormatter, self).add_usage("{}pathleak{} [-v VIC] [-a ACK] [-p PARAM] [-s]\n          [-l FIL PATH] [-d INT] [--loot]\n        [-f] [-h] [--vic2 VIC2]".format(color.RB,color.END), actions, groups, prefix)
+            return super(VainFormatter, self).add_usage("{}pathleak{} -v VIC -a ACK -l FIL PATH\n          [-p PAM] [-s] [-d INT] [-f]\n        [-n] [-c VIC2]".format(color.RB,color.END), actions, groups, prefix)
 
 def build_parser():
     p = ArgumentParser(formatter_class=VainFormatter,add_help=False)
@@ -62,10 +62,10 @@ def build_parser():
                    help="1 » Dictionaries",
                    nargs=2,
                    metavar=("FIL","PATH"))
-    p.add_argument('--loot',
+    p.add_argument('-n', '--loot',
                    help="1 › Download found files into loot",
                    action="store_true")
-    p.add_argument('--v2',
+    p.add_argument('-c', '--vic2',
                    help="A › Attack target part 2",
                    metavar=("VIC2"))
                
