@@ -24,6 +24,20 @@ class ArgumentParser(argparse.ArgumentParser):
     def error(self, message):
         self.print_usage(sys.stderr)
         self.exit(2, "\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' %s\n' % (message))
+    def print_help(self):
+        self.print_usage(sys.stderr)
+        print('''
+
+  -v VIC, --victim VIC  {0}Target to attack, part 1 (pre injection point){1}
+  -a ACK, --attack ACK  {0}Type of attack [int](1: query, 2: path){1}
+  -l FIL PATH, --lists FIL PATH      
+                        {0}Dictionaries to use (see templates for syntax){1}
+  -p PAM, --param PAM   {0}query parameter to use for --attack 1{1}
+  -s, --summary         {0}Print a summary of found files and payloads{1}
+  -d INT, --depth INT   {0}max. nr of ../ and dir permutation level [int]{1}
+  -f, --verbosity       {0}display every path tried, even 404s{1}
+  -n, --loot            {0}Download found files into the loot folder{1}
+  -c VIC2, --vic2 VIC2  {0}Attack Target, part 2 (post injection point){1}'''.format(color.RC, color.END))
 
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
