@@ -38,3 +38,5 @@ if sys.platform.lower().startswith('win'):
     lootdir = os.path.dirname(os.path.realpath(__file__))+"\\..\\loot\\"
 else:
     lootdir = os.path.dirname(os.path.realpath(__file__))+"/../loot/"
+
+version = "0.5"

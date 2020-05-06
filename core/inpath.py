@@ -63,13 +63,13 @@ def inpath(url,url2,keyword,files,dirs,depth,verbose,dl,summary):
                                 found.append(dir+file)
                                 vlnlist = r.url.split("/")[1::]
                                 vlnpath = ("/".join(i for i in vlnlist)).replace(url2, "")
-                                urls.append(color.RD + "[path]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + vlnpath)
+                                urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + vlnpath)
                         elif r.status_code == 403:
                             print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
                             found.append(dir+file)
                             vlnlist = r.url.split("/")[1::]
                             vlnpath = ("/".join(i for i in vlnlist)).replace(url2, "")
-                            urls.append(color.RD + "[path]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + vlnpath)
+                            urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + vlnpath)
                         else:
                             if verbose:
                                 print(color.RD+"{}|: ".format(r.status_code)+color.END+color.RC+r.url+color.END)

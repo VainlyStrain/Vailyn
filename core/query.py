@@ -24,6 +24,7 @@ from core.variables import payloadlist
 from core.filecheck import filecheck
 from core.loot import download
 
+
 def query(url,url2,keyword,files,dirs,depth,verbose,dl,summary):
     found=[]
     urls = []
@@ -59,11 +60,11 @@ def query(url,url2,keyword,files,dirs,depth,verbose,dl,summary):
                                 if dl and dir+file not in found:
                                     download(r.url,file)
                                 found.append(dir+file)
-                                urls.append(color.RD + "[path]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
+                                urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
                         elif r.status_code == 403:
                             print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
                             found.append(dir+file)
-                            urls.append(color.RD + "[path]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
+                            urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
                         else:
                             if verbose:
                                 print(color.RD+"{}|: ".format(r.status_code)+color.END+color.RC+r.url+color.END)

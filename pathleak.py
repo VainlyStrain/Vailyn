@@ -32,6 +32,8 @@ from core.print import banner
 from core.tree import *
 from core.variables import *
 
+import time
+
 filetree = treelib.Tree()
 filetree.create_node(color.O+"/"+color.END+color.RD, "root")
 
@@ -100,6 +102,11 @@ def main() -> int:
             parser.print_usage()
             sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -p mandatory for -a 1')
+        print("{}pathleak: {}PARAM{}".format(color.RC, color.END+color.RB, color.END))
+        print("    v" + version)
+        time.sleep(0.5)
+        print('\n{0}┌─[{1}pathleak{0}]{1}\n{0}└──╼{1} init. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
+        starting_time = time.time()
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(query, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,)) for l in splitted]
             for i in res:
@@ -107,26 +114,36 @@ def main() -> int:
                 foundfiles += restuple[0]
                 foundurls += restuple[1]
     elif (args.attack == 2):
+        print("{}pathleak: {}PATH{}".format(color.RC, color.END+color.RB, color.END))
+        print("    v" + version)
+        time.sleep(0.5)
+        print('\n{0}┌─[{1}pathleak{0}]{1}\n{0}└──╼{1} init. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
+        starting_time = time.time()
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(inpath, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,)) for l in splitted]
             for i in res:
                 restuple = i.get()
                 foundfiles += restuple[0]
                 foundurls += restuple[1]
-                
+    ending_time = time.time()
+    total_time = ending_time - starting_time
     if summary:
         banner()
-        if foundfiles:
-            create_tree(filetree, foundfiles)
-            filetree.show()
-        if foundurls:
-            fnd = []
-            for i in foundurls:
-                if i not in fnd:
+    else:
+        print('\n{0}┌─[{1}pathleak{0}]{1}\n{0}└──╼{1} fin. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
+    if foundfiles:
+        create_tree(filetree, foundfiles)
+        filetree.show()
+    if foundurls:
+        fnd = []
+        for i in foundurls:
+            if i not in fnd:
+                if summary:
                     print(color.END+i)
-                    fnd.append(i)
-        else:
-            print("nothing found")
+                fnd.append(i)
+    else:
+        print("nothing found")
+    print("{}Scan completed in {}s.{}".format(color.RC, total_time, color.END))
 
 
 if __name__ == "__main__":
