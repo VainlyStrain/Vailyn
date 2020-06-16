@@ -19,7 +19,7 @@ _____, ___
 
 import sys, os
 import core.variables as variables
-from core.session import session
+from core.methods.session import session
 from core.colors import color
 
 
