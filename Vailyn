@@ -105,12 +105,12 @@ def main() -> int:
             parser.print_usage()
             sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -p mandatory for -a 1')
-        print("{}pathleak: {}PARAM{}".format(color.RC, color.END+color.RB, color.END))
+        print("{}Vailyn: {}PARAM{}".format(color.RC, color.END+color.RB, color.END))
         print("    v" + version)
         time.sleep(0.5)
         
-        #print('\n{0}┌─[{1}pathleak{0}]{1}\n{0}└──╼{1} init. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
-        print('\n{0}┌─[{1}pathleak{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
+        #print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} init. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
+        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
         
         starting_time = time.time()
         #test for the vulnerability
@@ -136,7 +136,7 @@ def main() -> int:
         #start the attack
         starting_time = time.time()
         if attack:
-            print('\n{0}┌─[{1}pathleak{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
+            print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
             with Pool(processes=processes) as pool:
                 res = [pool.apply_async(query, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,selectedpayloads,)) for l in splitted]
                 for i in res:
@@ -144,10 +144,10 @@ def main() -> int:
                     foundfiles += restuple[0]
                     foundurls += restuple[1]
     elif (args.attack == 2):
-        print("{}pathleak: {}PATH{}".format(color.RC, color.END+color.RB, color.END))
+        print("{}Vailyn: {}PATH{}".format(color.RC, color.END+color.RB, color.END))
         print("    v" + version)
         time.sleep(0.5)        
-        print('\n{0}┌─[{1}pathleak{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
+        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
         
         starting_time = time.time()
         #test for the vulnerability
@@ -173,7 +173,7 @@ def main() -> int:
         #start the attack
         starting_time = time.time()
         if attack:
-            print('\n{0}┌─[{1}pathleak{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
+            print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
             with Pool(processes=processes) as pool:
                 res = [pool.apply_async(inpath, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,selectedpayloads,)) for l in splitted]
                 for i in res:
@@ -187,8 +187,8 @@ def main() -> int:
     if summary:
         banner()
     else:
-        #print('\n{0}┌─[{1}pathleak{0}]{1}\n{0}└──╼{1} fin. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
-        print('\n{0}┌─[{1}pathleak{0}]{1}\n{0}└──╼{1} Directory Tree\n'.format(color.RD, color.END))
+        #print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} fin. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
+        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Directory Tree\n'.format(color.RD, color.END))
     if foundfiles:
         create_tree(filetree, foundfiles)
         filetree.show()

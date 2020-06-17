@@ -58,7 +58,7 @@ def query(url,url2,keyword,files,dirs,depth,verbose,dl,summary, selected_payload
                             if filecheck(r.content, con2):
                                 print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
                                 if dl and dir+file not in found:
-                                    download(r.url,file)
+                                    download(r.url,dir+file)
                                 found.append(dir+file)
                                 urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
                         elif r.status_code == 403:

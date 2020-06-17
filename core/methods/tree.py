@@ -33,7 +33,7 @@ def tree_append(tree, path, parentnode):
     id = plist[0]
     if not tree.contains(id):
         if len(plist) > 1:
-            tree.create_node(color.END+plist[0]+color.RD, id, parent=parentnode)
+            tree.create_node(color.END+color.CURSIVE+color.END+plist[0]+color.RD, id, parent=parentnode)
         else:
             tree.create_node(color.END+color.CURSIVE+plist[0]+color.END+color.RD, id, parent=parentnode)
     else:
