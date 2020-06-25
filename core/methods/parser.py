@@ -37,14 +37,15 @@ class ArgumentParser(argparse.ArgumentParser):
   -d INT, --depth INT   {0}max. nr of ../ and dir permutation level [int]{1}
   -f, --verbosity       {0}display every path tried, even 404s{1}
   -n, --loot            {0}Download found files into the loot folder{1}
-  -c VIC2, --vic2 VIC2  {0}Attack Target, part 2 (post injection point){1}'''.format(color.RC, color.END))
+  -c FIL, --check FIL   {0}File to check for in Phase 1 (df: /etc/passwd){1}
+  --vic2 VIC2           {0}Attack Target, part 2 (post injection point){1}'''.format(color.RC, color.END))
 
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
         if prefix is None:
-            prefix = color.RC + 'Vsynta.: ' + color.END
+            prefix = color.RC + 'Vsynta ' + color.END
             #return super(VainFormatter, self).add_usage("{}Vailyn{} [-v VIC] [-a ACK] [-p PARAM] [-s]\n          [-l FIL PATH] [-d INT] [--loot]\n        [-f] [-h] [--vic2 VIC2]".format(color.RB,color.END), actions, groups, prefix)
-            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a ACK -l FIL PATH\n          [-p PAM] [-s] [-d INT] [-f]\n        [-n] [-c VIC2]".format(color.RB,color.END), actions, groups, prefix)
+            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a ACK -l FIL PATH [-s]\n        [-p PAM] [-q VIC2] [-d INT] \n      [-n] [-c FIL] [-f]".format(color.RB,color.END), actions, groups, prefix)
 
 def build_parser():
     p = ArgumentParser(formatter_class=VainFormatter,add_help=False)
@@ -79,8 +80,11 @@ def build_parser():
     p.add_argument('-n', '--loot',
                    help="1 › Download found files into loot",
                    action="store_true")
-    p.add_argument('-c', '--vic2',
+    p.add_argument('-q', '--vic2',
                    help="A › Attack target part 2",
                    metavar=("VIC2"))
+    p.add_argument('-c', '--check',
+                   help="A › Attack target part 2",
+                   metavar=("FILE"))
                
     return p 

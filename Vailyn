@@ -72,6 +72,7 @@ def main() -> int:
     foundfiles = [""]
     foundurls = [""]
     foundpayloads = []
+    vlnfile = "/etc/passwd"
 
     if opt["loot"]:
         loot = True
@@ -87,6 +88,9 @@ def main() -> int:
         
     if opt["summary"]:
         summary = True
+
+    if opt["check"]:
+        vlnfile = args.check
         
     iter=1
     ndirs=list.copy(sdirs)
@@ -116,7 +120,7 @@ def main() -> int:
         #test for the vulnerability
         m = 12
         with Pool(processes=processes) as pool:
-            res = [pool.apply_async(determine_payloads_query, args=(args.victim,victim2,args.param,verbose,m,l,)) for l in paysplit]
+            res = [pool.apply_async(determine_payloads_query, args=(args.victim,victim2,args.param,verbose,m,l,vlnfile,)) for l in paysplit]
             for i in res:
                 pays = i.get()
                 foundpayloads += pays
@@ -153,7 +157,7 @@ def main() -> int:
         #test for the vulnerability
         m = 12
         with Pool(processes=processes) as pool:
-            res = [pool.apply_async(determine_payloads_inpath, args=(args.victim,victim2,args.param,verbose,m,l,)) for l in paysplit]
+            res = [pool.apply_async(determine_payloads_inpath, args=(args.victim,victim2,args.param,verbose,m,l,vlnfile,)) for l in paysplit]
             for i in res:
                 pays = i.get()
                 foundpayloads += pays

