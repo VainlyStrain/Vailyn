@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/VainlyStrain/Vailyn/blob/master/Vailyn">
-    <img src="https://img.shields.io/static/v1.svg?label=Version&message=1.0&color=lightgrey&style=flat-square&logo=dev.to&logoColor=white">
+    <img src="https://img.shields.io/static/v1.svg?label=Version&message=1.1&color=lightgrey&style=flat-square&logo=dev.to&logoColor=white">
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7&color=lightgrey&style=flat-square&logo=python&logoColor=white">
