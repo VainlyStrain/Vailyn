@@ -84,7 +84,7 @@ def determine_payloads_inpath(url,url2,keyword,verbose,depth,paylist,file):
     s = session()
     con2 = requests.get(url).content
     for i in paylist:
-        d = 5
+        d = 0
         while d <= depth:
             traverse=''
             j=1

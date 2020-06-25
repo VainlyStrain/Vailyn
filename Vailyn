@@ -118,7 +118,7 @@ def main() -> int:
         
         starting_time = time.time()
         #test for the vulnerability
-        m = 12
+        m = 8
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(determine_payloads_query, args=(args.victim,victim2,args.param,verbose,m,l,vlnfile,)) for l in paysplit]
             for i in res:
@@ -155,7 +155,7 @@ def main() -> int:
         
         starting_time = time.time()
         #test for the vulnerability
-        m = 12
+        m = 8
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(determine_payloads_inpath, args=(args.victim,victim2,args.param,verbose,m,l,vlnfile,)) for l in paysplit]
             for i in res:

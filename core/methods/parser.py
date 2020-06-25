@@ -38,7 +38,7 @@ class ArgumentParser(argparse.ArgumentParser):
   -f, --verbosity       {0}display every path tried, even 404s{1}
   -n, --loot            {0}Download found files into the loot folder{1}
   -c FIL, --check FIL   {0}File to check for in Phase 1 (df: /etc/passwd){1}
-  --vic2 VIC2           {0}Attack Target, part 2 (post injection point){1}'''.format(color.RC, color.END))
+  -q VIC2, --vic2 VIC2  {0}Attack Target, part 2 (post injection point){1}'''.format(color.RC, color.END))
 
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
