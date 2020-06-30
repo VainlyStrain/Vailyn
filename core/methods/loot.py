@@ -24,8 +24,10 @@ from core.colors import color
 
 date = time.strftime("%Y-%m-%d %H:%M:%S")
 
-def download(url, file):
+def download(url, file, cookie=None):
     requests = session()
+    if cookie:
+        requests.cookies = cookie
     if sys.platform.lower().startswith('win'):
         if "\\" in file:
             path ='\\'.join(file.split('\\')[0:-1])
@@ -49,6 +51,11 @@ def download(url, file):
     if not os.path.exists(variables.lootdir+subdir+path):
         os.makedirs(variables.lootdir+subdir+path)
     with open((variables.lootdir+subdir+file), "wb") as loot:
+        #if cookie:
+        #    response = requests.get(url, cookies=cookie)
+            #print(cookie)
+            #print(response.content)
+        #else:
         response = requests.get(url)
         loot.write(response.content)
     loot.close()

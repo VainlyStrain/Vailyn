@@ -39,4 +39,4 @@ if sys.platform.lower().startswith('win'):
 else:
     lootdir = os.path.dirname(os.path.realpath(__file__))+"/../loot/"
 
-version = "1.1"
+version = "1.2"

@@ -1,12 +1,12 @@
 <h1 align="center">
-  <img src='syn/logo.png' height='250'></img><br>
+  <img src='misc/logo.png' height='250'></img><br>
   Vailyn
   <br>
 </h1>
 
 <p align="center">
   <a href="https://github.com/VainlyStrain/Vailyn/blob/master/Vailyn">
-    <img src="https://img.shields.io/static/v1.svg?label=Version&message=1.1&color=lightgrey&style=flat-square&logo=dev.to&logoColor=white">
+    <img src="https://img.shields.io/static/v1.svg?label=Version&message=1.2&color=lightgrey&style=flat-square&logo=dev.to&logoColor=white">
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7&color=lightgrey&style=flat-square&logo=python&logoColor=white">
@@ -30,7 +30,11 @@ Now, the user can choose freely which payloads to use. Only these payloads will 
 
 The second phase is the exploitation phase. Now, it tries to leak all possible files from the server using a file and a directory dictionary. The search depth and the directory permutation level can be adapted via arguments. Optionally, it can download found files, and save them in its loot folder.
 
-Right now, it supports 2 attack methods: injection via query and path. Cookies are not supported yet.
+Right now, it supports multiple attack methods: injection via query and path.
+
+> __New__
+>
+> Since v1.2, cookie path traversals are supported, too! Use -a 3 for a cookie attack.
 
 ### Why the phase separation?
 
