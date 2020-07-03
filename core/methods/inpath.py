@@ -77,6 +77,8 @@ def inpath(url,url2,keyword,files,dirs,depth,verbose,dl,selected_payloads, selec
 
  
 def determine_payloads_inpath(url,url2,keyword,verbose,depth,paylist,file):
+    if not url.endswith("/"):
+        url += "/"
     payloads = []
     nullbytes = []
     s = session()

@@ -26,6 +26,8 @@ from core.methods.loot import download
 
 
 def query(url,url2,keyword,files,dirs,depth,verbose,dl, selected_payloads, selected_nullbytes):
+    if not url.endswith("/"):
+        url += "/"
     found=[]
     urls = []
     s = session()
@@ -78,6 +80,8 @@ def query(url,url2,keyword,files,dirs,depth,verbose,dl, selected_payloads, selec
     return (found, urls)
 
 def determine_payloads_query(url,url2,keyword,verbose,depth,paylist, file):
+    if not url.endswith("/"):
+        url += "/"
     payloads = []
     nullbytes = []
     s = session()

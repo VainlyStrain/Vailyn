@@ -55,6 +55,8 @@ def readCookie(url):
     return (cookie, selectedpart)
 
 def determine_payloads_cookie(url, cookie, selected ,verbose, depth, paylist, file):
+    if not url.endswith("/"):
+        url += "/"
     s = session()
     payloads = []
     nullbytes = []
@@ -94,6 +96,8 @@ def determine_payloads_cookie(url, cookie, selected ,verbose, depth, paylist, fi
     return (payloads, nullbytes)
 
 def cookie_attack(url, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes):
+    if not url.endswith("/"):
+        url += "/"
     s = session()
     found=[]
     urls = []
