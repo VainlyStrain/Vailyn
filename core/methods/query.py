@@ -25,7 +25,7 @@ from core.methods.filecheck import filecheck
 from core.methods.loot import download
 
 
-def query(url,url2,keyword,files,dirs,depth,verbose,dl,summary, selected_payloads, selected_nullbytes):
+def query(url,url2,keyword,files,dirs,depth,verbose,dl, selected_payloads, selected_nullbytes):
     found=[]
     urls = []
     s = session()
@@ -61,7 +61,7 @@ def query(url,url2,keyword,files,dirs,depth,verbose,dl,summary, selected_payload
                             requestlist.append((r,p))
                     for (r,p) in requestlist:
                         if str(r.status_code).startswith("2") or r.status_code == 302:
-                            if filecheck(r.content, con2, p):
+                            if filecheck(r, con2, p):
                                 print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
                                 if dl and dir+file not in found:
                                     download(r.url,dir+file)
@@ -109,7 +109,7 @@ def determine_payloads_query(url,url2,keyword,verbose,depth,paylist, file):
             found = False
             for (r, p, nb) in requestlist:
                 if str(r.status_code).startswith("2") or r.status_code == 302 or r.status_code == 403:
-                    if filecheck(r.content, con2, p):
+                    if filecheck(r, con2, p):
                         payloads.append(i)
                         if nb != "":
                             nullbytes.append(nb)

@@ -69,7 +69,6 @@ def main() -> int:
     depth = 2
     verbose = False
     dirs = 0
-    summary = False
     foundfiles = [""]
     foundurls = [""]
     foundpayloads = []
@@ -86,11 +85,8 @@ def main() -> int:
     if opt["depth"]:
         depth = args.depth
 
-    if opt["verbosity"]:
+    if opt["all"]:
         verbose = True
-        
-    if opt["summary"]:
-        summary = True
 
     if opt["check"]:
         vlnfile = args.check
@@ -153,7 +149,7 @@ def main() -> int:
         if attack:
             print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(query, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,selectedpayloads,selectednullbytes,)) for l in splitted]
+                res = [pool.apply_async(query, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,)) for l in splitted]
                 for i in res:
                     restuple = i.get()
                     foundfiles += restuple[0]
@@ -197,7 +193,7 @@ def main() -> int:
         if attack:
             print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(inpath, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,summary,selectedpayloads,selectednullbytes,)) for l in splitted]
+                res = [pool.apply_async(inpath, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,)) for l in splitted]
                 for i in res:
                     restuple = i.get()
                     foundfiles += restuple[0]
@@ -244,7 +240,7 @@ def main() -> int:
         if attack:
             print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(cookie_attack, args=(args.victim,cookie,selected,commons,l,depth,verbose,loot,summary,selectedpayloads,selectednullbytes,)) for l in splitted]
+                res = [pool.apply_async(cookie_attack, args=(args.victim,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,)) for l in splitted]
                 for i in res:
                     restuple = i.get()
                     foundfiles += restuple[0]
@@ -253,22 +249,23 @@ def main() -> int:
     ending_time = time.time()
     attack_time = ending_time - starting_time
     total_time = vuln_time + attack_time
-    if summary:
-        banner()
-    else:
+    #if summary:
+    #    banner()
+    #else:
         #print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} fin. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
-        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Directory Tree\n'.format(color.RD, color.END))
+    print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Directory Tree\n'.format(color.RD, color.END))
     if foundfiles:
         create_tree(filetree, foundfiles)
         filetree.show()
-    if foundurls:
-        fnd = []
-        for i in foundurls:
-            if i not in fnd:
-                if summary:
-                    print(color.END+i)
-                fnd.append(i)
-    else:
+    #if foundurls:
+    #    fnd = []
+    #    for i in foundurls:
+    #        if i not in fnd:
+    #            if summary:
+    #                print(color.END+i)
+    #            fnd.append(i)
+    #else:
+    if not foundurls:
         print("nothing found")
     print("{}Scan completed in {}s.{}".format(color.RC, total_time, color.END))
 
