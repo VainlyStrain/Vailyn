@@ -57,7 +57,7 @@ $ pip install -r requirements.txt   # --user
 That's it! Fire Vailyn up by moving to its installation directory and performing
 
 ```
-$ Vailyn -h
+$ python Vailyn -h
 ```
 
 ### Usage
