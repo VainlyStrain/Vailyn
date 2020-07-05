@@ -1,20 +1,19 @@
+[![asciicast](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD.svg)](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD)
 <h1 align="center">
-  <img src='misc/logo.png' height='250'></img><br>
+  <br> <!--<img src='misc/logo.png' height='250'></img>-->
   Vailyn
   <br>
 </h1>
 
 <p align="center">
   <a href="https://github.com/VainlyStrain/Vailyn/blob/master/Vailyn">
-    <img src="https://img.shields.io/static/v1.svg?label=Version&message=1.2&color=lightgrey&style=flat-square&logo=dev.to&logoColor=white">
+    <img src="https://img.shields.io/static/v1.svg?label=Version&message=1.2&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7&color=lightgrey&style=flat-square&logo=python&logoColor=white">
   </a><br>
   Path Traversal Attack Tool
 </p>
-
-[![asciicast](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD.svg)](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD)
 
 ### About
 
