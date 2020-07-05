@@ -14,6 +14,8 @@
   Path Traversal Attack Tool
 </p>
 
+[![asciicast](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD.svg)](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD)
+
 ### About
 
 Vailyn is a multi-phased vulnerability analysis and exploitation tool for path traversal/directory climbing vulnerabilities. It is built to make it as performant as possible, and to offer a wide arsenal of filter evasion techniques.
@@ -99,7 +101,7 @@ Example: if the final URL should look like: `https://site.com/download.php?file=
 
 To perform the bruteforce attack in phase 2, you need to specify 2 dictionaries:
 * FIL, containing filenames only (e.g. index.php)
-* PATH, containing directory names only. Note that each directory entry MUST end with a "/". Also, Vailyn will handle directory permutation for you, so you'll need only single directories in a row.
+* PATH, containing directory names only. Note that each directory entry MUST end with a "/". Also, Vailyn will handle directory permutation for you, so you'll need only single directories in a line.
 
 #### Phase 1
 
