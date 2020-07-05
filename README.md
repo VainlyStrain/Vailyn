@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src='misc/logo.png' height='500'></img>
+  <img src='misc/logo.png' height='580'></img><br>
   Vailyn
   <br>
 </h1>
