@@ -1,6 +1,6 @@
 [![asciicast](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD.svg)](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD)
 <h1 align="center">
-  <br> <!--<img src='misc/logo.png' height='250'></img>-->
+  <!--<img src='misc/logo.png' height='250'></img>-->
   Vailyn
   <br>
 </h1>
@@ -12,7 +12,7 @@
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7&color=lightgrey&style=flat-square&logo=python&logoColor=white">
   </a><br>
-  Path Traversal Attack Tool
+  Phased Path Traversal Attacks
 </p>
 
 ### About
