@@ -1,6 +1,5 @@
-[![asciicast](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD.svg)](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD)
 <h1 align="center">
-  <!--<img src='misc/logo.png' height='250'></img>-->
+  <img src='misc/logo.png' height='500'></img>
   Vailyn
   <br>
 </h1>
@@ -127,6 +126,10 @@ To distinguish real results from false positives, Vailyn does the following chec
 * check for empty responses
 * check if common error signatures are in the response content
 * check if the payload is contained in the response: this is an additional check for the case the server responds 200 for non-existing files, and reflects the payload in a message like (../../secret not found)
+
+### Demo
+
+[![asciicast](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD.svg)](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD)
 
 ### Possible Issues
 
