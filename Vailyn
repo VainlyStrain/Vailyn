@@ -30,9 +30,8 @@ from core.methods.select import select
 
 from core.methods.tree import *
 from core.variables import *
-from core.methods.query import *
-from core.methods.inpath import *
-from core.methods.cookie import *
+from core.methods.attack import phase1, phase2
+from core.methods.cookie import readCookie
 
 import time
 
@@ -93,7 +92,11 @@ def main() -> int:
 
     if opt["checkdepth"]:
         checkdepth = args.checkdepth
-        
+    
+    param = ""
+    cookie = None
+    selected = ""
+
     iter=1
     ndirs=list.copy(sdirs)
     del ndirs[0]
@@ -112,139 +115,59 @@ def main() -> int:
             sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -p mandatory for -a 1')
         print("{}Vailyn: {}PARAM{}".format(color.RC, color.END+color.RB, color.END))
-        print("    v" + version)
-        time.sleep(0.5)
-        
-        #print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} init. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
-        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
-        
-        starting_time = time.time()
-        #test for the vulnerability
-        with Pool(processes=processes) as pool:
-            res = [pool.apply_async(determine_payloads_query, args=(args.victim,victim2,args.param,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
-            for i in res:
-                tuples = i.get()
-                foundpayloads += tuples[0]
-                foundnullbytes += tuples[1]
-                
-        ending_time = time.time()
-        vuln_time = ending_time - starting_time
-                
-        attack = False
-        if foundpayloads:
-            attack = True
-            selectedpayloads = select(foundpayloads)
-            if foundnullbytes:
-                selectednullbytes = select(foundnullbytes)
-            else:
-                selectednullbytes = []
-        else:
-            cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
-            if cont != "":
-                attack = True
-                selectedpayloads = payloadlist
-                selectednullbytes = nullchars
-        #start the attack
-        starting_time = time.time()
-        if attack:
-            print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
-            with Pool(processes=processes) as pool:
-                res = [pool.apply_async(query, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,)) for l in splitted]
-                for i in res:
-                    restuple = i.get()
-                    foundfiles += restuple[0]
-                    foundurls += restuple[1]
+        param = args.param
     elif (args.attack == 2):
         if not args.victim.endswith("/"):
             args.victim = args.victim + "/"
         print("{}Vailyn: {}PATH{}".format(color.RC, color.END+color.RB, color.END))
-        print("    v" + version)
-        time.sleep(0.5)        
-        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
-        
-        starting_time = time.time()
-        #test for the vulnerability
-        with Pool(processes=processes) as pool:
-            res = [pool.apply_async(determine_payloads_inpath, args=(args.victim,victim2,args.param,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
-            for i in res:
-                tuples = i.get()
-                foundpayloads += tuples[0]
-                foundnullbytes += tuples[1]
-                
-        ending_time = time.time()
-        vuln_time = ending_time - starting_time
-                
-        attack = False
-        if foundpayloads:
-            attack = True
-            selectedpayloads = select(foundpayloads)
-            if foundnullbytes:
-                selectednullbytes = select(foundnullbytes)
-            else:
-                selectednullbytes = []
-        else:
-            cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
-            if cont != "":
-                attack = True
-                selectedpayloads = payloadlist
-                selectednullbytes = nullchars
-        #start the attack
-        starting_time = time.time()
-        if attack:
-            print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
-            with Pool(processes=processes) as pool:
-                res = [pool.apply_async(inpath, args=(args.victim,victim2,args.param,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,)) for l in splitted]
-                for i in res:
-                    restuple = i.get()
-                    foundfiles += restuple[0]
-                    foundurls += restuple[1]
     elif (args.attack == 3):
         print("{}Vailyn: {}COOKIE{}".format(color.RC, color.END+color.RB, color.END))
-        print("    v" + version)
-        time.sleep(0.5)
 
+    print("    v" + version)
+    time.sleep(0.5)
+
+    if args.attack == 3:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Parsing Cookie\n'.format(color.RD, color.END))
         cookie, selected = readCookie(args.victim)
+
+    print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
         
-        #print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} init. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
-        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
-        
-        starting_time = time.time()
-        #test for the vulnerability
-        with Pool(processes=processes) as pool:
-            res = [pool.apply_async(determine_payloads_cookie, args=(args.victim,cookie,selected,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
-            for i in res:
-                tuples = i.get()
-                foundpayloads += tuples[0]
-                foundnullbytes += tuples[1]
+    starting_time = time.time()
+    with Pool(processes=processes) as pool:
+        res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
+        for i in res:
+            tuples = i.get()
+            foundpayloads += tuples[0]
+            foundnullbytes += tuples[1]
+            
+    ending_time = time.time()
+    vuln_time = ending_time - starting_time
                 
-        ending_time = time.time()
-        vuln_time = ending_time - starting_time
-                
-        attack = False
-        if foundpayloads:
-            attack = True
-            selectedpayloads = select(foundpayloads)
-            if foundnullbytes:
-                selectednullbytes = select(foundnullbytes)
-            else:
-                selectednullbytes = []
+    attack = False
+    if foundpayloads:
+        attack = True
+        selectedpayloads = select(foundpayloads)
+        if foundnullbytes:
+            selectednullbytes = select(foundnullbytes)
         else:
-            cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
-            if cont != "":
-                attack = True
-                selectedpayloads = payloadlist
-                selectednullbytes = nullchars
-        #start the attack
-        starting_time = time.time()
-        if attack:
-            print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
-            with Pool(processes=processes) as pool:
-                res = [pool.apply_async(cookie_attack, args=(args.victim,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,)) for l in splitted]
-                for i in res:
-                    restuple = i.get()
-                    foundfiles += restuple[0]
-                    foundurls += restuple[1]
+            selectednullbytes = []
+    else:
+        cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
+        if cont != "":
+            attack = True
+            selectedpayloads = payloadlist
+            selectednullbytes = nullchars
+    #start the attack
+    starting_time = time.time()
+    if attack:
+        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
+        with Pool(processes=processes) as pool:
+            res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,)) for l in splitted]
+            for i in res:
+                restuple = i.get()
+                foundfiles += restuple[0]
+                foundurls += restuple[1]
+
                     
     ending_time = time.time()
     attack_time = ending_time - starting_time
