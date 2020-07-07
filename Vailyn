@@ -23,6 +23,7 @@ import requests, sys
 import random, string
 import subprocess
 import time
+import os
 
 from itertools import permutations
 from multiprocessing.pool import ThreadPool as Pool
@@ -33,9 +34,10 @@ from core.methods.select import select
 from core.methods.tree import create_tree
 from core.methods.attack import phase1, phase2
 from core.methods.cookie import readCookie
+from core.methods.cache import load, save, parseUrl
 
 from core.colors import color
-from core.variables import payloadlist, nullchars, version, sdirs, commons, processes
+from core.variables import payloadlist, nullchars, version, sdirs, commons, processes, cachedir
 
 
 filetree = treelib.Tree()
@@ -134,16 +136,30 @@ def main() -> int:
 
     print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
         
-    starting_time = time.time()
-    with Pool(processes=processes) as pool:
-        res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
-        for i in res:
-            tuples = i.get()
-            foundpayloads += tuples[0]
-            foundnullbytes += tuples[1]
+    vlnysis = True
+    targetcache = parseUrl(args.victim)
+    if os.path.exists(cachedir+targetcache+"payloads.cache") and os.path.exists(cachedir+targetcache+"nullbytes.cache"):
+        choice = input("{0}[!]{1} Detected Payload cache from previous attack.\n{0}[?]{1} Do you want to load the cache and skip Phase 1? (enter if not) :> ".format(color.RD, color.END))
+        if choice != "":
+            vlnysis = False
+            foundpayloads, foundnullbytes = load(targetcache)
+        else:
+            print()
+
+    if vlnysis:
+        starting_time = time.time()
+        with Pool(processes=processes) as pool:
+            res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
+            for i in res:
+                tuples = i.get()
+                foundpayloads += tuples[0]
+                foundnullbytes += tuples[1]
             
-    ending_time = time.time()
-    vuln_time = ending_time - starting_time
+        ending_time = time.time()
+        vuln_time = ending_time - starting_time
+        save(targetcache, foundpayloads, foundnullbytes)
+    else:
+        vuln_time = 0.0
                 
     attack = False
     if foundpayloads:

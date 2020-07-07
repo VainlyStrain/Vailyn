@@ -34,8 +34,10 @@ CLEAR_CMD = "cls" if sys.platform.lower().startswith("win") else "clear"
 processes = multiprocessing.cpu_count()
 
 if sys.platform.lower().startswith('win'):
-    lootdir = os.path.dirname(os.path.realpath(__file__))+"\\..\\loot\\"
+    lootdir = os.path.dirname(os.path.realpath(__file__)) + "\\..\\loot\\"
+    cachedir = os.path.dirname(os.path.realpath(__file__)) + "\\payload-cache\\"
 else:
-    lootdir = os.path.dirname(os.path.realpath(__file__))+"/../loot/"
+    lootdir = os.path.dirname(os.path.realpath(__file__)) + "/../loot/"
+    cachedir = os.path.dirname(os.path.realpath(__file__)) + "/payload-cache/"
 
 version = "1.2"
