@@ -26,23 +26,15 @@ from core.methods.filecheck import filecheck
 from core.methods.loot import download
 
 
-
+"""fetches cookies from the website for the cookie attack"""
 def getCookie(url):
     s = session()
-    r = s.get(url)
+    s.get(url)
     return s.cookies
 
+"""parses the cookie and lets the attacker choose the injedction point"""
 def readCookie(url):
-    #cookiestring = ""
-    #with open(cookiefile, "r") as f:
-    #    cookiestring = f.read().strip()
-    #assert cookiestring != ""
-    #scookie = SimpleCookie()
-    #scookie.load(cookiestring)
-    #make it compatible with requests
     cookie = getCookie(url)
-    #for key, morsel in scookie.items():
-    #    cookie[key] = morsel.value
     i = 0
     if len(cookie.keys()) < 1:
         sys.exit(color.R + "[-]" + color.END + " Server did not send any cookies.")
@@ -51,5 +43,4 @@ def readCookie(url):
         i += 1
     selected = input("\n[!] Select key for attack (int) :> ")
     selectedpart = list(cookie.keys())[int(selected)]
-    #print(selectedpart)
     return (cookie, selectedpart)

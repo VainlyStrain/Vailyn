@@ -22,8 +22,10 @@ import core.variables as variables
 from core.methods.session import session
 from core.colors import color
 
+#append date to folder to be unique
 date = time.strftime("%Y-%m-%d %H:%M:%S")
 
+"""download found files & save them in the loot folder"""
 def download(url, file, cookie=None):
     requests = session()
     if cookie:
@@ -51,11 +53,6 @@ def download(url, file, cookie=None):
     if not os.path.exists(variables.lootdir+subdir+path):
         os.makedirs(variables.lootdir+subdir+path)
     with open((variables.lootdir+subdir+file), "wb") as loot:
-        #if cookie:
-        #    response = requests.get(url, cookies=cookie)
-            #print(cookie)
-            #print(response.content)
-        #else:
         response = requests.get(url)
         loot.write(response.content)
     loot.close()

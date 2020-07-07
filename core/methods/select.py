@@ -19,6 +19,10 @@ _____, ___
 
 from core.colors import color
 
+"""
+select specific payloads or nullbytes for phase 2
+@payloadlist: payloads or nullbytes found in phase 1
+"""
 def select(payloadlist):
     #filter duplicates
     payloadlist = list(set(payloadlist))

@@ -17,23 +17,26 @@ _____, ___
 └──╼ VainlyStrain
 """
 
-from multiprocessing.pool import ThreadPool as Pool
+
 import treelib, argparse
 import requests, sys
 import random, string
 import subprocess
+import time
 
 from itertools import permutations
+from multiprocessing.pool import ThreadPool as Pool
+
 from core.methods.parser import build_parser
 from core.methods.print import banner
 from core.methods.select import select
-
-from core.methods.tree import *
-from core.variables import *
+from core.methods.tree import create_tree
 from core.methods.attack import phase1, phase2
 from core.methods.cookie import readCookie
 
-import time
+from core.colors import color
+from core.variables import payloadlist, nullchars, version, sdirs, commons, processes
+
 
 filetree = treelib.Tree()
 filetree.create_node(color.O+"/"+color.END+color.RD, "root")
@@ -54,7 +57,7 @@ def main() -> int:
         parser.print_usage()
         sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -v, -a and -l mandatory')
-    dirs = opt["lists"]
+    #load dictionaries
     if opt['lists']:
         with open(args.lists[0]) as filelisted:
             for l in filelisted:
@@ -67,7 +70,6 @@ def main() -> int:
     victim2 = ""
     depth = 2
     verbose = False
-    dirs = 0
     foundfiles = [""]
     foundurls = [""]
     foundpayloads = []
@@ -172,22 +174,10 @@ def main() -> int:
     ending_time = time.time()
     attack_time = ending_time - starting_time
     total_time = vuln_time + attack_time
-    #if summary:
-    #    banner()
-    #else:
-        #print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} fin. {2}\n'.format(color.RD, color.END, time.strftime("%I:%M:%S %p")))
     print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Directory Tree\n'.format(color.RD, color.END))
     if foundfiles:
         create_tree(filetree, foundfiles)
         filetree.show()
-    #if foundurls:
-    #    fnd = []
-    #    for i in foundurls:
-    #        if i not in fnd:
-    #            if summary:
-    #                print(color.END+i)
-    #            fnd.append(i)
-    #else:
     if not foundurls:
         print("nothing found")
     print("{}Scan completed in {}s.{}".format(color.RC, total_time, color.END))

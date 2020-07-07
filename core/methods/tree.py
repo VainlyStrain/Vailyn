@@ -20,14 +20,16 @@ _____, ___
 import treelib, string, random
 from core.colors import color
 
+"""generates a random string, used for unique tree ids when duplicate file names"""
 def randomword(length):
    letters = string.ascii_lowercase
    return ''.join(random.choice(letters) for i in range(length))
 
+"""removes Vailyn's colors from string"""
 def replaceColors(ntag):
     return ntag.replace(color.RD, "").replace(color.END, "").replace(color.O, "").replace(color.CURSIVE, "").replace(color.BOLD, "")
     
-
+"""append file to found files tree"""
 def tree_append(tree, path, parentnode):
     plist = path.split("/")
     id = plist[0]
@@ -51,6 +53,7 @@ def tree_append(tree, path, parentnode):
     if len(plist) > 1:
         tree_append(tree, "/".join(plist[1::]), id)
         
+"""create the found files tree"""
 def create_tree(tree, filepaths):
     for i in filepaths:
         if i != "":
