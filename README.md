@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/VainlyStrain/Vailyn/blob/master/Vailyn">
-    <img src="https://img.shields.io/static/v1.svg?label=Version&message=1.2&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
+    <img src="https://img.shields.io/static/v1.svg?label=Version&message=1.3&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7&color=lightgrey&style=flat-square&logo=python&logoColor=white">
@@ -129,7 +129,7 @@ To distinguish real results from false positives, Vailyn does the following chec
 
 ### Demo
 
-[![asciicast](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD.svg)](https://asciinema.org/a/ZzDbTior61wJ2U2aKLpMMxqtD)
+[![asciicast](https://asciinema.org/a/346020.svg)](https://asciinema.org/a/346020)
 
 ### Possible Issues
 
