@@ -147,6 +147,7 @@ def main() -> int:
             print()
 
     if vlnysis:
+        print("{0}[+]{1} Loaded {2}{3}{1} payloads.\n".format(color.RD, color.END, color.BOLD, len(payloadlist)*len(nullchars)))
         starting_time = time.time()
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
@@ -166,7 +167,7 @@ def main() -> int:
         attack = True
         selectedpayloads = select(foundpayloads)
         if foundnullbytes:
-            selectednullbytes = select(foundnullbytes)
+            selectednullbytes = select(foundnullbytes, nullbytes=True)
         else:
             selectednullbytes = []
     else:
