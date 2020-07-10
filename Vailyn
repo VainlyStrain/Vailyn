@@ -30,6 +30,7 @@ from multiprocessing.pool import ThreadPool as Pool
 
 from core.methods.parser import build_parser
 from core.methods.print import banner
+from core.methods.list import listsplit
 from core.methods.select import select
 from core.methods.tree import create_tree
 from core.methods.attack import phase1, phase2
@@ -42,13 +43,6 @@ from core.variables import payloadlist, nullchars, version, sdirs, commons, proc
 
 filetree = treelib.Tree()
 filetree.create_node(color.O+"/"+color.END+color.RD, "root")
-
-def listsplit(l, n):
-    if n == 0:
-        n += 1
-    for i in range(0, len(l), n):
-        yield l[i:i + n] 
-        
 
 def main() -> int:    
     banner()
