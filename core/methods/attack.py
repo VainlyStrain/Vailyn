@@ -23,7 +23,7 @@ from core.colors import color
 from core.variables import payloadlist, nullchars
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
-from core.methods.print import progress, erase
+from core.methods.print import progress
 
 
 """prepare request for inpath attack"""
@@ -106,7 +106,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             found = False
             for (r, p, nb) in requestlist:
                 requestcount += 1
-                progress(requestcount, totalrequests, prefix=" ", suffix="  ")
+                progress(requestcount, totalrequests, prefix=" ", suffix=" ")
                 if str(r.status_code).startswith("2") or r.status_code == 302 or (r.status_code == 403 and attack != 2):
                     if filecheck(r, con2, p):
                         payloads.append(i)
@@ -189,7 +189,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                             requestlist.append((r,p))
                     for (r,p) in requestlist:
                         requestcount += 1
-                        progress(requestcount, totalrequests, prefix=" ", suffix="  ")
+                        progress(requestcount, totalrequests, prefix=" ", suffix=" ")
                         if attack == 3:
                             s.cookies.set(selected, p)
                         if str(r.status_code).startswith("2") or r.status_code == 302:

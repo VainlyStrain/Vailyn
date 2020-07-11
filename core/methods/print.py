@@ -124,7 +124,7 @@ def progress (iteration, total, prefix = '', suffix = '', decimals = 1, length =
     
     #print('\r%s %s%s%%%s %s' % (prefix, color.BOLD, percent, color.END, suffix), end = printEnd)
     erase()
-    sys.stdout.write('%s %s%5s%%%s %s' % (prefix, color.BOLD, percent, color.END, suffix))
+    sys.stdout.write('%s %s%5s%%%s %s' % (prefix, color.RB, percent, color.END+color.RD+"|"+color.END, suffix))
     sys.stdout.flush()
     
     # Print New Line on Complete

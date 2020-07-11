@@ -1,3 +1,4 @@
 treelib
 requests
 argparse
+colorama
