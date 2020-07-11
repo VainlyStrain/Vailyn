@@ -100,7 +100,7 @@ def listdisplay(gen, maxlen):
     print("{0}{1}|{2}  {3}".format(color.RB, space+"A"+color.END+color.RD, color.END, "ALL"))
     print()
 
-def progress (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+def progress (iteration, total, prefix = '', suffix = '', decimals = 1):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -116,23 +116,13 @@ def progress (iteration, total, prefix = '', suffix = '', decimals = 1, length =
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     if float(percent) > 100.0:
         percent = "100.0"
-    #filledLength = int(length * iteration // total)
-    #bar = fill * filledLength + "{}༛{}".format(color.RD, color.END) * (length - filledLength)
-    #print('\r%s [%s] %s%% %s' % (prefix, bar, percent, suffix), end = printEnd)
-    #print('\r%s %s %s%% %s' % (prefix, bar, percent, suffix), end = printEnd)
-    
-    
-    #print('\r%s %s%s%%%s %s' % (prefix, color.BOLD, percent, color.END, suffix), end = printEnd)
     erase()
     sys.stdout.write('%s %s%5s%%%s %s' % (prefix, color.RB, percent, color.END+color.RD+"|"+color.END, suffix))
     sys.stdout.flush()
     
-    # Print New Line on Complete
-    #if iteration == total: 
-    #    print()
 
-
-#this method stems from dirsearch (https://github.com/maurosoria/dirsearch)
+#this method stems from dirsearch
+#(https://github.com/maurosoria/dirsearch) by Mauro Soria
 def erase():
     if platform.system() == 'Windows':
         csbi = GetConsoleScreenBufferInfo()
