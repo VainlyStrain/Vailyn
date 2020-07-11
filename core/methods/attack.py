@@ -23,6 +23,7 @@ from core.colors import color
 from core.variables import payloadlist, nullchars
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
+from core.methods.print import progress, erase
 
 
 """prepare request for inpath attack"""
@@ -59,6 +60,8 @@ def query(traverse, dir, file, nb, keyword, url, url2):
 """
 def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file):
     #resolve issues with inpath attac
+    requestcount = 0
+    totalrequests = len(paylist) * (len(nullchars) + 1) * depth
     if not url.endswith("/"):
         url += "/"
     payloads = []
@@ -102,6 +105,8 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                 requestlist.append((r, p, nb))
             found = False
             for (r, p, nb) in requestlist:
+                requestcount += 1
+                progress(requestcount, totalrequests, prefix=" ", suffix="  ")
                 if str(r.status_code).startswith("2") or r.status_code == 302 or (r.status_code == 403 and attack != 2):
                     if filecheck(r, con2, p):
                         payloads.append(i)
@@ -134,6 +139,11 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 """
 def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes):
     #resolve issues with inpath attack and loot function
+    requestcount = 0
+    if len(selected_nullbytes) == 0:
+        totalrequests = len(selected_payloads) * len(files) * len(dirs) * depth
+    else:
+        totalrequests = len(selected_payloads) * len(selected_nullbytes) * len(files) * len(dirs) * depth
     if not url.endswith("/"):
         url += "/"
     found=[]
@@ -178,6 +188,8 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                 r = s.get(url)
                             requestlist.append((r,p))
                     for (r,p) in requestlist:
+                        requestcount += 1
+                        progress(requestcount, totalrequests, prefix=" ", suffix="  ")
                         if attack == 3:
                             s.cookies.set(selected, p)
                         if str(r.status_code).startswith("2") or r.status_code == 302:
