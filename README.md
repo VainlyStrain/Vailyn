@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/VainlyStrain/Vailyn/blob/master/Vailyn">
-    <img src="https://img.shields.io/static/v1.svg?label=Version&message=1.4&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
+    <img src="https://img.shields.io/static/v1.svg?label=Version&message=1.5&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7&color=lightgrey&style=flat-square&logo=python&logoColor=white">
@@ -79,6 +79,7 @@ additional:
                         Max. Depth of checking for phase 1
   -h, --help            show this help menu and exit
   -i FIL, --check FIL   File to check for in Phase 1 (df: /etc/passwd)
+  -t FIL, --cookie FIL  File containing authentication cookie (if needed)
   -q VIC2, --vic2 VIC2  Attack Target, part 2 (post injection point)
 
 ```
@@ -100,6 +101,8 @@ Example: if the final URL should look like: `https://site.com/download.php?file=
 To perform the bruteforce attack in phase 2, you need to specify 2 dictionaries:
 * FIL, containing filenames only (e.g. index.php)
 * PATH, containing directory names only. Note that each directory entry MUST end with a "/". Also, Vailyn will handle directory permutation for you, so you'll need only single directories in a line.
+
+If the attacked site is behind a login page, you can supply an authentication cookie via `-t COOKIEFILE`.
 
 #### Phase 1
 
@@ -129,7 +132,7 @@ To distinguish real results from false positives, Vailyn does the following chec
 
 ### Demo
 
-[![asciicast](https://asciinema.org/a/346020.svg)](https://asciinema.org/a/346020)
+[![asciicast](https://asciinema.org/a/348613.svg)](https://asciinema.org/a/348613)
 
 ### Possible Issues
 
