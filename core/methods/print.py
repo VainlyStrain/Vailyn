@@ -19,12 +19,10 @@ _____, ___
 
 from core.colors import color
 from core.variables import CLEAR_CMD
-import subprocess, shutil, math, sys, platform
+import subprocess, shutil, math, sys
 from core.methods.list import listsplit
 from core.variables import payloadlist
 
-if platform.system() == 'Windows':
-    from colorama.win32 import GetConsoleScreenBufferInfo, FillConsoleOutputCharacter, STDOUT
 
 def banner():
     vaile = '''{0}                      |
@@ -121,19 +119,6 @@ def progress (iteration, total, prefix = '', suffix = '', decimals = 1):
     sys.stdout.flush()
     
 
-#this method stems from dirsearch
-#(https://github.com/maurosoria/dirsearch) by Mauro Soria
 def erase():
-    if platform.system() == 'Windows':
-        csbi = GetConsoleScreenBufferInfo()
-        line = "\b" * int(csbi.dwCursorPosition.X)
-        sys.stdout.write(line)
-        width = csbi.dwCursorPosition.X
-        csbi.dwCursorPosition.X = 0
-        FillConsoleOutputCharacter(STDOUT, ' ', width, csbi.dwCursorPosition)
-        sys.stdout.write(line)
-        sys.stdout.flush()
-
-    else:
-        sys.stdout.write('\033[1K')
-        sys.stdout.write('\033[0G')
+    sys.stdout.write('\033[1K')
+    sys.stdout.write('\033[0G')
