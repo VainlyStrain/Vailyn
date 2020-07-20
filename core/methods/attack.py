@@ -26,6 +26,8 @@ from core.methods.loot import download
 from core.methods.print import progress
 from core.methods.cookie import cookieFromFile
 
+global maxlen
+maxlen = len(max(payloadlist, key=len))
 
 """prepare request for inpath attack"""
 def inpath(traverse, dir, file, nb, url, url2):
@@ -118,7 +120,11 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                         if nb != "":
                             nullbytes.append(nb)
                         found = True
-                        print(color.RD + "[pl]" + color.END + color.O + " " + str(r.status_code) + color.END + " " + i)
+
+                        out = color.RD + "[pl]" + color.END + color.O + " " + str(r.status_code) + color.END + " "
+                        out = out + "{0:{1}}".format(i, maxlen) + " " + nb
+
+                        print(out)
             d+=1
             if found:
                 break
