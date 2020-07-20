@@ -66,7 +66,7 @@ def listprint2(plist):
     print("{0}{1}|{2}  {3}".format(color.RB, "   A"+color.END+color.RD, color.END, "ALL"))
     print()
 
-def listprint(plist):
+def listprint(plist, nullbytes):
     tmplist = []
     for i in range(0, len(plist)):
         #tmpstr = "{0:4}  {1}".format(i, plist[i])
@@ -76,9 +76,9 @@ def listprint(plist):
     termwidth = shutil.get_terminal_size()[0]
     column_number = math.floor(len(plist)/(termwidth/((maxlen+4))))
     columns = listsplit(tmplist, column_number)
-    listdisplay(columns, maxlen)
+    listdisplay(columns, maxlen, nullbytes)
 
-def listdisplay(gen, maxlen):
+def listdisplay(gen, maxlen, nb):
     listlist = []
     for l in gen:
       listlist.append(l)
@@ -96,6 +96,8 @@ def listdisplay(gen, maxlen):
     for i in range(0, len(str(len(payloadlist)))-1):
         space += " "
     print("{0}{1}|{2}  {3}".format(color.RB, space+"A"+color.END+color.RD, color.END, "ALL"))
+    if nb:
+        print("{0}{1}|{2}  {3}".format(color.RB, space+"N"+color.END+color.RD, color.END, "NONE"))
     print()
 
 def progress (iteration, total, prefix = '', suffix = '', decimals = 1):

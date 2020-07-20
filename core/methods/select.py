@@ -34,7 +34,7 @@ def select(payloadlist, nullbytes=False):
         #print("\n{0}[+]{1} Operative payloads ({2}{3}{1}):\n {4}".format(color.RD, color.END, color.BOLD, len(payloadlist), str(payloadlist)))
         print("\n{0}[+]{1} Operative payloads ({2}{3}{1}):".format(color.RD, color.END, color.BOLD, len(payloadlist)))
     #print(color.BOLD+"\n  Operative Payloads:\n"+color.END+" "+color.O+str(payloadlist)+color.END)
-    listprint(payloadlist)
+    listprint(payloadlist, nullbytes)
     invalid = True
     while invalid:
         if nullbytes:
@@ -44,6 +44,8 @@ def select(payloadlist, nullbytes=False):
         try:
             if payloads.strip().lower() == "a":
                 return payloadlist
+            elif nullbytes and payloads.strip().lower() == "n":
+                return []
             selected = [payloadlist[int(i.strip())] for i in payloads.split(",")]
             invalid = False
         except:

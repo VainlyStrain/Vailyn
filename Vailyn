@@ -72,6 +72,7 @@ def main() -> int:
     foundnullbytes = []
     vlnfile = "/etc/passwd"
     checkdepth = 8
+    cookiefile = ""
 
     if opt["loot"]:
         loot = True
@@ -90,6 +91,9 @@ def main() -> int:
 
     if opt["checkdepth"]:
         checkdepth = args.checkdepth
+
+    if opt["cookie"]:
+        cookiefile = args.cookie
     
     param = ""
     cookie = None
@@ -144,7 +148,7 @@ def main() -> int:
         print("{0}[+]{1} Loaded {2}{3}{1} payloads.\n".format(color.RD, color.END, color.BOLD, len(payloadlist)*len(nullchars)))
         starting_time = time.time()
         with Pool(processes=processes) as pool:
-            res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,)) for l in paysplit]
+            res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,cookiefile,)) for l in paysplit]
             for i in res:
                 tuples = i.get()
                 foundpayloads += tuples[0]
@@ -175,7 +179,7 @@ def main() -> int:
     if attack:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
         with Pool(processes=processes) as pool:
-            res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,)) for l in splitted]
+            res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,)) for l in splitted]
             for i in res:
                 restuple = i.get()
                 foundfiles += restuple[0]

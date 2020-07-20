@@ -41,6 +41,7 @@ additional:
                         {0}Max. Depth of checking for phase 1{1}
   -h, --help            {0}show this help menu and exit{1}
   -i FIL, --check FIL   {0}File to check for in Phase 1 (df: /etc/passwd){1}
+  -t FIL, --cookie FIL  {0}File containing authentication cookie (if needed){1}
   -q VIC2, --vic2 VIC2  {0}Attack Target, part 2 (post injection point){1}'''.format(color.RC, color.END))
 
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
@@ -84,6 +85,9 @@ def build_parser():
                    help="A › Attack target part 2",
                    metavar=("VIC2"))
     p.add_argument('-i', '--check',
+                   help="A › Attack target part 2",
+                   metavar=("FILE"))
+    p.add_argument('-t', '--cookie',
                    help="A › Attack target part 2",
                    metavar=("FILE"))
     p.add_argument('-c', '--checkdepth',

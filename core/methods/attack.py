@@ -24,6 +24,7 @@ from core.variables import payloadlist, nullchars
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 from core.methods.print import progress
+from core.methods.cookie import cookieFromFile
 
 
 """prepare request for inpath attack"""
@@ -58,7 +59,7 @@ def query(traverse, dir, file, nb, keyword, url, url2):
 @paylist: payload list (all)
 @file: file to be looked up (-i FIL, default: /etc/passwd)
 """
-def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file):
+def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie):
     #resolve issues with inpath attac
     requestcount = 0
     totalrequests = len(paylist) * (len(nullchars) + 1) * depth
@@ -69,6 +70,10 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     s = session()
     if attack == 3:
         s.cookies = cookie
+    if authcookie != "":
+        tmpjar = cookieFromFile(authcookie)
+        for cookie in tmpjar:
+            s.cookies.set_cookie(cookie)
     #initial ping for filecheck
     con2 = requests.get(url).content
     for i in paylist:
@@ -137,7 +142,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 @selected_payloads: payloads selected in phase 1
 @selected_nullbytes: terminators selected in phase 1
 """
-def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes):
+def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie):
     #resolve issues with inpath attack and loot function
     requestcount = 0
     if len(selected_nullbytes) == 0:
@@ -149,6 +154,12 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
     found=[]
     urls = []
     s = session()
+    if attack == 3:
+        s.cookies = cookie
+    if authcookie != "":
+        tmpjar = cookieFromFile(authcookie)
+        for cookie in tmpjar:
+            s.cookies.set_cookie(cookie)
     #initial ping for filecheck
     con2 = requests.get(url).content
     for dir in dirs:

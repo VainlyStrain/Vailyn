@@ -18,8 +18,8 @@ _____, ___
 """
 
 from core.methods.session import session
-from http.cookies import SimpleCookie
-import requests, sys
+from http.cookiejar import FileCookieJar #MozillaCookieJar
+import requests, sys, time
 from core.colors import color
 from core.variables import payloadlist, nullchars
 from core.methods.filecheck import filecheck
@@ -44,3 +44,11 @@ def readCookie(url):
     selected = input("\n[!] Select key for attack (int) :> ")
     selectedpart = list(cookie.keys())[int(selected)]
     return (cookie, selectedpart)
+
+def cookieFromFile(cookiefile):
+    jar = FileCookieJar('cookiefile')
+    jar.load(ignore_expires=True)
+    for cookie in jar:
+        cookie.expires = time.time() + 14 * 24 * 3600
+    assert(len(jar) > 0)
+    return jar
