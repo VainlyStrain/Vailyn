@@ -79,7 +79,6 @@ additional:
   -h, --help            show this help menu and exit
   -i FIL, --check FIL   File to check for in Phase 1 (df: /etc/passwd)
   -q VIC2, --vic2 VIC2  Attack Target, part 2 (post injection point)
-
 ```
 
 Vailyn currently supports 3 attack vectors. The attack performed is identified by the `-a ACK` argument.
