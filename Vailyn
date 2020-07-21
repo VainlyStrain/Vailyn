@@ -80,17 +80,15 @@ def main() -> int:
     if opt["vic2"]:
         victim2 = args.vic2
 
-    if opt["depth"]:
-        depth = args.depth
+    if opt["depths"]:
+        checkdepth = args.depths[0]
+        depth = args.depths[1]
 
     if opt["all"]:
         verbose = True
 
     if opt["check"]:
         vlnfile = args.check
-
-    if opt["checkdepth"]:
-        checkdepth = args.checkdepth
 
     if opt["cookie"]:
         cookiefile = args.cookie
