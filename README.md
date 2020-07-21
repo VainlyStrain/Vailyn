@@ -73,13 +73,11 @@ mandatory:
 additional:
   -p PAM, --param PAM   query parameter to use for --attack 1
   -s, --all             display every path tried, even 404s
-  -d INT, --depth INT   max. depth of checking and dir permutation level
+  -d I J, --depths I J  depths of checking (I: phase 1, J: phase 2)
   -n, --loot            Download found files into the loot folder
-  -c INT, --checkdepth INT
-                        Max. Depth of checking for phase 1
+  -c FIL, --cookie FIL  File containing authentication cookie (if needed)
   -h, --help            show this help menu and exit
   -i FIL, --check FIL   File to check for in Phase 1 (df: /etc/passwd)
-  -t FIL, --cookie FIL  File containing authentication cookie (if needed)
   -q VIC2, --vic2 VIC2  Attack Target, part 2 (post injection point)
 
 ```
@@ -102,20 +100,20 @@ To perform the bruteforce attack in phase 2, you need to specify 2 dictionaries:
 * FIL, containing filenames only (e.g. index.php)
 * PATH, containing directory names only. Note that each directory entry MUST end with a "/". Also, Vailyn will handle directory permutation for you, so you'll need only single directories in a line.
 
-If the attacked site is behind a login page, you can supply an authentication cookie via `-t COOKIEFILE`.
+If the attacked site is behind a login page, you can supply an authentication cookie via `-c COOKIEFILE`.
 
 #### Phase 1
 
 This is the analysis phase, where working payloads are separated from the others.
 
 By default, `/etc/passwd` is looked up. If the server is not running Linux, you can specify a custom file by `-i FILENAME`. Note that you must include subdirectories in FILENAME.
-You can modify the lookup depth with `-c DEPTH` (default=8).
+You can modify the lookup depth with the first value of `-d` (default=8).
 
 #### Phase 2
 
 This is the exploitation phase, where Vailyn will try to leak as much files as possible.
 
-The depth of lookup in phase 2 (the maximal number of layers traversed back, and the level of subdirectory recursion) is specified by the `-d` argument. In future versions, these properties can be changed independently (using 2 arguments).
+The depth of lookup in phase 2 (the maximal number of layers traversed back, and the level of subdirectory recursion) is specified by the second value of the `-d` argument. In future versions, these properties can be changed independently (using 2 arguments).
 
 By specifying `-n`, Vailyn will not only display files on the terminal, but also download and save the files into the loot folder.
 
