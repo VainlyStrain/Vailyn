@@ -130,7 +130,7 @@ def main() -> int:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Parsing Cookie\n'.format(color.RD, color.END))
         cookie, selected = readCookie(args.victim)
 
-    print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} List Payloads\n'.format(color.RD, color.END))
+    print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Analysis Phase\n'.format(color.RD, color.END))
         
     vlnysis = True
     targetcache = parseUrl(args.victim)
@@ -175,7 +175,7 @@ def main() -> int:
     #start the attack
     starting_time = time.time()
     if attack:
-        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Attack Phase\n'.format(color.RD, color.END))
+        print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Sploit Phase\n'.format(color.RD, color.END))
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,)) for l in splitted]
             for i in res:

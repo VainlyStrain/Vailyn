@@ -56,5 +56,10 @@ def tree_append(tree, path, parentnode):
 """create the found files tree"""
 def create_tree(tree, filepaths):
     for i in filepaths:
-        if i != "":
+        contained = False
+        for j in filepaths:
+            if i != j and i != "" and i in j:
+                contained = True
+                #print("i:"+i+"\nj:"+j)
+        if i != "" and not contained:
             tree_append(tree, i, "root")
