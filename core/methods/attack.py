@@ -60,9 +60,10 @@ def query(traverse, dir, file, nb, keyword, url, url2):
 @depth: attack depth (-d INT)
 @paylist: payload list (all)
 @file: file to be looked up (-i FIL, default: /etc/passwd)
+@authcookie: Authentication Cookie File to bypass Login Screens
 """
 def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie):
-    #resolve issues with inpath attac
+    #resolve issues with inpath attack
     requestcount = 0
     totalrequests = len(paylist) * (len(nullchars) + 1) * depth
     if not url.endswith("/"):
@@ -147,6 +148,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 @dl: download found files?
 @selected_payloads: payloads selected in phase 1
 @selected_nullbytes: terminators selected in phase 1
+@authcookie: Authentication Cookie File to bypass Login Screens
 """
 def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie):
     #resolve issues with inpath attack and loot function
