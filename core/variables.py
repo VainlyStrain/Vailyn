@@ -47,6 +47,11 @@ nullchars = ['%00', '%2500', '%25%30%30', '%u0000', '%c0%80', '%e0%80']
 sdirs = ['']
 commons = []
 
+#Tor variables
+tor = False
+initip = ""
+torip = ""
+
 #clear the terminal, supports both Windows and Unix-like
 CLEAR_CMD = "cls" if sys.platform.lower().startswith("win") else "clear"
 

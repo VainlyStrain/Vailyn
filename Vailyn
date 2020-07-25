@@ -24,6 +24,8 @@ import subprocess
 import time
 import os
 
+import core.variables as variables
+
 from itertools import permutations
 from multiprocessing.pool import ThreadPool as Pool
 
@@ -35,6 +37,7 @@ from core.methods.tree import create_tree
 from core.methods.attack import phase1, phase2
 from core.methods.cookie import readCookie
 from core.methods.cache import load, save, parseUrl
+from core.methods.tor import initcheck, torpipe, torcheck
 
 from core.colors import color
 from core.variables import payloadlist, nullchars, version, sdirs, commons, processes, cachedir
@@ -100,6 +103,32 @@ def main() -> int:
     cookie = None
     selected = ""
 
+    if opt["tor"]:
+        if sys.platform.lower().startswith('win'):
+            sys.exit("{} [-]{} Tor support is Linux-only at the moment.".format(color.R, color.END))
+        
+        variables.tor = True
+        try:
+            initcheck()
+            acc = True
+        except:
+            acc = False
+
+        if acc or not variables.initip == "":
+            p = torpipe(True)
+            if not p:
+                start = input(color.END+" [?] Do you want to start the Tor service? (enter if not) :> ")
+                if start != "":
+                    try:
+                        subprocess.call(["systemctl", "start", "tor"])
+                        p = torpipe(True)
+                    except Exception as e:
+                        sys.exit(e)
+            torcheck()
+        else:
+            sys.exit("{} [-]{} Problems setting initial IP. Aborting.".format(color.R, color.END))
+
+
     #create directory permutations from dictionary
     iter=1
     ndirs=list.copy(sdirs)
@@ -133,6 +162,9 @@ def main() -> int:
 
     print("    v" + version)
     time.sleep(0.5)
+
+    if variables.tor:
+        print("\n{0} [TOR]{1}{6} IP{1}{0}|{1}{5} {2} {1}{4}>{1} {3}".format(color.RD, color.END, variables.initip, variables.torip, color.BOLD, color.CURSIVE, color.O))
 
     #fetch and select cookie for cookie mode
     if args.attack == 3:
@@ -215,6 +247,13 @@ def main() -> int:
         print("nothing found")
 
     print("{}Scan completed in {}s.{}".format(color.RC, total_time, color.END))
+    if variables.tor:
+        stop = input(color.END+" [?] Do you want to terminate the Tor service? (enter if not) :> ")
+        if stop != "":
+            try:
+                subprocess.call(["systemctl", "stop", "tor"])
+            except Exception as e:
+                sys.exit(e)
 
 
 if __name__ == "__main__":

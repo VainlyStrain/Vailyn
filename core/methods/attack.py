@@ -83,7 +83,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             s.cookies.set_cookie(cookie)
 
     #initial ping for filecheck
-    con2 = requests.get(url).content
+    con2 = s.get(url).content
     for i in paylist:
         d = 0
         while d <= depth:
@@ -186,7 +186,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
             s.cookies.set_cookie(cookie)
 
     #initial ping for filecheck
-    con2 = requests.get(url).content
+    con2 = s.get(url).content
     for dir in dirs:
         for file in files:
             d=1

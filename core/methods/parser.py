@@ -40,14 +40,15 @@ additional:
   -c FIL, --cookie FIL  {0}File containing authentication cookie (if needed){1}
   -h, --help            {0}show this help menu and exit{1}
   -i FIL, --check FIL   {0}File to check for in Phase 1 (df: /etc/passwd){1}
-  -q VIC2, --vic2 VIC2  {0}Attack Target, part 2 (post injection point){1}'''.format(color.RC, color.END))
+  -q VIC2, --vic2 VIC2  {0}Attack Target, part 2 (post injection point){1}
+  -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}'''.format(color.RC, color.END))
 
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
         if prefix is None:
             prefix = color.RC + 'Vsynta ' + color.END
             #return super(VainFormatter, self).add_usage("{}Vailyn{} [-v VIC] [-a ACK] [-p PARAM] [-s]\n          [-l FIL PATH] [-d INT] [--loot]\n        [-f] [-h] [--vic2 VIC2]".format(color.RB,color.END), actions, groups, prefix)
-            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a ACK -l FIL PATH \n        [-p PAM] [-s] [-d I J] [-n] \n      [-c FIL] [-i FIL]\n    [-q VIC2] [-h]".format(color.RB,color.END), actions, groups, prefix)
+            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a ACK -l FIL PATH \n        [-p PAM] [-s] [-d I J] [-n] \n      [-c FIL] [-i FIL]\n    [-q VIC2] [-t]".format(color.RB,color.END), actions, groups, prefix)
 
 def build_parser():
     p = ArgumentParser(formatter_class=VainFormatter,add_help=False)
@@ -89,5 +90,8 @@ def build_parser():
     p.add_argument('-c', '--cookie',
                    help="File containing authentication cookie (if needed)",
                    metavar=("FIL"))
+    p.add_argument('-t', '--tor',
+                   help="Pipe attacks through the Tor anonymity network",
+                   action="store_true",)
                
     return p 
