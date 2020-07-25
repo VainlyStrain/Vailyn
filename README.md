@@ -79,6 +79,7 @@ additional:
   -h, --help            show this help menu and exit
   -i FIL, --check FIL   File to check for in Phase 1 (df: /etc/passwd)
   -q VIC2, --vic2 VIC2  Attack Target, part 2 (post injection point)
+  -t, --tor             Pipe attacks through the Tor anonymity network
 ```
 
 Vailyn currently supports 3 attack vectors. The attack performed is identified by the `-a ACK` argument.
@@ -99,7 +100,7 @@ To perform the bruteforce attack in phase 2, you need to specify 2 dictionaries:
 * FIL, containing filenames only (e.g. index.php)
 * PATH, containing directory names only. Note that each directory entry MUST end with a "/". Also, Vailyn will handle directory permutation for you, so you'll need only single directories in a line.
 
-If the attacked site is behind a login page, you can supply an authentication cookie via `-c COOKIEFILE`.
+If the attacked site is behind a login page, you can supply an authentication cookie via `-c COOKIEFILE`. If you want to attack over Tor, use `--tor`.
 
 #### Phase 1
 
@@ -134,3 +135,13 @@ To distinguish real results from false positives, Vailyn does the following chec
 ### Possible Issues
 
 Please consider, that I'm still learning. So, there may still be some undetected false positives/negatives. If you found some (or want to point out other bugs/improvements), please leave an issue.
+
+### Code of Conduct
+
+Vailyn is provided as an offensive web application audit tool. It has built-in functionalities which can reveal potential vulnerabilities in web applications, which could possibly be exploited maliciously.
+
+**THEREFORE, NEITHER THE AUTHOR NOR THE CONTRIBUTORS ARE RESPONSIBLE FOR ANY MISUSE OR DAMAGE DUE TO THIS TOOLKIT.**
+
+By using this software, the user obliges to follow their local laws, to not attack someone else's system without explicit permission from the owner, or with malicious intend.
+
+In case of an infringement, only the end user who committed it is accountable for their actions.

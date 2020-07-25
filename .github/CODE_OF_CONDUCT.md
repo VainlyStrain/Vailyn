@@ -6,4 +6,4 @@ Vailyn is provided as an offensive web application audit tool. It has built-in f
 
 By using this software, the user obliges to follow their local laws, to not attack someone else's system without explicit permission from the owner, or with malicious intend.
 
-In case of an infringement, only the end user who committed is accountable for their actions.
+In case of an infringement, only the end user who committed it is accountable for their actions.
