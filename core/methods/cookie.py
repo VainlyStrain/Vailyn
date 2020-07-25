@@ -13,7 +13,7 @@ _____, ___
       ,   
        
 
-┌─[pathtrav]─[~]
+┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
 
@@ -45,9 +45,11 @@ def readCookie(url):
     selectedpart = list(cookie.keys())[int(selected)]
     return (cookie, selectedpart)
 
+"""reads authentication cookie from file"""
 def cookieFromFile(cookiefile):
     jar = FileCookieJar('cookiefile')
     jar.load(ignore_expires=True)
+    #set expiration time to avoid errors
     for cookie in jar:
         cookie.expires = time.time() + 14 * 24 * 3600
     assert(len(jar) > 0)

@@ -13,7 +13,7 @@ _____, ___
       ,   
        
 
-┌─[pathtrav]─[~]
+┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
 
@@ -24,6 +24,7 @@ from core.methods.list import listsplit
 from core.variables import payloadlist
 
 
+"""prints asciiart when starting the tool"""
 def banner():
     vaile = '''{0}                      |
                       :   
@@ -58,6 +59,12 @@ ____, __              |
     '''.format(color.END, color.BOLD, color.CURSIVE)
     subprocess.call(CLEAR_CMD)
     print(vaile)
+
+"""
+the following methods nicely output lists for the payload selection
+
+currently in use: listprint
+"""
 
 def listprint2(plist):
     print()
@@ -100,6 +107,7 @@ def listdisplay(gen, maxlen, nb):
         print("{0}{1}|{2}  {3}".format(color.RB, space+"N"+color.END+color.RD, color.END, "NONE"))
     print()
 
+"""prints progress in percentage"""
 def progress (iteration, total, prefix = '', suffix = '', decimals = 1):
     """
     Call in a loop to create terminal progress bar
@@ -121,6 +129,7 @@ def progress (iteration, total, prefix = '', suffix = '', decimals = 1):
     sys.stdout.flush()
     
 
+"""prevent progress() from flooding the terminal output"""
 def erase():
     sys.stdout.write('\033[1K')
     sys.stdout.write('\033[0G')

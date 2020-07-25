@@ -13,7 +13,7 @@ _____, ___
       ,   
        
 
-┌─[pathtrav]─[~]
+┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
 
@@ -22,9 +22,7 @@ import core.variables as variables
 from core.methods.session import session
 from core.colors import color
 
-#append date to folder to be unique
-#date = time.strftime("%Y-%m-%d %H:%M:%S")
-
+"""convert URL to directory name for cache"""
 def parseUrl(url):
     baseurl = url.split("://")[1]
     name = baseurl.split("/")[0]
@@ -45,6 +43,7 @@ def save(subdir, plist, nlist):
         for i in nlist:
             n.write(i+"\n")
 
+"""load payloads & nullbytes from cache"""
 def load(subdir):
     plist = []
     nlist = []

@@ -13,7 +13,7 @@ _____, ___
       ,   
        
 
-┌─[pathtrav]─[~]
+┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
 
@@ -57,6 +57,7 @@ def tree_append(tree, path, parentnode):
 def create_tree(tree, filepaths):
     for i in filepaths:
         contained = False
+        #prevent dups if parent folder found
         for j in filepaths:
             if i != j and i != "" and i in j:
                 contained = True

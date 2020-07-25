@@ -1,5 +1,27 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+_____, ___
+   '+ .;    
+    , ;   
+     .   
+           
+       .    
+     .;.    
+     .;  
+      :  
+      ,   
+       
+
+┌─[Vailyn]─[~]
+└──╼ VainlyStrain
+"""
+
 import requests
 
+"""
+creates a new requests session for the attack
+"""
 def session():
     VaileSession = requests.session()
     VaileSession.proxies = {}

