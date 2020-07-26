@@ -103,10 +103,7 @@ def main() -> int:
     cookie = None
     selected = ""
 
-    if opt["tor"]:
-        if sys.platform.lower().startswith('win'):
-            sys.exit("{} [-]{} Tor support is Linux-only at the moment.".format(color.R, color.END))
-        
+    if opt["tor"]:        
         variables.tor = True
         try:
             initcheck()
@@ -115,15 +112,20 @@ def main() -> int:
             acc = False
 
         if acc or not variables.initip == "":
-            p = torpipe(True)
-            if not p:
-                start = input(color.END+" [?] Do you want to start the Tor service? (enter if not) :> ")
-                if start != "":
-                    try:
-                        subprocess.call(["systemctl", "start", "tor"])
-                        p = torpipe(True)
-                    except Exception as e:
-                        sys.exit(e)
+            if sys.platform.lower().startswith('win'):
+                status = input(color.END+" [?] Do you have the Tor service actively running? (enter if not) :> ")
+                if status == "":
+                    sys.exit(" {}[-]{} Aborting.".format(color.R, color.END))
+            else:
+                p = torpipe(True)
+                if not p:
+                    start = input(color.END+" [?] Do you want to start the Tor service? (enter if not) :> ")
+                    if start != "":
+                        try:
+                            subprocess.call(["systemctl", "start", "tor"])
+                            p = torpipe(True)
+                        except Exception as e:
+                            sys.exit(e)
             torcheck()
         else:
             sys.exit("{} [-]{} Problems setting initial IP. Aborting.".format(color.R, color.END))
