@@ -17,7 +17,6 @@ _____, ___
 └──╼ VainlyStrain
 """
 
-import sys
 
 class color:
     BOLD = '\033[1m'

@@ -27,7 +27,7 @@ def parseUrl(url):
     baseurl = url.split("://")[1]
     name = baseurl.split("/")[0]
 
-    #patch for Windows, which does not allow certain URI cahrs in dirname
+    #patch for Windows, which does not allow certain URI chars in dirname
     if "@" in name:
         name = name.split("@")[1]
     name = name.split(":")[0]
