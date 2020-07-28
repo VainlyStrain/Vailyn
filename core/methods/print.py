@@ -127,6 +127,12 @@ def progress (iteration, total, prefix = '', suffix = '', decimals = 1):
     erase()
     sys.stdout.write('%s %s%5s%%%s %s' % (prefix, color.RB, percent, color.END+color.RD+"|"+color.END, suffix))
     sys.stdout.flush()
+
+def progresswin(iteration, total, prefix = '', suffix = '', decimals = 1):
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    if float(percent) > 100.0:
+        percent = "100.0"
+    print("{} [VAILYN]{} {}{}%%{} done.".format(color.RD, color.END, color.BOLD, percent, color.END))
     
 
 """prevent progress() from flooding the terminal output"""

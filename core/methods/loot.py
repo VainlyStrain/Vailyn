@@ -39,6 +39,11 @@ def download(url, file, cookie=None):
             path ='\\'.join(file.split('/')[0:-1])
             baseurl = url.split("://")[1]
             name = baseurl.split("/")[0]
+
+        #fixes directory issues on Windows, because it doesn't allow the character :, which is used in URIs
+        if "@" in name:
+            name = name.split("@")[1]
+        name = name.split(":")[0]
         subdir = name+"-"+str(date)+"\\"
     else:
         if "\\" in file:
@@ -49,6 +54,10 @@ def download(url, file, cookie=None):
             path ='/'.join(file.split('/')[0:-1])
             baseurl = url.split("://")[1]
             name = baseurl.split("/")[0]
+
+        if "@" in name:
+            name = name.split("@")[1]
+        name = name.split(":")[0]
         subdir = name+"-"+str(date)+"/"
     if not os.path.exists(variables.lootdir+subdir+path):
         os.makedirs(variables.lootdir+subdir+path)

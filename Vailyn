@@ -21,6 +21,7 @@ import treelib, argparse
 import requests, sys
 import random, string
 import subprocess
+import colorama
 import time
 import os
 
@@ -42,6 +43,9 @@ from core.methods.tor import initcheck, torpipe, torcheck
 from core.colors import color
 from core.variables import payloadlist, nullchars, version, sdirs, commons, processes, cachedir
 
+
+#initialize colorama
+colorama.init()
 
 #initialize file tree
 filetree = treelib.Tree()
