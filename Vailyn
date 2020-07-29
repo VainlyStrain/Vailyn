@@ -126,7 +126,7 @@ def main() -> int:
                     start = input(color.END+" [?] Do you want to start the Tor service? (enter if not) :> ")
                     if start != "":
                         try:
-                            subprocess.call(["systemctl", "start", "tor"])
+                            subprocess.run(["systemctl", "start", "tor"])
                             p = torpipe(True)
                         except Exception as e:
                             sys.exit(e)
@@ -257,7 +257,7 @@ def main() -> int:
         stop = input(color.END+" [?] Do you want to terminate the Tor service? (enter if not) :> ")
         if stop != "":
             try:
-                subprocess.call(["systemctl", "stop", "tor"])
+                subprocess.run(["systemctl", "stop", "tor"])
             except Exception as e:
                 sys.exit(e)
 

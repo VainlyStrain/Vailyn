@@ -57,7 +57,7 @@ ____, __              |
                      .    
                      {0}
     '''.format(color.END, color.BOLD, color.CURSIVE)
-    subprocess.call(CLEAR_CMD)
+    subprocess.run(CLEAR_CMD)
     print(vaile)
 
 """
