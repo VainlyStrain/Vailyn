@@ -138,4 +138,8 @@ def progresswin(iteration, total, prefix = '', suffix = '', decimals = 1):
 """prevent progress() from flooding the terminal output"""
 def erase():
     sys.stdout.write('\033[1K')
-    sys.stdout.write('\033[0G')
+    if sys.platform.lower().startswith('win'):
+        termwidth = shutil.get_terminal_size()[0]
+        sys.stdout.write('\033[{}D'.format(termwidth))
+    else:
+        sys.stdout.write('\033[0G')
