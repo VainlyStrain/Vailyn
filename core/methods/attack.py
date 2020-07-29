@@ -127,7 +127,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             for (r, p, nb) in requestlist:
                 requestcount += 1
                 if sys.platform.lower().startswith('win'):
-                    if requestcount % 50 == 0:
+                    if requestcount % 1000 == 0:
                         progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
                 else:
                     progress(requestcount, totalrequests, prefix=" ", suffix=" ")
@@ -235,7 +235,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                     for (r,p) in requestlist:
                         requestcount += 1
                         if sys.platform.lower().startswith('win'):
-                            if requestcount % 50 == 0:
+                            if requestcount % 1000 == 0:
                                 progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
                         else:
                             progress(requestcount, totalrequests, prefix=" ", suffix=" ")
