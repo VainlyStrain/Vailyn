@@ -38,7 +38,7 @@ def presession():
 """Detect if the Tor service is active and running"""
 def torpipe(controller):
     try:
-        status = subprocess.check_output(['systemctl','status','tor'])
+        status = subprocess.run(['systemctl','status','tor'], check=True, stdout=subprocess.PIPE).stdout
         #status = subprocess.check_output(['service','tor','status'])
         if "active (running)" in str(status):
             return True
