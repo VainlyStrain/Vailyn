@@ -18,7 +18,7 @@ _____, ___
 """
 
 
-import sys
+import sys, re
 import requests
 import subprocess
 from urllib.request import urlopen
@@ -38,11 +38,17 @@ def presession():
 """Detect if the Tor service is active and running"""
 def torpipe(controller):
     try:
+        macOS = False
         try:
             status = subprocess.run(['systemctl','status','tor'], check=True, stdout=subprocess.PIPE).stdout
         except OSError: #non-systemd distro
             status = subprocess.run(['service','tor','status'], check=True, stdout=subprocess.PIPE).stdout
-        if "active (running)" in str(status):
+        except OSError: #macOS
+            macOS = True
+            status = subprocess.run(['brew','services','list'], check=True, stdout=subprocess.PIPE).stdout
+        if "active (running)" in str(status) and not macOS:
+            return True
+        elif re.match(".*tor\s+started.*", str(status), flags=re.DOTALL) and macOS:
             return True
         else:
             print(color.R + " [-] " + "\033[0m" + color.UNDERLINE + "\033[1m" + "Tor service not running. Aborting..."+color.END)

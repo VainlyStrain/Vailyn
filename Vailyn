@@ -131,6 +131,9 @@ def main() -> int:
                         except OSError: #non-systemd distro
                             subprocess.run(["service", "tor", "start"])
                             p = torpipe(True)
+                        except OSError: #macOS - requires brew
+                            subprocess.run(["brew", "services", "start", "tor"])
+                            p = torpipe(True)
                         except Exception as e:
                             sys.exit(e)
             torcheck()
@@ -263,6 +266,8 @@ def main() -> int:
                 subprocess.run(["systemctl", "stop", "tor"])
             except OSError:
                 subprocess.run(["service", "tor", "stop"])
+            except OSError:
+                subprocess.run(["brew", "services", "stop", "tor"])
             except Exception as e:
                 sys.exit(e)
 
