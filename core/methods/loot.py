@@ -23,7 +23,10 @@ from core.methods.session import session
 from core.colors import color
 
 #append date to folder to be unique
-date = time.strftime("%Y-%m-%d %H:%M:%S")
+if sys.platform.lower().startswith('win'):
+    date = time.strftime("%Y-%m-%d %H-%M-%S")
+else:
+    date = time.strftime("%Y-%m-%d %H:%M:%S")
 
 """download found files & save them in the loot folder"""
 def download(url, file, cookie=None):
