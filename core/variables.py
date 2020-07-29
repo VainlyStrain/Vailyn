@@ -53,8 +53,8 @@ initip = ""
 torip = ""
 
 #clear the terminal, supports both Windows and Unix-like
-CLEAR_CMD = "cls" if sys.platform.lower().startswith("win") else "clear"
-
+CLEAR_CMD = ["cmd", "/c", "cls"] if sys.platform.lower().startswith("win") else ["clear"]
+ 
 #set maximal amount of processes
 processes = multiprocessing.cpu_count()
 
