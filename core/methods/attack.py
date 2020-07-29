@@ -126,12 +126,11 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             found = False
             for (r, p, nb) in requestlist:
                 requestcount += 1
-                #if sys.platform.lower().startswith('win'):
-                #    if requestcount % 1000 == 0:
-                #        progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
-                #else:
-                #    progress(requestcount, totalrequests, prefix=" ", suffix=" ")
-                progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+                if sys.platform.lower().startswith('win'):
+                    if requestcount % 1000 == 0:
+                        progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
+                else:
+                    progress(requestcount, totalrequests, prefix=" ", suffix=" ")
                 if str(r.status_code).startswith("2") or r.status_code == 302 or (r.status_code == 403 and attack != 2):
                     if filecheck(r, con2, p):
                         payloads.append(i)
@@ -235,12 +234,11 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                     #analyze result
                     for (r,p) in requestlist:
                         requestcount += 1
-                        #if sys.platform.lower().startswith('win'):
-                        #    if requestcount % 1000 == 0:
-                        #        progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
-                        #else:
-                        #    progress(requestcount, totalrequests, prefix=" ", suffix=" ")
-                        progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+                        if sys.platform.lower().startswith('win'):
+                            if requestcount % 1000 == 0:
+                                progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
+                        else:
+                            progress(requestcount, totalrequests, prefix=" ", suffix=" ")
                         if attack == 3:
                             s.cookies.set(selected, p)
                         if str(r.status_code).startswith("2") or r.status_code == 302:
