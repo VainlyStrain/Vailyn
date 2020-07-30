@@ -30,11 +30,7 @@ Now, the user can choose freely which payloads to use. Only these payloads will 
 
 The second phase is the exploitation phase. Now, it tries to leak all possible files from the server using a file and a directory dictionary. The search depth and the directory permutation level can be adapted via arguments. Optionally, it can download found files, and save them in its loot folder.
 
-Right now, it supports multiple attack methods: injection via query and path.
-
-> __New__
->
-> Since v1.2, cookie path traversals are supported, too! Use -a 3 for a cookie attack.
+Right now, it supports multiple attack methods: injection via query, path, query and post data.
 
 ### Why the phase separation?
 
@@ -72,7 +68,7 @@ mandatory:
                         Dictionaries to use (see templates for syntax)
 additional:
   -p PAM, --param PAM   query parameter to use for --attack 1
-  -s, --all             display every path tried, even 404s
+  -s DAT, --post DAT    POST Data (set injection point with INJECT)
   -d I J, --depths I J  depths of checking (I: phase 1, J: phase 2)
   -n, --loot            Download found files into the loot folder
   -c FIL, --cookie FIL  File containing authentication cookie (if needed)
@@ -82,7 +78,7 @@ additional:
   -t, --tor             Pipe attacks through the Tor anonymity network
 ```
 
-Vailyn currently supports 3 attack vectors. The attack performed is identified by the `-a ACK` argument.
+Vailyn currently supports 4 attack vectors. The attack performed is identified by the `-a ACK` argument.
 
 ```
 ACK        attack
@@ -90,6 +86,7 @@ ACK        attack
 1          query-based attack  (https://site.com?file=../../../)
 2          path-based attack   (https://site.com/../../../)
 3          cookie-based attack (will grab the cookies for you)
+4          infected post data  (ELEM1=VAL1&ELEM2=../../../)
 ```
 
 You also must specify a target to attack. This is done via `-v VIC` and `-q VIC2`, where -v is the part before the injection point, and -q the rest.
@@ -117,7 +114,7 @@ The depth of lookup in phase 2 (the maximal number of layers traversed back, and
 
 By specifying `-n`, Vailyn will not only display files on the terminal, but also download and save the files into the loot folder.
 
-If you want a verbose output (display every output, not only found files), you can use `-s`. Note that output gets really messy, this is basically just a debug help.
+If you want a verbose output (display every output, not only found files), you can use `--debug`. Note that output gets really messy, this is basically just a debug help.
 
 ### False Positive prevention
 
