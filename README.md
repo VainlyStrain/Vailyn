@@ -20,7 +20,7 @@ Vailyn is a multi-phased vulnerability analysis and exploitation tool for path t
 
 ### How does it work?
 
-Vailyn operates in 2 phases. First, it checks if the vulnerability is present. It does so by trying to access /etc/passwd, with all of its evasive payloads. Analysing the response, payloads that worked are separated from the others.
+Vailyn operates in 2 phases. First, it checks if the vulnerability is present. It does so by trying to access /etc/passwd (or an user-specified file), with all of its evasive payloads. Analysing the response, payloads that worked are separated from the others.
 
 > __Improvement__
 >
