@@ -94,7 +94,7 @@ def main() -> int:
         checkdepth = args.depths[0]
         depth = args.depths[1]
 
-    if opt["all"]:
+    if opt["debug"]:
         verbose = True
 
     if opt["check"]:
@@ -105,6 +105,7 @@ def main() -> int:
     
     param = ""
     cookie = None
+    postdata = ""
     selected = ""
 
     if opt["tor"]:        
@@ -171,6 +172,20 @@ def main() -> int:
         print("{}Vailyn: {}PATH{}".format(color.RC, color.END+color.RB, color.END))
     elif (args.attack == 3):  #cookie mode
         print("{}Vailyn: {}COOKIE{}".format(color.RC, color.END+color.RB, color.END))
+    elif (args.attack == 4): #post traversal
+        if not opt["post"]:
+            parser.print_usage()
+            sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
+                'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -s mandatory for -a 4')
+        print("{}Vailyn: {}POST{}".format(color.RC, color.END+color.RB, color.END))
+        postdata = args.post
+        if "INJECT" not in postdata:
+            sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
+                'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -s needs to contain INJECT at injection point')
+        if "=" not in postdata:
+            sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
+                'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -s needs to be of form P1=V1&P2=V2')
+
 
     print("    v" + version)
     time.sleep(0.5)
@@ -202,7 +217,7 @@ def main() -> int:
         starting_time = time.time()
         #initiate phase 1 - vulnerability analysis
         with Pool(processes=processes) as pool:
-            res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,cookiefile,)) for l in paysplit]
+            res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,cookiefile,postdata,)) for l in paysplit]
             for i in res:
                 #fetch results
                 tuples = i.get()
@@ -238,7 +253,7 @@ def main() -> int:
     if attack:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Sploit Phase\n'.format(color.RD, color.END))
         with Pool(processes=processes) as pool:
-            res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,)) for l in splitted]
+            res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,postdata,)) for l in splitted]
             for i in res:
                 #fetch results
                 restuple = i.get()

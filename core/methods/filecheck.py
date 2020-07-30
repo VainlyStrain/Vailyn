@@ -26,7 +26,7 @@ This method filters out false positives. It does so by many different checks:
   + is the payload contained in the response? (indicating an error)
   + is the response empty? (some servers do not return 404, but 200 with empty response)
 """
-def filecheck(r, con2, payload):
+def filecheck(r, con2, payload, post=False):
     con = r.content
     conn = str(con).lower()
     #prevents Vailyn to be stuck with long binary files (like zip archives)

