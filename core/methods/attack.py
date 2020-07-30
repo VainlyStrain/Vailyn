@@ -77,8 +77,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     payloads = []
     nullbytes = []
     s = session()
-    if attack == 3:
-        s.cookies = cookie
+
     if authcookie != "":
         tmpjar = cookieFromFile(authcookie)
         for cookie in tmpjar:
@@ -208,8 +207,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
     found=[]
     urls = []
     s = session()
-    if attack == 3:
-        s.cookies = cookie
+
     if authcookie != "":
         tmpjar = cookieFromFile(authcookie)
         for cookie in tmpjar:
