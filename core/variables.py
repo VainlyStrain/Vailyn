@@ -65,4 +65,5 @@ else:
     lootdir = os.path.dirname(os.path.realpath(__file__)) + "/../loot/"
     cachedir = os.path.dirname(os.path.realpath(__file__)) + "/payload-cache/"
 
-version = "1.5"
+version = "1.6"
+e_version = "1.6.0-1"
