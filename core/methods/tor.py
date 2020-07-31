@@ -76,3 +76,47 @@ def torcheck():
     #except:
     #    print(R + " [-] " + "\033[0m" + color.UNDERLINE + "\033[1m" + "IPcheck socket failure.")
     #    torcheck() 
+
+def enableTor(shell=True, sigWin=False, sigLin=False):
+    vars.tor = True
+    try:
+        initcheck()
+        acc = True
+    except:
+        acc = False
+
+    if acc or not vars.initip == "":
+        if sys.platform.lower().startswith('win'):
+            if shell:
+                status = input(color.END+" [?] Do you have the Tor service actively running? (enter if not) :> ")
+            elif sigWin:
+                status = "y"
+            else:
+                return 420
+            if status == "":
+                sys.exit(" {}[-]{} Aborting.".format(color.R, color.END))
+        else:
+            p = torpipe(True)
+            if not p:
+                if shell:
+                    start = input(color.END+" [?] Do you want to start the Tor service? (enter if not) :> ")
+                elif sigLin:
+                    start = "y"
+                else:
+                    return 1337
+                if start != "":
+                    try:
+                        subprocess.run(["systemctl", "start", "tor"])
+                        p = torpipe(True)
+                    except OSError: #non-systemd distro
+                        subprocess.run(["service", "tor", "start"])
+                        p = torpipe(True)
+                    except OSError: #macOS - requires brew
+                        subprocess.run(["brew", "services", "start", "tor"])
+                        p = torpipe(True)
+                    except Exception as e:
+                        sys.exit(e)
+        torcheck()
+        return 0
+    else:
+        sys.exit("{} [-]{} Problems setting initial IP. Aborting.".format(color.R, color.END))

