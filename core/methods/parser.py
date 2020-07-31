@@ -41,7 +41,8 @@ additional:
   -h, --help            {0}show this help menu and exit{1}
   -i FIL, --check FIL   {0}File to check for in Phase 1 (df: /etc/passwd){1}
   -q VIC2, --vic2 VIC2  {0}Attack Target, part 2 (post injection point){1}
-  -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}'''.format(color.RC, color.END))
+  -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}
+  --app                 {0}Start Vailyn's Qt5 interface{1}'''.format(color.RC, color.END))
 
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
@@ -95,6 +96,9 @@ def build_parser():
                    action="store_true",)
     p.add_argument('--debug',
                    help="display every path tried, even 404s",
+                   action="store_true",)
+    p.add_argument('--app',
+                   help="Start Vailyn's Qt5 interface",
                    action="store_true",)
                
     return p 

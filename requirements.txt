@@ -2,3 +2,4 @@ treelib
 requests
 argparse
 colorama
+PyQt5

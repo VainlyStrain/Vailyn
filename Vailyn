@@ -29,6 +29,9 @@ import core.variables as variables
 
 from itertools import permutations
 from multiprocessing.pool import ThreadPool as Pool
+from PyQt5.QtCore import Qt
+from PyQt5 import QtWidgets, uic, QtCore, QtGui
+from PyQt5.QtWidgets import QTreeWidgetItem, QTableWidgetItem
 
 from core.methods.parser import build_parser
 from core.methods.print import banner
@@ -51,12 +54,17 @@ colorama.init()
 filetree = treelib.Tree()
 filetree.create_node(color.O+"/"+color.END+color.RD, "root")
 
+"""Vailyn's Graphical User Interface"""
+class VailynApp(QtWidgets.QDialog):
+    def __init__(self):
+        super(VailynApp, self).__init__()
+        uic.loadUi("core/qt5/Main.ui", self) # Load the .ui file
+        self.show()
+
+
 """Vailyn's main - parse args, start attacks & print results"""
-def main() -> int:    
-    banner()
-    parser = build_parser()
-    opt = vars(parser.parse_args())
-    args = parser.parse_args()
+def main(parser, opt, args) -> int:    
+    
     if not (opt["lists"] and opt["victim"] and opt["attack"]):
         parser.print_usage()
         sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
@@ -289,6 +297,16 @@ def main() -> int:
 
 if __name__ == "__main__":
     try:
-       main()
+        banner()
+        parser = build_parser()
+        opt = vars(parser.parse_args())
+        args = parser.parse_args()
+        if opt["app"]:
+            app = QtWidgets.QApplication(sys.argv) 
+            window = VailynApp() 
+            app.setWindowIcon(QtGui.QIcon("core/qt5/icons/Vailyn.png"))
+            rcode = app.exec_() 
+        else:
+            main(parser, opt, args)
     except KeyboardInterrupt:
         print('\nInterrvpted.\n')
