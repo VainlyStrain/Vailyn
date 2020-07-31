@@ -1318,7 +1318,7 @@ image: none;
                        </widget>
                       </item>
                       <item row="1" column="1" colspan="2">
-                       <widget class="QComboBox" name="comboBox"/>
+                       <widget class="QComboBox" name="attackOption"/>
                       </item>
                      </layout>
                     </widget>
@@ -1531,7 +1531,7 @@ image: none;
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="torBox_2">
+               <widget class="QCheckBox" name="torBox">
                 <property name="text">
                  <string>Tor</string>
                 </property>
@@ -1551,7 +1551,7 @@ image: none;
                </spacer>
               </item>
               <item>
-               <widget class="QPushButton" name="attackButton_2">
+               <widget class="QPushButton" name="attackButton">
                 <property name="text">
                  <string>Attack</string>
                 </property>
@@ -1602,48 +1602,6 @@ image: none;
                   <string notr="true">1</string>
                  </property>
                 </column>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <spacer name="horizontalSpacer_5">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="torBox">
-                <property name="text">
-                 <string>Tor</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="optsButton">
-                <property name="text">
-                 <string>Info and Opts</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="attackButton">
-                <property name="text">
-                 <string>Attack</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>icons/tidos.png</normaloff>icons/tidos.png</iconset>
-                </property>
                </widget>
               </item>
              </layout>

@@ -56,10 +56,80 @@ filetree.create_node(color.O+"/"+color.END+color.RD, "root")
 
 """Vailyn's Graphical User Interface"""
 class VailynApp(QtWidgets.QDialog):
+    #initialise arguments
+    victim = ""
+    attack = 0
+    filedict = ""
+    dirdict = ""
+    depth1 = 0
+    depth2 = 0
+    param = ""
+    post = ""
+    cookie = ""
+    tor = False
+    loot = False
+    vlnfile = "/etc/passwd"
+    victim2 = ""
+
+    #initialise results
+    foundfiles = [""]
+    foundurls = [""]
+    foundpayloads = []
+    foundnullbytes = []
+
     def __init__(self):
         super(VailynApp, self).__init__()
         uic.loadUi("core/qt5/Main.ui", self) # Load the .ui file
+        self.attackOption.addItem("query")
+        self.attackOption.addItem("path")
+        self.attackOption.addItem("cookie")
+        self.attackOption.addItem("post")
+        self.newTargetButton.clicked.connect(self.getVictim)
+        self.attackButton.clicked.connect(self.attackGui)
+        self.infoButton.clicked.connect(self.showInfo)
+        self.fileDictButton.clicked.connect(self.getFileDictionary)
+        self.dirDictButton.clicked.connect(self.getDirDictionary)
+        self.addCookieButton.clicked.connect(self.getAuthCookie)
+        self.attackOption.currentIndexChanged.connect(self.handlePost)
         self.show()
+
+    def getAuthCookie(self):
+        raise NotImplementedError
+
+    def getFileDictionary(self):
+        raise NotImplementedError
+
+    def getDirDictionary(self):
+        raise NotImplementedError
+
+    def showInfo(self):
+        raise NotImplementedError
+
+    def handlePost(self):
+        if self.attackOption.currentIndex() == 3:
+            self.postLabel.setEnabled(True)
+            self.postInput.setEnabled(True)
+        else:
+            self.postLabel.setEnabled(False)
+            self.postInput.setEnabled(False)
+
+    def attackGui(self):
+        attack = self.attackOption.currentIndex() + 1
+        filedict = self.fileDictDisplay.text()
+        dirdict = self.dirDictDisplay.text()
+        depth1 = int(self.phase1Depth.text())
+        depth2 = int(self.phase2Depth.text())
+        if attack == 4:
+            post = self.postInput.text()
+            print(post)
+        cookie = self.cookieDisplay.text()
+        loot = self.lootBox.isChecked()
+        tor = self.torBox.isChecked()
+        vlnfile = self.vlnFileInput.text()
+        raise NotImplementedError
+
+    def getVictim(self):
+        raise NotImplementedError
 
 
 """Vailyn's main - parse args, start attacks & print results"""
