@@ -49,7 +49,7 @@ class VainFormatter(argparse.RawDescriptionHelpFormatter):
         if prefix is None:
             prefix = color.RC + 'Vsynta ' + color.END
             #return super(VainFormatter, self).add_usage("{}Vailyn{} [-v VIC] [-a ACK] [-p PARAM] [-s]\n          [-l FIL PATH] [-d INT] [--loot]\n        [-f] [-h] [--vic2 VIC2]".format(color.RB,color.END), actions, groups, prefix)
-            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a ACK -l FIL PATH \n        [-p PAM] [-s DAT] [-d I J] \n      [-c FIL] [-i FIL] [-h]\n        [-n] [-t] \n    [-q VIC2]".format(color.RB,color.END), actions, groups, prefix)
+            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a ACK -l FIL PATH \n        [-p PAM] [-s DAT] [-d I J] \n      [-c FIL] [-i FIL] [-n]\n        [-t] [--app] \n    [-q VIC2]".format(color.RB,color.END), actions, groups, prefix)
 
 def build_parser():
     p = ArgumentParser(formatter_class=VainFormatter,add_help=False)
