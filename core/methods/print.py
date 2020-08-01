@@ -66,12 +66,14 @@ the following methods nicely output lists for the payload selection
 currently in use: listprint
 """
 
-def listprint2(plist):
-    print()
+def listprint2(plist, nullbytes):
+    pstr = "\n"
     for i in range(0, len(plist)):
-        print("{0}{1:{5}}{2}|{3}  {4}".format(color.RB, i, color.END+color.RD, color.END, plist[i], len(str(len(payloadlist)))))
-    print("{0}{1}|{2}  {3}".format(color.RB, "   A"+color.END+color.RD, color.END, "ALL"))
-    print()
+        pstr = pstr + "{0}{1:{5}}{2}|{3}  {4}\n".format("", i, "", "", plist[i], len(str(len(payloadlist))))
+    pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "   A", "", "ALL")
+    if nullbytes:
+        pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "   N", "", "NONE")
+    return pstr
 
 def listprint(plist, nullbytes):
     tmplist = []

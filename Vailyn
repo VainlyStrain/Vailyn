@@ -31,15 +31,15 @@ from itertools import permutations
 from multiprocessing.pool import ThreadPool as Pool
 from PyQt5.QtCore import Qt
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
-from PyQt5.QtWidgets import QTreeWidgetItem, QTableWidgetItem
+from PyQt5.QtWidgets import QTreeWidgetItem, QTableWidgetItem, QFileDialog
 
 from core.methods.parser import build_parser
-from core.methods.print import banner
+from core.methods.print import banner, listprint2
 from core.methods.list import listsplit
 from core.methods.select import select
 from core.methods.tree import create_tree
 from core.methods.attack import phase1, phase2
-from core.methods.cookie import readCookie
+from core.methods.cookie import readCookie, getCookie
 from core.methods.cache import load, save, parseUrl
 from core.methods.tor import initcheck, enableTor
 
@@ -61,8 +61,8 @@ class VailynApp(QtWidgets.QDialog):
     attack = 0
     filedict = ""
     dirdict = ""
-    depth1 = 0
-    depth2 = 0
+    depth1 = 8
+    depth2 = 2
     param = ""
     post = ""
     authcookie = ""
@@ -80,6 +80,8 @@ class VailynApp(QtWidgets.QDialog):
     cookie = ""
     selected = ""
 
+    unix = False
+
     def __init__(self):
         super(VailynApp, self).__init__()
         uic.loadUi("core/qt5/Main.ui", self) # Load the .ui file
@@ -96,17 +98,85 @@ class VailynApp(QtWidgets.QDialog):
         self.attackOption.currentIndexChanged.connect(self.handlePost)
         self.show()
 
+    def getFileName(self):
+        return QFileDialog.getOpenFileName()
+
     def getAuthCookie(self):
-        raise NotImplementedError
+        self.cookieDisplay.setText(self.getFileName()[0])
 
     def getFileDictionary(self):
-        raise NotImplementedError
+        self.fileDictDisplay.setText(self.getFileName()[0])
 
     def getDirDictionary(self):
-        raise NotImplementedError
+        self.dirDictDisplay.setText(self.getFileName()[0])
 
     def showInfo(self):
         raise NotImplementedError
+
+    def guiSelect(self, payloadlist, nullbytes=False):
+        #filter duplicates
+        payloadlist = list(set(payloadlist))
+        pstr = ""
+        if nullbytes:
+            #print("\n{0}[+]{1} Operative nullbytes ({2}{3}{1}):\n {4}".format(color.RD, color.END, color.BOLD, len(payloadlist), str(payloadlist)))
+            pstr = pstr + ("Operative nullbytes ({}):".format(len(payloadlist)))
+        else:
+            #print("\n{0}[+]{1} Operative payloads ({2}{3}{1}):\n {4}".format(color.RD, color.END, color.BOLD, len(payloadlist), str(payloadlist)))
+            pstr = pstr + ("Operative payloads ({}):".format(len(payloadlist)))
+        #print(color.BOLD+"\n  Operative Payloads:\n"+color.END+" "+color.O+str(payloadlist)+color.END)
+        pstr = pstr + listprint2(payloadlist, nullbytes)
+
+
+        self.selected = ""
+        self.payloadDialog = QtWidgets.QDialog()
+        uic.loadUi("core/qt5/Payload.ui", self.payloadDialog)
+        self.payloadDialog.payloadBrowser.setText(pstr)
+        if nullbytes:
+            self.payloadDialog.selectLabel.setText("Select Nullbytes")
+        else:
+            self.payloadDialog.selectLabel.setText("Select Payloads")
+        self.payloadDialog.show()
+        self.payloadDialog.payloadSelectButton.clicked.connect(intern)
+        self.selection = []
+        def intern():
+            self.selected = self.cookieDialog.selectPayloadInput.text()
+            if self.selected.strip().lower() == "a":
+                self.selection = payloadlist
+            elif nullbytes and self.selected.strip().lower() == "n":
+                self.selection = []
+            else:
+                try:
+                    self.selection = [payloadlist[int(i.strip())] for i in self.selected.split(",")]
+                    self.cookieDialog.close()
+                except:
+                    self.showError("Invalid Selection string.")
+
+        return self.selection
+
+    def readCookieGui(self, target):
+        cookie = getCookie(target)
+        i = 0
+        if len(cookie.keys()) < 1:
+            self.showError("Server did not send any cookies.")
+            return (None, None)
+        cstr = ""
+        for key in cookie.keys():
+            cstr = cstr + str(i) + ": " + key + "\n"
+            i += 1
+
+        self.selected = ""
+        self.cookieDialog = QtWidgets.QDialog()
+        uic.loadUi("core/qt5/Cookie.ui", self.cookieDialog)
+        self.cookieDialog.cookieBrowser.setText(cstr)
+        self.cookieDIalog.show()
+        self.cookieDialog.cookieSelectButton.clicked.connect(intern)
+        def intern():
+            self.selected = self.cookieDialog.selectCookieInput.text()
+            if self.selected == "" or self.selected not in cstr:
+                self.showError("Invalid Cookie Name.")
+            else:
+                self.cookieDialog.close()
+        return (cookie, self.selected)
 
     def handlePost(self):
         if self.attackOption.currentIndex() == 3:
@@ -142,6 +212,7 @@ class VailynApp(QtWidgets.QDialog):
                 ans = self.showQuestion("Do you want to start the Tor service?")
                 if not ans:
                     return
+                self.unix = True
                 enableTor(shell=False, sigLin=True)
 
         with open(self.filedict) as filelisted:
@@ -183,7 +254,7 @@ class VailynApp(QtWidgets.QDialog):
             return
         
         if self.attack == 3:
-            self.cookie, self.selected = readCookie(self.victim)
+            self.cookie, self.selected = self.readCookieGui(self.victim)
 
         vlnysis = True
 
@@ -248,7 +319,18 @@ class VailynApp(QtWidgets.QDialog):
         if self.foundfiles:
             self.guiTree()
 
-        raise NotImplementedError
+        if self.tor and self.unix:
+            stop = self.showQuestion("Do you want to terminate the Tor service?")
+            if stop:
+                try:
+                    subprocess.run(["systemctl", "stop", "tor"])
+                except OSError:
+                    subprocess.run(["service", "tor", "stop"])
+                except OSError:
+                    subprocess.run(["brew", "services", "stop", "tor"])
+                except Exception as e:
+                    sys.exit(e)
+
 
     def getVictim(self):
         raise NotImplementedError
@@ -467,7 +549,7 @@ def main(parser, opt, args, shell=True) -> int:
         print("nothing found")
 
     print("{}Scan completed in {}s.{}".format(color.RC, total_time, color.END))
-    if variables.tor:
+    if variables.tor and not sys.platform.lower().startswith("win"):
         stop = input(color.END+" [?] Do you want to terminate the Tor service? (enter if not) :> ")
         if stop != "":
             try:
