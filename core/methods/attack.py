@@ -247,6 +247,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                             p = traverse + dir + file
                             s.cookies.set(selected, traverse + dir + file)
                             r = s.get(url)
+                            #print(s.cookies)
                         elif attack == 4:
                             p = traverse + dir + file
                             for prop in postdata.split("&"):

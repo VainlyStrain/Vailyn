@@ -116,14 +116,14 @@ class VailynApp(QtWidgets.QDialog):
 
     def guiSelect(self, payloadlist, nullbytes=False):
         def intern():
-            self.selected = self.payloadDialog.payloadSelectInput.text()
-            if self.selected.strip().lower() == "a":
+            self.selectedp = self.payloadDialog.payloadSelectInput.text()
+            if self.selectedp.strip().lower() == "a":
                 self.selection = payloadlist
-            elif nullbytes and self.selected.strip().lower() == "n":
+            elif nullbytes and self.selectedp.strip().lower() == "n":
                 self.selection = []
             else:
                 try:
-                    self.selection = [payloadlist[int(i.strip())] for i in self.selected.split(",")]
+                    self.selection = [payloadlist[int(i.strip())] for i in self.selectedp.split(",")]
                     self.payloadDialog.close()
                 except:
                     self.showError("Invalid Selection string.")
@@ -134,7 +134,7 @@ class VailynApp(QtWidgets.QDialog):
         pstr = pstr + listprint2(payloadlist, nullbytes)
 
 
-        self.selected = ""
+        self.selectedp = ""
         self.payloadDialog = QtWidgets.QDialog()
         uic.loadUi("core/qt5/Payload.ui", self.payloadDialog)
         self.payloadDialog.payloadBrowser.setText(pstr)
@@ -150,8 +150,8 @@ class VailynApp(QtWidgets.QDialog):
 
     def readCookieGui(self, target):
         def intern():
-            self.selected = self.cookieDialog.cookieSelectInput.text()
-            if self.selected == "" or self.selected not in cstr:
+            self.selected = self.cookieDialog.cookieSelectInput.text().strip()
+            if self.selected == "" or self.selected not in self.cstr:
                 self.showError("Invalid Cookie Name.")
             else:
                 self.cookieDialog.close()
@@ -161,15 +161,15 @@ class VailynApp(QtWidgets.QDialog):
         if len(cookie.keys()) < 1:
             self.showError("Server did not send any cookies.")
             return (None, None)
-        cstr = ""
+        self.cstr = ""
         for key in cookie.keys():
-            cstr = cstr + str(i) + ": " + key + "\n"
+            self.cstr = self.cstr + str(i) + ": " + key + "\n"
             i += 1
 
         self.selected = ""
         self.cookieDialog = QtWidgets.QDialog()
         uic.loadUi("core/qt5/Cookie.ui", self.cookieDialog)
-        self.cookieDialog.cookieBrowser.setText(cstr)
+        self.cookieDialog.cookieBrowser.setText(self.cstr)
         self.cookieDialog.selectCookieButton.clicked.connect(intern)
         self.cookieDialog.exec_()
 
@@ -184,16 +184,9 @@ class VailynApp(QtWidgets.QDialog):
             self.postLabel.setEnabled(False)
             self.postInput.setEnabled(False)
 
-    def reset(self):
-        variables.sdirs = ['']
-        variables.commons = []
-        self.foundfiles = [""]
-        self.foundurls = [""]
-        self.foundpayloads = []
-        self.foundnullbytes = []
-
     def attackGui(self):
-        self.reset()
+        sdirs = ['']
+        commons = []
         self.attack = self.attackOption.currentIndex() + 1
         self.filedict = self.fileDictDisplay.text().strip()
         self.dirdict = self.dirDictDisplay.text().strip()
@@ -267,6 +260,8 @@ class VailynApp(QtWidgets.QDialog):
         
         if self.attack == 3:
             self.cookie, self.selected = self.readCookieGui(self.victim)
+            if self.cookie == None or self.selected == None:
+                return
 
         vlnysis = True
 
