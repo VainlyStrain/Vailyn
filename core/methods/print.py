@@ -67,12 +67,12 @@ currently in use: listprint
 """
 
 def listprint2(plist, nullbytes):
-    pstr = "\n"
+    pstr = ""
     for i in range(0, len(plist)):
         pstr = pstr + "{0}{1:{5}}{2}|{3}  {4}\n".format("", i, "", "", plist[i], len(str(len(payloadlist))))
-    pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "   A", "", "ALL")
+    pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "  A", "", "ALL")
     if nullbytes:
-        pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "   N", "", "NONE")
+        pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "  N", "", "NONE")
     return pstr
 
 def listprint(plist, nullbytes):

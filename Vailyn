@@ -96,6 +96,7 @@ class VailynApp(QtWidgets.QDialog):
         self.dirDictButton.clicked.connect(self.getDirDictionary)
         self.addCookieButton.clicked.connect(self.getAuthCookie)
         self.attackOption.currentIndexChanged.connect(self.handlePost)
+        self.attack = self.attackOption.currentIndex() + 1
         self.show()
 
     def getFileName(self):
@@ -114,16 +115,22 @@ class VailynApp(QtWidgets.QDialog):
         raise NotImplementedError
 
     def guiSelect(self, payloadlist, nullbytes=False):
+        def intern():
+            self.selected = self.payloadDialog.payloadSelectInput.text()
+            if self.selected.strip().lower() == "a":
+                self.selection = payloadlist
+            elif nullbytes and self.selected.strip().lower() == "n":
+                self.selection = []
+            else:
+                try:
+                    self.selection = [payloadlist[int(i.strip())] for i in self.selected.split(",")]
+                    self.payloadDialog.close()
+                except:
+                    self.showError("Invalid Selection string.")
+
         #filter duplicates
         payloadlist = list(set(payloadlist))
         pstr = ""
-        if nullbytes:
-            #print("\n{0}[+]{1} Operative nullbytes ({2}{3}{1}):\n {4}".format(color.RD, color.END, color.BOLD, len(payloadlist), str(payloadlist)))
-            pstr = pstr + ("Operative nullbytes ({}):".format(len(payloadlist)))
-        else:
-            #print("\n{0}[+]{1} Operative payloads ({2}{3}{1}):\n {4}".format(color.RD, color.END, color.BOLD, len(payloadlist), str(payloadlist)))
-            pstr = pstr + ("Operative payloads ({}):".format(len(payloadlist)))
-        #print(color.BOLD+"\n  Operative Payloads:\n"+color.END+" "+color.O+str(payloadlist)+color.END)
         pstr = pstr + listprint2(payloadlist, nullbytes)
 
 
@@ -135,25 +142,20 @@ class VailynApp(QtWidgets.QDialog):
             self.payloadDialog.selectLabel.setText("Select Nullbytes")
         else:
             self.payloadDialog.selectLabel.setText("Select Payloads")
-        self.payloadDialog.show()
-        self.payloadDialog.payloadSelectButton.clicked.connect(intern)
+        self.payloadDialog.selectPayloadButton.clicked.connect(intern)
         self.selection = []
-        def intern():
-            self.selected = self.cookieDialog.selectPayloadInput.text()
-            if self.selected.strip().lower() == "a":
-                self.selection = payloadlist
-            elif nullbytes and self.selected.strip().lower() == "n":
-                self.selection = []
-            else:
-                try:
-                    self.selection = [payloadlist[int(i.strip())] for i in self.selected.split(",")]
-                    self.cookieDialog.close()
-                except:
-                    self.showError("Invalid Selection string.")
+        self.payloadDialog.exec_()
 
         return self.selection
 
     def readCookieGui(self, target):
+        def intern():
+            self.selected = self.cookieDialog.cookieSelectInput.text()
+            if self.selected == "" or self.selected not in cstr:
+                self.showError("Invalid Cookie Name.")
+            else:
+                self.cookieDialog.close()
+
         cookie = getCookie(target)
         i = 0
         if len(cookie.keys()) < 1:
@@ -168,17 +170,13 @@ class VailynApp(QtWidgets.QDialog):
         self.cookieDialog = QtWidgets.QDialog()
         uic.loadUi("core/qt5/Cookie.ui", self.cookieDialog)
         self.cookieDialog.cookieBrowser.setText(cstr)
-        self.cookieDIalog.show()
-        self.cookieDialog.cookieSelectButton.clicked.connect(intern)
-        def intern():
-            self.selected = self.cookieDialog.selectCookieInput.text()
-            if self.selected == "" or self.selected not in cstr:
-                self.showError("Invalid Cookie Name.")
-            else:
-                self.cookieDialog.close()
+        self.cookieDialog.selectCookieButton.clicked.connect(intern)
+        self.cookieDialog.exec_()
+
         return (cookie, self.selected)
 
     def handlePost(self):
+        self.attack = self.attackOption.currentIndex() + 1
         if self.attackOption.currentIndex() == 3:
             self.postLabel.setEnabled(True)
             self.postInput.setEnabled(True)
@@ -186,21 +184,35 @@ class VailynApp(QtWidgets.QDialog):
             self.postLabel.setEnabled(False)
             self.postInput.setEnabled(False)
 
+    def reset(self):
+        variables.sdirs = ['']
+        variables.commons = []
+        self.foundfiles = [""]
+        self.foundurls = [""]
+        self.foundpayloads = []
+        self.foundnullbytes = []
+
     def attackGui(self):
+        self.reset()
         self.attack = self.attackOption.currentIndex() + 1
-        self.filedict = self.fileDictDisplay.text()
-        self.dirdict = self.dirDictDisplay.text()
+        self.filedict = self.fileDictDisplay.text().strip()
+        self.dirdict = self.dirDictDisplay.text().strip()
+
+        if self.victim == "" or (self.attack == 1 and self.param == "") or self.filedict == "" or self.dirdict == "":
+            self.showError("Mandatory argument(s) not specified.")
+            return
+
         try:
-            self.depth1 = int(self.phase1Depth.text())
-            self.depth2 = int(self.phase2Depth.text())
+            self.depth1 = int(self.phase1Depth.text().strip())
+            self.depth2 = int(self.phase2Depth.text().strip())
         except ValueError:
             self.showError("Depths must be valid positive integers!")
         if self.attack == 4:
             self.post = self.postInput.text()
-        self.authcookie = self.cookieDisplay.text()
+        self.authcookie = self.cookieDisplay.text().strip()
         self.loot = self.lootBox.isChecked()
         self.tor = self.torBox.isChecked()
-        self.vlnfile = self.vlnFileInput.text()
+        self.vlnfile = self.vlnFileInput.text().strip()
         if self.tor:
             sig = enableTor(shell=False)
             if sig == 420:
@@ -246,10 +258,10 @@ class VailynApp(QtWidgets.QDialog):
             self.showError("A post data string is required for this attack.")
             return
 
-        if "INJECT" not in self.post:
+        if self.attack == 4 and "INJECT" not in self.post:
             self.showError("POST Data needs to contain INJECT at injection point")
             return
-        if "=" not in self.post:
+        if self.attack == 4 and "=" not in self.post:
             self.showError("POST Data needs to be of form P1=V1&P2=V2")
             return
         
@@ -316,8 +328,8 @@ class VailynApp(QtWidgets.QDialog):
         attack_time = ending_time - starting_time
         total_time = vuln_time + attack_time
 
-        if self.foundfiles:
-            self.guiTree()
+        #if self.foundfiles:
+        #    self.guiTree()
 
         if self.tor and self.unix:
             stop = self.showQuestion("Do you want to terminate the Tor service?")
@@ -333,7 +345,55 @@ class VailynApp(QtWidgets.QDialog):
 
 
     def getVictim(self):
-        raise NotImplementedError
+        def intern():
+            vic = self.targetDialog.vicField.text().strip()
+            pam = self.targetDialog.paramField.text().strip()
+            vic2 = self.targetDialog.vic2Field.text().strip()
+            if vic == "":
+                self.showError("-v VIC must be specified.")
+            elif self.attack == 1 and pam == "":
+                self.showError("-p PAM must be specified for query attack.")
+            elif "://" not in vic:
+                self.showError("scheme:// must be sepecified in -v VIC.")
+            else:
+                self.victim = vic
+                if self.attack == 1:
+                    self.param = pam
+                self.victim2 = vic2
+                self.targetDialog.close()
+                if self.attack == 1:
+                    if "?" not in vic:
+                        self.victimDisplayLabel.setText(vic + "?" + pam + "=INJECT" + vic2)
+                    else:
+                        self.victimDisplayLabel.setText(vic + "&" + pam + "=INJECT" + vic2)
+                elif self.attack == 3 or self.attack == 4:
+                    self.victimDisplayLabel.setText(vic + vic2)
+                elif self.attack == 2:
+                    if vic.endswith("/"):
+                        self.victimDisplayLabel.setText(vic + "INJECT" + vic2)
+                    else:
+                        self.victimDisplayLabel.setText(vic + "/" +  "INJECT" + vic2)
+                self.show()
+
+        self.targetDialog = QtWidgets.QDialog()
+        uic.loadUi("core/qt5/Target.ui", self.targetDialog)
+        if self.victim == "" and self.param == "" and self.victim2 == "":
+            self.targetDialog.titleLabel.setText("Add New Target")
+        else:
+            self.targetDialog.titleLabel.setText("Edit Target")
+        if self.attack == 1:
+            self.targetDialog.paramLabel.setEnabled(True)
+            self.targetDialog.paramField.setEnabled(True)
+        else:
+            self.targetDialog.paramLabel.setEnabled(False)
+            self.targetDialog.paramField.setEnabled(False)
+        self.targetDialog.vicField.setText(self.victim)
+        self.targetDialog.paramField.setText(self.param)
+        self.targetDialog.vic2Field.setText(self.victim2)
+        self.targetDialog.cancelButton.clicked.connect(self.targetDialog.close)
+        self.targetDialog.setTargetButton.clicked.connect(intern)
+        self.targetDialog.exec_()
+
 
     def guiTree(self):
         raise NotImplementedError
@@ -342,20 +402,21 @@ class VailynApp(QtWidgets.QDialog):
         self.errorDialog = QtWidgets.QDialog()
         uic.loadUi("core/qt5/Error.ui", self.errorDialog)
         self.errorDialog.errorMessage.setText(message)
-        self.errorDialog.show()
         self.errorDialog.errorOkButton.clicked.connect(self.errorDialog.close)
+        self.errorDialog.exec_()
 
     def showQuestion(self, message):
+        def intern():
+            self.answer = True
+            self.questionDialog.close()
+
         self.answer = False
         self.questionDialog = QtWidgets.QDialog()
         uic.loadUi("core/qt5/Question.ui", self.questionDialog)
         self.questionDialog.question.setText(message)
-        self.questionDialog.show()
         self.questionDialog.noButton.clicked.connect(self.questionDialog.close)
         self.questionDialog.yesButton.clicked.connect(intern)
-        def intern():
-            self.answer = True
-            self.questionDialog.close()
+        self.questionDialog.exec_()
         return self.answer
 
 

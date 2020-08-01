@@ -40,7 +40,10 @@ def inpath(traverse, dir, file, nb, url, url2):
 
 """prepare request for query attack"""
 def query(traverse, dir, file, nb, keyword, url, url2):
-    query = "?" + keyword + "=" + traverse + dir + file + nb + url2
+    if "?" not in url:
+        query = "?" + keyword + "=" + traverse + dir + file + nb + url2
+    else:
+        query = "&" + keyword + "=" + traverse + dir + file + nb + url2
     p = traverse + dir + file + nb
     req = requests.Request(method='GET', url=url)
     prep = req.prepare()

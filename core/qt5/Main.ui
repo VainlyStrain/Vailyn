@@ -972,6 +972,20 @@ image: none;
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_tab5">
             <item>
+             <widget class="QLabel" name="mandatoryLabel">
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+                <underline>false</underline>
+               </font>
+              </property>
+              <property name="text">
+               <string>Mandatory</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <layout class="QVBoxLayout" name="verticalLayout_7">
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_7">
