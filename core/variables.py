@@ -66,4 +66,4 @@ else:
     cachedir = os.path.dirname(os.path.realpath(__file__)) + "/payload-cache/"
 
 version = "2.0"
-e_version = ""
+e_version = "2.0#pre-1"

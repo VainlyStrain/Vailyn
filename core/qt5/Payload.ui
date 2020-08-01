@@ -225,7 +225,11 @@ image: none;
     </widget>
    </item>
    <item>
-    <widget class="QTextBrowser" name="payloadBrowser"/>
+    <widget class="QTextBrowser" name="payloadBrowser">
+     <property name="focusPolicy">
+      <enum>Qt::ClickFocus</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -250,7 +254,20 @@ image: none;
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="cancelButton">
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
+       </property>
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="selectPayloadButton">
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
+       </property>
        <property name="text">
         <string>Select</string>
        </property>

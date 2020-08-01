@@ -91,12 +91,13 @@ class VailynApp(QtWidgets.QDialog):
         self.attackOption.addItem("post")
         self.newTargetButton.clicked.connect(self.getVictim)
         self.attackButton.clicked.connect(self.attackGui)
-        self.infoButton.clicked.connect(self.showInfo)
+        self.infoButton.clicked.connect(self.showAttackInfo)
         self.fileDictButton.clicked.connect(self.getFileDictionary)
         self.dirDictButton.clicked.connect(self.getDirDictionary)
         self.addCookieButton.clicked.connect(self.getAuthCookie)
         self.attackOption.currentIndexChanged.connect(self.handlePost)
         self.attack = self.attackOption.currentIndex() + 1
+        self.treeView.setHeaderHidden(True)
         self.show()
 
     def getFileName(self):
@@ -111,8 +112,22 @@ class VailynApp(QtWidgets.QDialog):
     def getDirDictionary(self):
         self.dirDictDisplay.setText(self.getFileName()[0])
 
-    def showInfo(self):
-        raise NotImplementedError
+    def showAttackInfo(self):
+        if self.attack == 1:
+            self.showInfo("[GET] http://example.com?file=../../../")
+        elif self.attack == 2:
+            self.showInfo("[GET] http://example.com/../../../")
+        elif self.attack == 3:
+            self.showInfo("[GET] http://example.com COOKIE=../../../")
+        elif self.attack == 4:
+            self.showInfo("[POST] http://example.com POST=../../../")
+
+    def showInfo(self, message):
+        self.infoDialog = QtWidgets.QDialog()
+        uic.loadUi("core/qt5/Info.ui", self.infoDialog)
+        self.infoDialog.infoMessage.setText(message)
+        self.infoDialog.okButton.clicked.connect(self.infoDialog.close)
+        self.infoDialog.exec_()
 
     def guiSelect(self, payloadlist, nullbytes=False):
         def intern():
@@ -127,6 +142,12 @@ class VailynApp(QtWidgets.QDialog):
                     self.payloadDialog.close()
                 except:
                     self.showError("Invalid Selection string.")
+
+        self.pacancel = False
+
+        def cancel():
+            self.pacancel = True
+            self.payloadDialog.close()
 
         #filter duplicates
         payloadlist = list(set(payloadlist))
@@ -143,9 +164,12 @@ class VailynApp(QtWidgets.QDialog):
         else:
             self.payloadDialog.selectLabel.setText("Select Payloads")
         self.payloadDialog.selectPayloadButton.clicked.connect(intern)
+        self.payloadDialog.cancelButton.clicked.connect(cancel)
         self.selection = []
         self.payloadDialog.exec_()
 
+        if self.pacancel:
+            return None
         return self.selection
 
     def readCookieGui(self, target):
@@ -157,6 +181,7 @@ class VailynApp(QtWidgets.QDialog):
                 self.cookieDialog.close()
 
         cookie = getCookie(target)
+        self.cocancel = False
         i = 0
         if len(cookie.keys()) < 1:
             self.showError("Server did not send any cookies.")
@@ -166,13 +191,19 @@ class VailynApp(QtWidgets.QDialog):
             self.cstr = self.cstr + str(i) + ": " + key + "\n"
             i += 1
 
+        def cancel():
+            self.cookieDialog.close()
+            self.cocancel = True
+
         self.selected = ""
         self.cookieDialog = QtWidgets.QDialog()
         uic.loadUi("core/qt5/Cookie.ui", self.cookieDialog)
         self.cookieDialog.cookieBrowser.setText(self.cstr)
         self.cookieDialog.selectCookieButton.clicked.connect(intern)
+        self.cookieDialog.cancelButton.clicked.connect(cancel)
         self.cookieDialog.exec_()
-
+        if self.cocancel:
+            return (None, None)
         return (cookie, self.selected)
 
     def handlePost(self):
@@ -187,6 +218,10 @@ class VailynApp(QtWidgets.QDialog):
     def attackGui(self):
         sdirs = ['']
         commons = []
+        self.foundfiles = [""]
+        self.foundurls = [""]
+        self.foundpayloads = []
+        self.foundnullbytes = []
         self.attack = self.attackOption.currentIndex() + 1
         self.filedict = self.fileDictDisplay.text().strip()
         self.dirdict = self.dirDictDisplay.text().strip()
@@ -308,6 +343,9 @@ class VailynApp(QtWidgets.QDialog):
                 self.selectedpayloads = payloadlist
                 self.selectednullbytes = nullchars
 
+        if self.selectedpayloads == None or self.selectednullbytes == None:
+            return
+
         starting_time = time.time()
         if attackphase:
             with Pool(processes=processes) as pool:
@@ -323,8 +361,10 @@ class VailynApp(QtWidgets.QDialog):
         attack_time = ending_time - starting_time
         total_time = vuln_time + attack_time
 
-        #if self.foundfiles:
-        #    self.guiTree()
+        if self.foundfiles:
+            self.guiTree(total_time)
+
+        self.showInfo("Attack done. Found {} files in {}s.".format(len(self.foundfiles)-1, total_time))
 
         if self.tor and self.unix:
             stop = self.showQuestion("Do you want to terminate the Tor service?")
@@ -390,8 +430,41 @@ class VailynApp(QtWidgets.QDialog):
         self.targetDialog.exec_()
 
 
-    def guiTree(self):
-        raise NotImplementedError
+    def guiTree(self, atime):
+        self.timeLabel.setText("Done after " + str(atime) + "s.")
+        self.treeView.clear()
+        root = QTreeWidgetItem(self.treeView)
+        root.setText(0, "/")
+
+        def create_tree(filepaths, root):
+            for i in filepaths:
+                contained = False
+                #prevent dups if parent folder found
+                for j in filepaths:
+                    if i != j and i != "" and i in j:
+                        contained = True
+                        #print("i:"+i+"\nj:"+j)
+                if i != "" and not contained:
+                    tree_append(i, root)
+                    
+        def tree_append(path, parentnode):
+            plist = path.split("/")
+            id = plist[0]
+            check = True
+            for i in range(0, parentnode.childCount()):
+                if parentnode.child(i).text(0) == id:
+                    check = False
+                    if len(plist) > 1:
+                        tree_append("/".join(plist[1::]), parentnode.child(i))
+            if check:
+                child = QTreeWidgetItem(parentnode)
+                child.setText(0, plist[0])
+                if len(plist) > 1:
+                    tree_append("/".join(plist[1::]), child)
+
+        create_tree(self.foundfiles, root)
+        self.treeView.expandAll()
+        self.show()
 
     def showError(self, message):
         self.errorDialog = QtWidgets.QDialog()

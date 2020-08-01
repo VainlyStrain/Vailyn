@@ -938,6 +938,9 @@ image: none;
         </property>
         <item>
          <widget class="QTabWidget" name="tabWidget">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
@@ -1619,6 +1622,13 @@ image: none;
                </widget>
               </item>
              </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="timeLabel">
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
