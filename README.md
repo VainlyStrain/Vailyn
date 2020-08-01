@@ -14,6 +14,12 @@
   Phased Path Traversal Attacks
 </p>
 
+> **Vailyn 2.0**
+>
+> Since v2.0, Vailyn has a Qt5 interface. Fire it up with the `--app` argument!
+>
+> The app is still in beta, so expect unpatched issues.
+
 ### About
 
 Vailyn is a multi-phased vulnerability analysis and exploitation tool for path traversal/directory climbing vulnerabilities. It is built to make it as performant as possible, and to offer a wide arsenal of filter evasion techniques.
@@ -72,6 +78,7 @@ additional:
   -i FIL, --check FIL   File to check for in Phase 1 (df: /etc/passwd)
   -q VIC2, --vic2 VIC2  Attack Target, part 2 (post injection point)
   -t, --tor             Pipe attacks through the Tor anonymity network
+  --app                 Start Vailyn's Qt5 interface
 ```
 
 Vailyn currently supports 4 attack vectors. The attack performed is identified by the `-a ACK` argument.
@@ -127,7 +134,7 @@ To distinguish real results from false positives, Vailyn does the following chec
 
 ### Possible Issues
 
-Please consider, that I'm still learning. So, there may still be some undetected false positives/negatives. If you found some (or want to point out other bugs/improvements), please leave an issue.
+Found some false positives/negatives (or want to point out other bugs/improvements): please leave an issue!
 
 ### Code of Conduct
 
