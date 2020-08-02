@@ -169,6 +169,11 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                         out = out + "{0:{1}}".format(i, maxlen) + " " + nb
 
                         print(out)
+                if verbose and not found:
+                    if attack == 1 or attack == 2:
+                        print(color.END + "{}|: ".format(r.status_code)+r.url)
+                    elif attack == 3 or attack == 4:
+                        print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
             d+=1
             if found:
                 break
@@ -291,8 +296,10 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                         else:
                             progress(requestcount, totalrequests, prefix=" ", suffix=" ")
 
+                        vfound = False
                         if str(r.status_code).startswith("2") or r.status_code == 302:
                             if filecheck(r, con2, p) and attack != 4 or filecheck(r, con2, p, post=True) and attack == 4:
+                                vfound = True
                                 if attack == 1 or attack == 2:
                                     print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
                                     if dl and dir+file not in found:
@@ -330,8 +337,10 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                 print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"postdata"+color.END+"="+p)
                                 found.append(dir+file)
                                 urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
-                        else:
-                            if verbose:
-                                print(color.RD+"{}|: ".format(r.status_code)+color.END+color.RC+r.url+color.END)
+                        if verbose and not vfound:
+                            if attack == 1 or attack == 2:
+                                print(color.END + "{}|: ".format(r.status_code)+r.url)
+                            elif attack == 3 or attack == 4:
+                                print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
                 d+=1
     return (found, urls)

@@ -314,7 +314,7 @@ class VailynApp(QtWidgets.QDialog):
             starting_time = time.time()
             #initiate phase 1 - vulnerability analysis
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(phase1, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,False,self.depth1,l,self.vlnfile,self.authcookie,self.post,)) for l in paysplit]
+                res = [pool.apply_async(phase1, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,True,self.depth1,l,self.vlnfile,self.authcookie,self.post,)) for l in paysplit]
                 for i in res:
                     #fetch results
                     tuples = i.get()
@@ -351,7 +351,7 @@ class VailynApp(QtWidgets.QDialog):
         starting_time = time.time()
         if attackphase:
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,False,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,)) for l in splitted]
+                res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,True,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,)) for l in splitted]
                 for i in res:
                     #fetch results
                     restuple = i.get()
