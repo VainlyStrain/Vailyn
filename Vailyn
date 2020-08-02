@@ -260,6 +260,8 @@ class VailynApp(QtWidgets.QDialog):
                 commons.append(l.strip())
         with open(self.dirdict) as dirlisted:
             for l in dirlisted:
+                if not l.strip().endswith("/"):
+                    l = l + "/"
                 sdirs.append(l.strip())
 
         #create directory permutations from dictionary
@@ -503,6 +505,8 @@ def main(parser, opt, args, shell=True) -> int:
                 commons.append(l.strip())
         with open(args.lists[1]) as dirlisted:
             for l in dirlisted:
+                if not l.strip().endswith("/"):
+                    l = l + "/"
                 sdirs.append(l.strip())
   
     loot = False
