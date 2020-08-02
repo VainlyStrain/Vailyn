@@ -232,9 +232,16 @@ class VailynApp(QtWidgets.QDialog):
 
         try:
             self.depth1 = int(self.phase1Depth.text().strip())
+        except ValueError:
+            if self.phase1Depth.text().strip() != "":
+                self.showError("Depths must be valid positive integers!")
+                return
+        try:
             self.depth2 = int(self.phase2Depth.text().strip())
         except ValueError:
-            self.showError("Depths must be valid positive integers!")
+            if self.phase2Depth.text().strip() != "":
+                self.showError("Depths must be valid positive integers!")
+                return
         if self.attack == 4:
             self.post = self.postInput.text()
         self.authcookie = self.cookieDisplay.text().strip()
