@@ -643,7 +643,7 @@ background: #221922;
 QTabBar::tab:last:!selected {
 border: 1px solid #130e13;
 border-right-color: #4a3e4a; 
-border-bottom-color: #4a3e4a; 
+border-bottom-color: #221922; 
 border-top-color: #221922;
 background: #221922;
 }
