@@ -332,7 +332,7 @@ class VailynApp(QtWidgets.QDialog):
             attackphase = True
             self.selectedpayloads = self.guiSelect(self.foundpayloads)
             if self.foundnullbytes:
-                self.selectednullbytes = self.guiSelect(self.foundnullbytes)
+                self.selectednullbytes = self.guiSelect(self.foundnullbytes, nullbytes=True)
             else:
                 self.selectednullbytes = []
         else:
