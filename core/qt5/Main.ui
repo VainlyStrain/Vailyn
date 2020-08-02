@@ -1592,15 +1592,21 @@ image: none;
            </attribute>
            <layout class="QVBoxLayout" name="moduleLayout">
             <item>
-             <widget class="QLabel" name="moduleLabel">
+             <widget class="QLabel" name="treeLabel">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="font">
+               <font>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Select Modules&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>File Tree</string>
               </property>
              </widget>
             </item>
