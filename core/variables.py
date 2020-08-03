@@ -52,6 +52,13 @@ tor = False
 initip = ""
 torip = ""
 
+timeout = None
+
+#reverse shell variables
+revshell = False
+LISTENIP = None
+LISTENPORT = None
+
 #clear the terminal, supports both Windows and Unix-like
 CLEAR_CMD = ["cmd", "/c", "cls"] if sys.platform.lower().startswith("win") else ["clear"]
  

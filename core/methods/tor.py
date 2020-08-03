@@ -66,7 +66,10 @@ def initcheck():
 def torcheck():
     #try:
     s = presession()
-    ipaddr = s.get('http://ip.42.pl/raw').text
+    try:
+        ipaddr = s.get('http://ip.42.pl/raw', timeout=vars.timeout).text
+    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+        sys.exit("Timeout at IP check.")
     #ip = str(ipaddr).split("'")[1].strip()
     if vars.initip.strip() != ipaddr:
         vars.torip = ipaddr

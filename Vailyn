@@ -708,6 +708,15 @@ if __name__ == "__main__":
         parser = build_parser()
         opt = vars(parser.parse_args())
         args = parser.parse_args()
+        if opt["timeout"]:
+            variables.timeout = args.timeout
+            assert variables.timeout != None
+        if opt["listen"]:
+            ip, port = args.listen
+            variables.revshell = True
+            variables.LISTENIP = ip
+            variables.LISTENPORT = port
+            assert variables.revshell and variables.LISTENIP != None and variables.LISTENPORT != None
         if opt["app"]:
             app = QtWidgets.QApplication(sys.argv) 
             window = VailynApp() 

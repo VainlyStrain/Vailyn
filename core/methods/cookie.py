@@ -21,7 +21,7 @@ from core.methods.session import session
 from http.cookiejar import FileCookieJar #MozillaCookieJar
 import requests, sys, time
 from core.colors import color
-from core.variables import payloadlist, nullchars
+from core.variables import payloadlist, nullchars, timeout
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 
@@ -29,7 +29,10 @@ from core.methods.loot import download
 """fetches cookies from the website for the cookie attack"""
 def getCookie(url):
     s = session()
-    s.get(url)
+    try:
+        s.get(url, timeout=timeout)
+    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+        sys.exit("Timeout fetching cookie.")
     return s.cookies
 
 """parses the cookie and lets the attacker choose the injedction point"""

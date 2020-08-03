@@ -21,6 +21,7 @@ import sys, os, time
 import core.variables as variables
 from core.methods.session import session
 from core.colors import color
+import requests
 
 #append date to folder to be unique
 if sys.platform.lower().startswith('win'):
@@ -30,9 +31,9 @@ else:
 
 """download found files & save them in the loot folder"""
 def download(url, file, cookie=None, post=None):
-    requests = session()
+    s = session()
     if cookie:
-        requests.cookies = cookie
+        s.cookies = cookie
     if sys.platform.lower().startswith('win'):
         if "\\" in file:
             path ='\\'.join(file.split('\\')[0:-1])
@@ -66,9 +67,17 @@ def download(url, file, cookie=None, post=None):
         os.makedirs(variables.lootdir+subdir+path)
     with open((variables.lootdir+subdir+file), "wb") as loot:
         if not post:
-            response = requests.get(url)
+            try:
+                response = s.get(url, timeout=variables.timeout)
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                print("Timeout reached looting " + url)
+                return
         else:
-            response = requests.post(url, data=post)
+            try:
+                response = s.post(url, data=post, timeout=variables.timeout)
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                print("Timeout reached looting " + url)
+                return
         loot.write(response.content)
     loot.close()
     print('{}[LOOT]{} {}'.format(color.RD, color.END+color.O+color.CURSIVE, file+color.END))
