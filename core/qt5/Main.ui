@@ -1412,6 +1412,40 @@ image: none;
              </widget>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="shellLabel">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>NC Listener</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="ipEdit">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="placeholderText">
+                 <string>127.0.0.1</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="portEdit">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>1337</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <layout class="QFormLayout" name="formLayout_2">
               <item row="0" column="0">
                <widget class="QLabel" name="label_5">
@@ -1424,26 +1458,6 @@ image: none;
                <widget class="QLineEdit" name="vlnFileInput">
                 <property name="text">
                  <string>/etc/passwd</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="postLabel">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>POST Data</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QLineEdit" name="postInput">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="placeholderText">
-                 <string>p1=val&amp;p2=INJECT</string>
                 </property>
                </widget>
               </item>
@@ -1498,6 +1512,20 @@ image: none;
                 </property>
                </spacer>
               </item>
+              <item>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Timeout: </string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="timeoutEdit">
+                <property name="placeholderText">
+                 <string>seconds</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
             <item>
@@ -1544,6 +1572,13 @@ image: none;
                <widget class="QCheckBox" name="lootBox">
                 <property name="text">
                  <string>Loot</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="shellBox">
+                <property name="text">
+                 <string>LFI Shell</string>
                 </property>
                </widget>
               </item>

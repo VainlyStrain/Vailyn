@@ -95,10 +95,14 @@ class VailynApp(QtWidgets.QDialog):
         self.fileDictButton.clicked.connect(self.getFileDictionary)
         self.dirDictButton.clicked.connect(self.getDirDictionary)
         self.addCookieButton.clicked.connect(self.getAuthCookie)
-        self.attackOption.currentIndexChanged.connect(self.handlePost)
+        self.shellBox.stateChanged.connect(self.handleShell)
+        self.attackOption.currentIndexChanged.connect(self.updateAttack)
         self.attack = self.attackOption.currentIndex() + 1
         self.treeView.setHeaderHidden(True)
         self.show()
+
+    def updateAttack(self):
+        self.attack = self.attackOption.currentIndex() + 1
 
     def getFileName(self):
         return QFileDialog.getOpenFileName()
@@ -206,14 +210,17 @@ class VailynApp(QtWidgets.QDialog):
             return (None, None)
         return (cookie, self.selected)
 
-    def handlePost(self):
-        self.attack = self.attackOption.currentIndex() + 1
-        if self.attackOption.currentIndex() == 3:
-            self.postLabel.setEnabled(True)
-            self.postInput.setEnabled(True)
+    def handleShell(self):
+        if self.shellBox.isChecked():
+            variables.revshell = True
+            self.shellLabel.setEnabled(True)
+            self.portEdit.setEnabled(True)
+            self.ipEdit.setEnabled(True)
         else:
-            self.postLabel.setEnabled(False)
-            self.postInput.setEnabled(False)
+            variables.revshell = False
+            self.shellLabel.setEnabled(False)
+            self.portEdit.setEnabled(False)
+            self.ipEdit.setEnabled(False)
 
     def attackGui(self):
         sdirs = ['']
@@ -244,10 +251,30 @@ class VailynApp(QtWidgets.QDialog):
                 return
         if self.attack == 4:
             self.post = self.postInput.text()
+
+        if variables.revshell:
+            try:
+                variables.LISTENIP = self.ipEdit.text().strip()
+                variables.LISTENPORT = self.portEdit.text().strip()
+                assert variables.LISTENPORT != "" and variables.LISTENIP != ""
+            except AssertionError:
+                self.showError("Listening IP and Port needed for attack.")
+                return
+
+        timeout = self.timeoutEdit.text().strip()
+        if timeout != "":
+            try:
+                variables.timeout = int(timeout)
+                assert(variables.timeout > 0)
+            except (ValueError, AssertionError):
+                self.showError("Timeout must be a valid positive integer!")
+                return
+
         self.authcookie = self.cookieDisplay.text().strip()
         self.loot = self.lootBox.isChecked()
         self.tor = self.torBox.isChecked()
         self.vlnfile = self.vlnFileInput.text().strip()
+
         if self.tor:
             sig = enableTor(shell=False)
             if sig == 420:
@@ -401,10 +428,13 @@ class VailynApp(QtWidgets.QDialog):
             vic = self.targetDialog.vicField.text().strip()
             pam = self.targetDialog.paramField.text().strip()
             vic2 = self.targetDialog.vic2Field.text().strip()
+            post = self.targetDialog.postInput.text().strip()
             if vic == "":
                 self.showError("-v VIC must be specified.")
             elif self.attack == 1 and pam == "":
                 self.showError("-p PAM must be specified for query attack.")
+            elif self.attack == 4 and post == "":
+                self.showError("-s DAT must be specified for POST attack.")
             elif "://" not in vic:
                 self.showError("scheme:// must be sepecified in -v VIC.")
             else:
@@ -412,6 +442,8 @@ class VailynApp(QtWidgets.QDialog):
                 if self.attack == 1:
                     self.param = pam
                 self.victim2 = vic2
+                if self.attack == 4:
+                    self.post = post
                 self.targetDialog.close()
                 if self.attack == 1:
                     if "?" not in vic:
@@ -439,6 +471,12 @@ class VailynApp(QtWidgets.QDialog):
         else:
             self.targetDialog.paramLabel.setEnabled(False)
             self.targetDialog.paramField.setEnabled(False)
+        if self.attack == 4:
+            self.targetDialog.postLabel.setEnabled(True)
+            self.targetDialog.postInput.setEnabled(True)
+        else:
+            self.targetDialog.postLabel.setEnabled(False)
+            self.targetDialog.postInput.setEnabled(False)
         self.targetDialog.vicField.setText(self.victim)
         self.targetDialog.paramField.setText(self.param)
         self.targetDialog.vic2Field.setText(self.victim2)
