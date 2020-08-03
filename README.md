@@ -17,8 +17,6 @@
 > **Vailyn 2.0**
 >
 > Since v2.0, Vailyn has a Qt5 interface. Fire it up with the `--app` argument!
->
-> The app is still in beta, so expect unpatched issues.
 
 ### About
 
@@ -30,13 +28,13 @@ Vailyn operates in 2 phases. First, it checks if the vulnerability is present. I
 
 Now, the user can choose freely which payloads to use. Only these payloads will be used in the second phase.
 
-The second phase is the exploitation phase. Now, it tries to leak all possible files from the server using a file and a directory dictionary. The search depth and the directory permutation level can be adapted via arguments. Optionally, it can download found files, and save them in its loot folder.
+The second phase is the exploitation phase. Now, it tries to leak all possible files from the server using a file and a directory dictionary. The search depth and the directory permutation level can be adapted via arguments. Optionally, it can download found files, and save them in its loot folder. Alternatively, it will try to obtain a reverse shell on the system, letting the attacker gain full control over the server.
 
 Right now, it supports multiple attack methods: injection via query, path, query and post data.
 
 ### Why the phase separation?
 
-The separation in several phases is new in this version. It is done to hugely improve the performance of the tool. In previous versions, every file-directory combination was checked with every payload. This resulted in a huge overhead due to payloads being always used again, despite they are not working for the current server.
+The separation in several phases is done to hugely improve the performance of the tool. In previous versions, every file-directory combination was checked with every payload. This resulted in a huge overhead due to payloads being always used again, despite not working for the current page.
 
 ### Installation
 
@@ -52,7 +50,7 @@ Once on your system, you'll need to install the dependencies.
 $ pip install -r requirements.txt   # --user
 ```
 
-If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by distro. Note that this module is Linux-only.
+If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by distro. Note that this module is currently Linux-only.
 
 That's it! Fire Vailyn up by moving to its installation directory and performing
 
@@ -62,7 +60,7 @@ $ python Vailyn -h
 
 ### Usage
 
-Vailyn has 3 mandatory arguments: `-v VIC, -a ACK and -l FIL PATH`. However, depending on `-a`, more arguments may be required.
+Vailyn has 3 mandatory arguments: `-v VIC, -a INT and -l FILES PATHS`. However, depending on `-a`, more arguments may be required.
 
 ```
 mandatory:
@@ -85,10 +83,10 @@ additional:
   -g, --app             Start Vailyn's Qt5 interface
 ```
 
-Vailyn currently supports 4 attack vectors. The attack performed is identified by the `-a ACK` argument.
+Vailyn currently supports 4 attack vectors. The attack performed is identified by the `-a INT` argument.
 
 ```
-ACK        attack
+INT        attack
 ----       -------
 1          query-based attack  (https://site.com?file=../../../)
 2          path-based attack   (https://site.com/../../../)
@@ -101,8 +99,8 @@ You also must specify a target to attack. This is done via `-v VIC` and `-q VIC2
 Example: if the final URL should look like: `https://site.com/download.php?file=<ATTACK>&param2=necessaryvalue`, you can specify `-v https://site.com/download.php` and `-q &param2=necessaryvalue` (and `-p file`, since this is a query attack).
 
 To perform the bruteforce attack in phase 2, you need to specify 2 dictionaries:
-* FIL, containing filenames only (e.g. index.php)
-* PATH, containing directory names only. Note that each directory entry MUST end with a "/". Also, Vailyn will handle directory permutation for you, so you'll need only single directories in a line.
+* FILES, containing filenames only (e.g. index.php)
+* PATHS, containing directory names only. Note that each directory entry MUST end with a "/". Also, Vailyn will handle directory permutation for you, so you'll need only single directories in a line.
 
 If the attacked site is behind a login page, you can supply an authentication cookie via `-c COOKIEFILE`. If you want to attack over Tor, use `--tor`.
 

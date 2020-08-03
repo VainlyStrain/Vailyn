@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>450</width>
-    <height>599</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1439,6 +1439,9 @@ image: none;
                  <bool>false</bool>
                 </property>
                 <property name="text">
+                 <string/>
+                </property>
+                <property name="placeholderText">
                  <string>1337</string>
                 </property>
                </widget>
