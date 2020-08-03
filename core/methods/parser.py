@@ -29,7 +29,7 @@ class ArgumentParser(argparse.ArgumentParser):
         print('''
 mandatory:
   -v VIC, --victim VIC  {0}Target to attack, part 1 [pre injection point]{1}
-  -a INT, --attack INT  {0}Attack type (int)[1: query, 2: path, 3:cookie]{1}
+  -a INT, --attack INT  {0}Attack type (int, 1-4)[see the Markdown docs]{1}
   -l FILES PATHS, --lists FILES PATHS      
                         {0}Dictionaries to use (see templates for syntax){1}
 additional:
