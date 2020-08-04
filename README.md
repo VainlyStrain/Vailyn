@@ -133,8 +133,8 @@ The techniques (only work for LFI inclusions):
 
 * `/proc/self/environ inclusion` only works on outdated servers
 * `Apache Log Poisoning & inclusion`
-* `SSH Log Poisoning` _TODO_
-* `poisoned mail inclusion` _TODO_
+* `SSH Log Poisoning` 
+* `poisoned mail inclusion`
 
 ### False Positive prevention
 
