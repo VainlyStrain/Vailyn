@@ -9,9 +9,9 @@
     <img src="https://img.shields.io/static/v1.svg?label=Version&message=2.1&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
   </a>
   <a href="https://www.python.org/">
-    <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7&color=lightgrey&style=flat-square&logo=python&logoColor=white">
+    <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7+&color=lightgrey&style=flat-square&logo=python&logoColor=white">
   </a><br>
-  Phased Path Traversal Attacks
+  Phased Path Traversal & LFI Attacks
 </p>
 
 > **Vailyn 2.0**
