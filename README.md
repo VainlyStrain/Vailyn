@@ -60,26 +60,26 @@ $ python Vailyn -h
 
 ### Usage
 
-Vailyn has 3 mandatory arguments: `-v VIC, -a INT and -l FILES PATHS`. However, depending on `-a`, more arguments may be required.
+Vailyn has 3 mandatory arguments: `-v VIC, -a INT and -l FIL PATH`. However, depending on `-a`, more arguments may be required.
 
 ```
 mandatory:
   -v VIC, --victim VIC  Target to attack, part 1 [pre injection point]
   -a INT, --attack INT  Attack type (int, 1-4)[see the Markdown docs]
-  -l FILES PATHS, --lists FILES PATHS      
+  -l FIL PATH, --lists FIL PATH      
                         Dictionaries to use (see templates for syntax)
 additional:
-  -p PAM, --param PAM   query parameter to use for --attack 1
-  -s DATA, --post DATA  POST Data (set injection point with INJECT)
+  -p P, --param P       query parameter to use for --attack 1
+  -s D, --post D        POST Data (set injection point with INJECT)
   -j A P, --listen A P  Try a reverse shell in Phase 2 (A:IP, P:port)
   -d I J, --depths I J  depths of checking (I: phase 1, J: phase 2)
   -n, --loot            Download found files into the loot folder
-  -c FIL, --cookie FIL  File containing authentication cookie (if needed)
+  -c C, --cookie C      File containing authentication cookie (if needed)
   -h, --help            show this help menu and exit
-  -i FIL, --check FIL   File to check for in Phase 1 (df: /etc/passwd)
-  -q VIC2, --vic2 VIC2  Attack Target, part 2 (post injection point)
+  -i F, --check F       File to check for in Phase 1 (df: /etc/passwd)
+  -q V, --vic2 V        Attack Target, part 2 (post injection point)
   -t, --tor             Pipe attacks through the Tor anonymity network
-  -k INT, --timeout INT Request Timeout
+  -k T, --timeout T     Request Timeout
   -g, --app             Start Vailyn's Qt5 interface
 ```
 
@@ -94,13 +94,13 @@ INT        attack
 4          infected post data  (ELEM1=VAL1&ELEM2=../../../)
 ```
 
-You also must specify a target to attack. This is done via `-v VIC` and `-q VIC2`, where -v is the part before the injection point, and -q the rest.
+You also must specify a target to attack. This is done via `-v VIC` and `-q V`, where -v is the part before the injection point, and -q the rest.
 
 Example: if the final URL should look like: `https://site.com/download.php?file=<ATTACK>&param2=necessaryvalue`, you can specify `-v https://site.com/download.php` and `-q &param2=necessaryvalue` (and `-p file`, since this is a query attack).
 
 To perform the bruteforce attack in phase 2, you need to specify 2 dictionaries:
-* FILES, containing filenames only (e.g. index.php)
-* PATHS, containing directory names only. Note that each directory entry MUST end with a "/". Also, Vailyn will handle directory permutation for you, so you'll need only single directories in a line.
+* FIL, containing filenames only (e.g. index.php)
+* PATH, containing directory names only. Note that each directory entry MUST end with a "/". Also, Vailyn will handle directory permutation for you, so you'll need only single directories in a line.
 
 If the attacked site is behind a login page, you can supply an authentication cookie via `-c COOKIEFILE`. If you want to attack over Tor, use `--tor`.
 

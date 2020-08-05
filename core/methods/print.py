@@ -53,9 +53,8 @@ ____, __              |
                    .'.    
                   ''.;:     
                     .|.   
-                     | .  
-                     .    
-                     {0}
+                     | '  
+                     '    {0}
     '''.format(color.END, color.BOLD, color.CURSIVE)
     subprocess.run(CLEAR_CMD)
     print(vaile)
