@@ -22,6 +22,7 @@ import requests, sys
 import random, string
 import subprocess
 import colorama
+import datetime
 import time
 import os
 
@@ -405,10 +406,12 @@ class VailynApp(QtWidgets.QDialog):
         attack_time = ending_time - starting_time
         total_time = vuln_time + attack_time
 
-        if self.foundfiles:
-            self.guiTree(total_time)
+        readable_time = datetime.timedelta(seconds=total_time)
 
-        self.showInfo("Attack done. Found {} files in {}s.".format(len(self.foundfiles)-1, total_time))
+        if self.foundfiles:
+            self.guiTree(readable_time)
+
+        self.showInfo("Attack done. Found {} files in {}.".format(len(self.foundfiles)-1, readable_time))
 
         if self.tor and self.unix:
             stop = self.showQuestion("Do you want to terminate the Tor service?")
@@ -486,7 +489,7 @@ class VailynApp(QtWidgets.QDialog):
 
 
     def guiTree(self, atime):
-        self.timeLabel.setText("Done after " + str(atime) + "s.")
+        self.timeLabel.setText("Done after " + str(atime) + ".")
         self.treeView.clear()
         root = QTreeWidgetItem(self.treeView)
         root.setText(0, "/")
@@ -734,6 +737,8 @@ def main(parser, opt, args, shell=True) -> int:
     attack_time = ending_time - starting_time
     total_time = vuln_time + attack_time
 
+    readable_time = datetime.timedelta(seconds=total_time)
+
     #display found files in a file tree
     print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Directory Tree\n'.format(color.RD, color.END))
     if foundfiles:
@@ -742,7 +747,7 @@ def main(parser, opt, args, shell=True) -> int:
     if not foundurls:
         print("nothing found")
 
-    print("{}Scan completed in {}s.{}".format(color.RC, total_time, color.END))
+    print("{}Scan completed in {}.{}".format(color.RC, readable_time, color.END))
     if variables.tor and not sys.platform.lower().startswith("win"):
         stop = input(color.END+" [?] Do you want to terminate the Tor service? (enter if not) :> ")
         if stop != "":
