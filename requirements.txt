@@ -3,3 +3,4 @@ requests
 argparse
 colorama
 PyQt5
+scrapy

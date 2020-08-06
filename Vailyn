@@ -90,6 +90,7 @@ class VailynApp(QtWidgets.QDialog):
         self.attackOption.addItem("path")
         self.attackOption.addItem("cookie")
         self.attackOption.addItem("post")
+        self.attackOption.addItem("scraper")
         self.newTargetButton.clicked.connect(self.getVictim)
         self.attackButton.clicked.connect(self.attackGui)
         self.infoButton.clicked.connect(self.showAttackInfo)
@@ -104,6 +105,14 @@ class VailynApp(QtWidgets.QDialog):
 
     def updateAttack(self):
         self.attack = self.attackOption.currentIndex() + 1
+
+        # TODO remove me when crawler mode ready
+        ########################################
+        if self.attack == 5:
+            self.attackButton.setEnabled(False)
+        else:
+            self.attackButton.setEnabled(True)
+        ########################################
 
     def getFileName(self):
         return QFileDialog.getOpenFileName()
@@ -126,6 +135,8 @@ class VailynApp(QtWidgets.QDialog):
             self.showInfo("[GET] http://example.com COOKIE=../../../")
         elif self.attack == 4:
             self.showInfo("[POST] http://example.com POST=../../../")
+        elif self.attack == 5:
+            self.showInfo("Automatically retreive all links & perform tests")
 
     def showInfo(self, message):
         self.infoDialog = QtWidgets.QDialog()
@@ -330,6 +341,18 @@ class VailynApp(QtWidgets.QDialog):
             self.showError("POST Data needs to be of form P1=V1&P2=V2")
             return
         
+        if args.attack == 5:
+            variables.viclist.append(args.victim)
+            assert len(variables.viclist) > 0
+            from core.methods.crawler import TraversalSpider
+            from scrapy.crawler import CrawlerProcess
+            process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393'})
+            process.crawl(TraversalSpider)
+            process.start()
+
+            #TODO
+            return
+
         if self.attack == 3:
             self.cookie, self.selected = self.readCookieGui(self.victim)
             if self.cookie == None or self.selected == None:
@@ -649,6 +672,11 @@ def main(parser, opt, args, shell=True) -> int:
         if "=" not in postdata:
             sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -s needs to be of form P1=V1&P2=V2')
+    elif args.attack == 5:
+        print("{}Vailyn: {}CRAWLER{}".format(color.RC, color.END+color.RB, color.END))
+    else:
+        sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
+                'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -a needs to be in 1..5')
 
 
     print("    v" + version)
@@ -656,6 +684,18 @@ def main(parser, opt, args, shell=True) -> int:
 
     if variables.tor:
         print("\n{0} [TOR]{1}{6} IP{1}{0}|{1}{5} {2} {1}{4}>{1} {3}".format(color.RD, color.END, variables.initip, variables.torip, color.BOLD, color.CURSIVE, color.O))
+
+    if args.attack == 5:
+        variables.viclist.append(args.victim)
+        assert len(variables.viclist) > 0
+        from core.methods.crawler import TraversalSpider
+        from scrapy.crawler import CrawlerProcess
+        process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393'})
+        process.crawl(TraversalSpider)
+        process.start()
+
+        #TODO
+        return
 
     #fetch and select cookie for cookie mode
     if args.attack == 3:

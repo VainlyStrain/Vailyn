@@ -59,6 +59,9 @@ revshell = False
 LISTENIP = None
 LISTENPORT = None
 
+#crawler list
+viclist = []
+
 #clear the terminal, supports both Windows and Unix-like
 CLEAR_CMD = ["cmd", "/c", "cls"] if sys.platform.lower().startswith("win") else ["clear"]
  
