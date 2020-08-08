@@ -92,7 +92,7 @@ INT        attack
 2          path-based attack   (https://site.com/../../../)
 3          cookie-based attack (will grab the cookies for you)
 4          infected post data  (ELEM1=VAL1&ELEM2=../../../)
-5          spider automation   fetch + analyze all URLs from site _TODO_
+5          spider automation   fetch + analyze all URLs from site WIP
 ```
 
 You also must specify a target to attack. This is done via `-v VIC` and `-q V`, where -v is the part before the injection point, and -q the rest.
@@ -197,4 +197,5 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 ### Credits & Copyright
 
 > Vailyn: Copyright © <a href="https://github.com/VainlyStrain">VainlyStrain</a>
+>
 > Arjun:  Copyright © <a href="https://github.com/s0md3v">s0md3v</a>
