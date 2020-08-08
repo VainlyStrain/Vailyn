@@ -55,15 +55,15 @@ class FormSpider(scrapy.Spider):
         return
 
 def arjunEnum():
-    with open("lib/Arjun/db/in.txt", "w") as vicfile:
+    with open("core/tmp/in.txt", "w") as vicfile:
         for target in viclist:
             vicfile.write(target + "\n")
     if stable:
-        subprocess.run(["python3", "lib/Arjun/arjun.py", "-o", "lib/Arjun/db/out.json", "--urls", "lib/Arjun/db/in.txt", "--get"])
+        subprocess.run(["python3", "lib/Arjun/arjun.py", "-o", "core/tmp/out.json", "--urls", "core/tmp/in.txt", "--get"])
     else:
-        subprocess.run(["python3", "lib/Arjun/arjun.py", "-t", str(processes), "-o", "lib/Arjun/db/out.json", "--urls", "lib/Arjun/db/in.txt", "--get"])
+        subprocess.run(["python3", "lib/Arjun/arjun.py", "-t", str(processes), "-o", "core/tmp/out.json", "--urls", "core/tmp/in.txt", "--get"])
     
-    siteparams = json.load("lib/Arjun/db/out.json")
+    siteparams = json.load("core/tmp/out.json")
     return siteparams
 
 def analyzeParam(siteparams, paysplit, victim2, verbose, depth, file, authcookie):
