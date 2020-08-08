@@ -344,7 +344,7 @@ class VailynApp(QtWidgets.QDialog):
         if args.attack == 5:
             variables.viclist.append(self.victim)
             assert len(variables.viclist) > 0
-            from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath
+            from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie
             from scrapy.crawler import CrawlerProcess
             print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: URL Enumeration")
@@ -369,7 +369,7 @@ class VailynApp(QtWidgets.QDialog):
             print("\n{0}Phase 3|{1} {2}Cookie Attack{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: Cookie Attack")
             self.show()
-            #cookieattack = analyzeCookie() TODO
+            cookieattack = analyzeCookie(paysplit, self.victim2, self.verbose, self.depth1, self.vlnfile, self.authcookie)
             time.sleep(1)
             print("\n{0}Phase 4|{1} {2}POST Enumeration{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: POST Enumeration")
@@ -405,6 +405,17 @@ class VailynApp(QtWidgets.QDialog):
                 for nullbyte in pair[1]:
                     nullstring = nullstring + "        " + str(nullbyte) + "\n"
                 print("    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring)
+            print("Cookie Attack\n")
+            for victim, sub in cookieattack.items():
+                print(victim)
+                for cname, pair in sub.items():
+                    paystring = ""
+                    nullstring = ""
+                    for payload in pair[0]:
+                        paystring = paystring + "            " + str(payload) + "\n"
+                    for nullbyte in pair[1]:
+                        nullstring = nullstring + "            " + str(nullbyte) + "\n"
+                    print("    " + cname + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
                 
             return
 
@@ -740,7 +751,7 @@ def main(parser, opt, args, shell=True) -> int:
     if args.attack == 5:
         variables.viclist.append(args.victim)
         assert len(variables.viclist) > 0
-        from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath
+        from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie
         from scrapy.crawler import CrawlerProcess
         print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
         time.sleep(0.5)
@@ -762,7 +773,7 @@ def main(parser, opt, args, shell=True) -> int:
         time.sleep(1)
         print("\n{0}Phase 3|{1} {2}Cookie Attack{1}\n".format(color.RD, color.END, color.O))
         time.sleep(0.5)
-        #cookieattack = analyzeCookie() TODO
+        cookieattack = analyzeCookie(paysplit, victim2, verbose, checkdepth, vlnfile, cookiefile)
         time.sleep(1)
         print("\n{0}Phase 4|{1} {2}POST Enumeration{1}\n".format(color.RD, color.END, color.O))
         time.sleep(0.5)
@@ -794,6 +805,17 @@ def main(parser, opt, args, shell=True) -> int:
             for nullbyte in pair[1]:
                 nullstring = nullstring + "        " + str(nullbyte) + "\n"
             print("    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring)
+        print("Cookie Attack\n")
+        for victim, sub in cookieattack.items():
+            print(victim)
+            for cname, pair in sub.items():
+                paystring = ""
+                nullstring = ""
+                for payload in pair[0]:
+                    paystring = paystring + "            " + str(payload) + "\n"
+                for nullbyte in pair[1]:
+                    nullstring = nullstring + "            " + str(nullbyte) + "\n"
+                print("    " + cname + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
             
         return
 
