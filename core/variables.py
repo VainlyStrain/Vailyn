@@ -62,6 +62,9 @@ LISTENPORT = None
 #crawler list
 viclist = []
 
+#arjun stable switch
+stable = False
+
 #clear the terminal, supports both Windows and Unix-like
 CLEAR_CMD = ["cmd", "/c", "cls"] if sys.platform.lower().startswith("win") else ["clear"]
  
@@ -74,6 +77,8 @@ if sys.platform.lower().startswith('win'):
 else:
     lootdir = os.path.dirname(os.path.realpath(__file__)) + "/../loot/"
     cachedir = os.path.dirname(os.path.realpath(__file__)) + "/payload-cache/"
+
+verbose = False
 
 version = "2.1"
 e_version = "2.1.0#pre-5"

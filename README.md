@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src='misc/logo.png' height='580'></img><br>
+  <img src='core/doc/logo.png' height='580'></img><br>
   Vailyn
   <br>
 </h1>
@@ -30,7 +30,7 @@ Now, the user can choose freely which payloads to use. Only these payloads will 
 
 The second phase is the exploitation phase. Now, it tries to leak all possible files from the server using a file and a directory dictionary. The search depth and the directory permutation level can be adapted via arguments. Optionally, it can download found files, and save them in its loot folder. Alternatively, it will try to obtain a reverse shell on the system, letting the attacker gain full control over the server.
 
-Right now, it supports multiple attack methods: injection via query, path, query and post data.
+Right now, it supports multiple attack methods: injection via query, path, cookie and post data.
 
 ### Why the phase separation?
 
@@ -65,7 +65,7 @@ Vailyn has 3 mandatory arguments: `-v VIC, -a INT and -l FIL PATH`. However, dep
 ```
 mandatory:
   -v VIC, --victim VIC  Target to attack, part 1 [pre injection point]
-  -a INT, --attack INT  Attack type (int, 1-4)[see the Markdown docs]
+  -a INT, --attack INT  Attack type (int, 1-5)[see the Markdown docs]
   -l FIL PATH, --lists FIL PATH      
                         Dictionaries to use (see templates for syntax)
 additional:
@@ -92,6 +92,7 @@ INT        attack
 2          path-based attack   (https://site.com/../../../)
 3          cookie-based attack (will grab the cookies for you)
 4          infected post data  (ELEM1=VAL1&ELEM2=../../../)
+5          spider automation   fetch + analyze all URLs from site _TODO_
 ```
 
 You also must specify a target to attack. This is done via `-v VIC` and `-q V`, where -v is the part before the injection point, and -q the rest.
@@ -192,3 +193,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 > By using this software, the user obliges to follow their local laws, to not attack someone else's system without explicit permission from the owner, or with malicious intend.
 >
 > In case of an infringement, only the end user who committed it is accountable for their actions.
+
+### Credits & Copyright
+
+> Vailyn: Copyright © <a href="https://github.com/VainlyStrain">VainlyStrain</a>
+> Arjun:  Copyright © <a href="https://github.com/s0md3v">s0md3v</a>
