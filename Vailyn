@@ -106,14 +106,6 @@ class VailynApp(QtWidgets.QDialog):
     def updateAttack(self):
         self.attack = self.attackOption.currentIndex() + 1
 
-        # TODO remove me when crawler mode ready
-        ########################################
-        if self.attack == 5:
-            self.attackButton.setEnabled(False)
-        else:
-            self.attackButton.setEnabled(True)
-        ########################################
-
     def getFileName(self):
         return QFileDialog.getOpenFileName()
 
@@ -341,7 +333,7 @@ class VailynApp(QtWidgets.QDialog):
             self.showError("POST Data needs to be of form P1=V1&P2=V2")
             return
         
-        if args.attack == 5:
+        if self.attack == 5:
             variables.viclist.append(self.victim)
             assert len(variables.viclist) > 0
             from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie
@@ -360,16 +352,16 @@ class VailynApp(QtWidgets.QDialog):
             print("\n{0}Phase 2|{1} {2}Query Attack{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: Query Attack")
             self.show()
-            queryattack = analyzeParam(siteparams, paysplit, self.victim2, self.verbose, self.depth1, self.vlnfile, self.authcookie)
+            queryattack = analyzeParam(siteparams, paysplit, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie)
             print("\n{0}Phase 3|{1} {2}Path Attack{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: Path Attack")
             self.show()
-            pathattack = analyzePath(paysplit, self.victim2, self.verbose, self.depth1, self.vlnfile, self.authcookie)
+            pathattack = analyzePath(paysplit, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie)
             time.sleep(1)
             print("\n{0}Phase 4|{1} {2}Cookie Attack{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: Cookie Attack")
             self.show()
-            cookieattack = analyzeCookie(paysplit, self.victim2, self.verbose, self.depth1, self.vlnfile, self.authcookie)
+            cookieattack = analyzeCookie(paysplit, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie)
             time.sleep(1)
             print("\n{0}Phase 5|{1} {2}POST Enumeration{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: POST Enumeration")
@@ -542,7 +534,7 @@ class VailynApp(QtWidgets.QDialog):
                         self.victimDisplayLabel.setText(vic + "?" + pam + "=INJECT" + vic2)
                     else:
                         self.victimDisplayLabel.setText(vic + "&" + pam + "=INJECT" + vic2)
-                elif self.attack == 3 or self.attack == 4:
+                elif self.attack == 3 or self.attack == 4 or self.attack == 5:
                     self.victimDisplayLabel.setText(vic + vic2)
                 elif self.attack == 2:
                     if vic.endswith("/"):
