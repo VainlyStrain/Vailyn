@@ -336,7 +336,7 @@ class VailynApp(QtWidgets.QDialog):
         if self.attack == 5:
             variables.viclist.append(self.victim)
             assert len(variables.viclist) > 0
-            from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie
+            from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
             from scrapy.crawler import CrawlerProcess
             print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: URL Enumeration")
@@ -366,11 +366,11 @@ class VailynApp(QtWidgets.QDialog):
             print("\n{0}Phase 5|{1} {2}POST Enumeration{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: POST Enumeration")
             self.show()
-            #do something here TODO
+            siteparams = arjunEnum(post=True)
             print("\n{0}Phase 6|{1} {2}POST Attack{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: POST Attack")
             self.show()
-            #postattack = analyzePost() TODO
+            postattack = analyzeParam(siteparams, paysplit, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie)
             ending_time = time.time()
             total_time = starting_time - ending_time
             atime = datetime.timedelta(seconds=total_time)
@@ -408,6 +408,17 @@ class VailynApp(QtWidgets.QDialog):
                     for nullbyte in pair[1]:
                         nullstring = nullstring + "            " + str(nullbyte) + "\n"
                     print("    " + cname + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+            print("POST Attack\n")
+            for victim, sub in postattack.items():
+                print(victim)
+                for param, pair in sub.items():
+                    paystring = ""
+                    nullstring = ""
+                    for payload in pair[0]:
+                        paystring = paystring + "            " + str(payload) + "\n"
+                    for nullbyte in pair[1]:
+                        nullstring = nullstring + "            " + str(nullbyte) + "\n"
+                    print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
                 
             return
 
@@ -743,7 +754,7 @@ def main(parser, opt, args, shell=True) -> int:
     if args.attack == 5:
         variables.viclist.append(args.victim)
         assert len(variables.viclist) > 0
-        from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie
+        from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
         from scrapy.crawler import CrawlerProcess
         print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
         time.sleep(0.5)
@@ -769,11 +780,11 @@ def main(parser, opt, args, shell=True) -> int:
         time.sleep(1)
         print("\n{0}Phase 5|{1} {2}POST Enumeration{1}\n".format(color.RD, color.END, color.O))
         time.sleep(0.5)
-        #do something here TODO
+        siteparams = arjunEnum(post=True)
         time.sleep(1)
         print("\n{0}Phase 6|{1} {2}POST Attack{1}\n".format(color.RD, color.END, color.O))
         time.sleep(0.5)
-        #postattack = analyzePost() TODO
+        postattack = analyzePost(siteparams, paysplit, victim2, verbose, checkdepth, vlnfile, cookiefile)
         time.sleep(2.5)
         print("\n\n{}FINAL RESULTS{}\n".format(color.BOLD+color.UNDERLINE, color.END))
         print("Query Attack\n")
@@ -808,6 +819,17 @@ def main(parser, opt, args, shell=True) -> int:
                 for nullbyte in pair[1]:
                     nullstring = nullstring + "            " + str(nullbyte) + "\n"
                 print("    " + cname + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+        print("POST Attack\n")
+        for victim, sub in postattack.items():
+            print(victim)
+            for param, pair in sub.items():
+                paystring = ""
+                nullstring = ""
+                for payload in pair[0]:
+                    paystring = paystring + "            " + str(payload) + "\n"
+                for nullbyte in pair[1]:
+                    nullstring = nullstring + "            " + str(nullbyte) + "\n"
+                print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
             
         return
 

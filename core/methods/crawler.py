@@ -57,17 +57,23 @@ class FormSpider(scrapy.Spider):
     def parse(self, response):
         return
 
-def arjunEnum():
+def arjunEnum(post=False):
     subdir = parseUrl(viclist[0])
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
     with open(cachedir+subdir+"spider-phase0.txt", "w") as vicfile:
         for target in viclist:
             vicfile.write(target + "\n")
-    if stable:
-        subprocess.run(["python3", "lib/Arjun/arjun.py", "-o", cachedir+subdir+"spider-phase1.json", "--urls", cachedir+subdir+"spider-phase0.txt", "--get", "-f", "lib/Arjun/db/params.txt"])
+    if post:
+        if stable:
+            subprocess.run(["python3", "lib/Arjun/arjun.py", "-o", cachedir+subdir+"spider-phase5.json", "--urls", cachedir+subdir+"spider-phase0.txt", "--post", "-f", "lib/Arjun/db/params.txt"])
+        else:
+            subprocess.run(["python3", "lib/Arjun/arjun.py", "-t", str(processes), "-o", cachedir+subdir+"spider-phase5.json", "--urls", cachedir+subdir+"spider-phase0.txt", "--post", "-f", "lib/Arjun/db/params.txt"])
     else:
-        subprocess.run(["python3", "lib/Arjun/arjun.py", "-t", str(processes), "-o", cachedir+subdir+"spider-phase1.json", "--urls", cachedir+subdir+"spider-phase0.txt", "--get", "-f", "lib/Arjun/db/params.txt"])
+        if stable:
+            subprocess.run(["python3", "lib/Arjun/arjun.py", "-o", cachedir+subdir+"spider-phase1.json", "--urls", cachedir+subdir+"spider-phase0.txt", "--get", "-f", "lib/Arjun/db/params.txt"])
+        else:
+            subprocess.run(["python3", "lib/Arjun/arjun.py", "-t", str(processes), "-o", cachedir+subdir+"spider-phase1.json", "--urls", cachedir+subdir+"spider-phase0.txt", "--get", "-f", "lib/Arjun/db/params.txt"])
     
 
     siteparams = None
@@ -156,5 +162,33 @@ def analyzeCookie(paysplit, victim2, verbose, depth, file, authcookie):
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
     with open(cachedir+subdir+"spider-phase4.json", "w+") as f:
+        json.dump(result, f, sort_keys=True, indent=4)
+    return result
+
+def analyzePost(siteparams, paysplit, victim2, verbose, depth, file, authcookie):
+    result = {}
+    subdir = parseUrl(viclist[0])
+    for victim, paramlist in siteparams.items():
+        sub = {}
+        print("\n{0}[INFO]{1} post{4}|{2} Attacking {3}".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+        time.sleep(1.5)
+        for param in paramlist:
+            payloads = []
+            nullbytes = []
+            print("\n{0}[INFO]{1} post{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, param, color.END+color.RD))
+            time.sleep(1.5)
+            with Pool(processes=processes) as pool:
+                res = [pool.apply_async(phase1, args=(4,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,param+"=INJECT",)) for l in paysplit]
+                for i in res:
+                    #fetch results
+                    tuples = i.get()
+                    payloads += tuples[0]
+                    nullbytes += tuples[1]
+            sub[param] = (payloads, nullbytes)
+            time.sleep(3)
+        result[victim] = sub
+    if not os.path.exists(cachedir+subdir):
+        os.makedirs(cachedir+subdir)
+    with open(cachedir+subdir+"spider-phase2.json", "w+") as f:
         json.dump(result, f, sort_keys=True, indent=4)
     return result
