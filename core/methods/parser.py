@@ -43,7 +43,7 @@ additional:
   -i F, --check F       {0}File to check for in Phase 1 (df: /etc/passwd){1}
   -q V, --vic2 V        {0}Attack Target, part 2 (post injection point){1}
   -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}
-  -k T, --timeout T     {0}Request Timeout{1}
+  -k T, --timeout T     {0}Request Timeout; stable switch for Arjun{1}
   -g, --app             {0}Start Vailyn's Qt5 interface{1}'''.format(color.RC, color.END))
 
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
@@ -63,7 +63,7 @@ def build_parser():
                    metavar="INT",
                    type=int)
     p.add_argument('-k', '--timeout',
-                   help="Request Timeout",
+                   help="Request Timeout; stable switch for Arjun",
                    metavar="T",
                    type=int)
     p.add_argument('-s', '--post',

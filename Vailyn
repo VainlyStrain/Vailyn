@@ -945,6 +945,7 @@ if __name__ == "__main__":
         args = parser.parse_args()
         if opt["timeout"]:
             variables.timeout = args.timeout
+            variables.stable = True
             assert variables.timeout != None
         if opt["debug"]:
             variables.verbose = True

