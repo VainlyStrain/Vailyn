@@ -50,13 +50,6 @@ class UrlSpider(scrapy.Spider):
                 viclist.append(link.url)
             yield Request(link.url, callback=self.parse)
 
-class FormSpider(scrapy.Spider):
-    name = "vailyn_form_spider"
-    start_urls = viclist
-
-    def parse(self, response):
-        return
-
 def arjunEnum(post=False):
     subdir = parseUrl(viclist[0])
     if not os.path.exists(cachedir+subdir):
