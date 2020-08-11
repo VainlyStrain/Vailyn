@@ -198,7 +198,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                         progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
                 else:
                     progress(requestcount, totalrequests, prefix=" ", suffix=" ")
-                if str(r.status_code).startswith("2") or r.status_code == 302 or (r.status_code == 403 and attack != 2):
+                if str(r.status_code).startswith("2") or r.status_code == 302:
                     if filecheck(r, con2, p) and attack != 4 or filecheck(r, con2, p, post=True) and attack == 4:
                         payloads.append(i)
                         if nb != "":
@@ -404,19 +404,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                             download(r.url,dir+file,cookie=s.cookies,post=data)
                                         found.append(dir+file)
                                         urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
-                            elif r.status_code == 403 and attack != 2:
-                                if attack == 1 or attack == 2:
-                                    print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
-                                    found.append(dir+file)
-                                    urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
-                                elif attack == 3:
-                                    print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"cookie"+color.END+"="+p)
-                                    found.append(dir+file)
-                                    urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
-                                elif attack == 4:
-                                    print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"postdata"+color.END+"="+p)
-                                    found.append(dir+file)
-                                    urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
+                            
                             if verbose and not vfound:
                                 if attack == 1 or attack == 2:
                                     print(color.END + "{}|: ".format(r.status_code)+r.url)

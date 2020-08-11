@@ -15,7 +15,7 @@ def requester(url, data, headers, GET, delay):
     if core.config.globalVariables['stable']:
         delay = random.choice(range(6, 12))
     time.sleep(delay)
-    headers['Host'] = re.search(r'https?://([^/]+)', url).group(1)
+    #headers['Host'] = re.search(r'https?://([^/]+)', url).group(1)
     if GET:
         response = requests.get(url, params=data, headers=headers, verify=False)
     elif core.config.globalVariables['jsonData']:
