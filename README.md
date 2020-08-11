@@ -205,3 +205,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 > Vailyn: Copyright © <a href="https://github.com/VainlyStrain">VainlyStrain</a>
 >
 > Arjun:  Copyright © <a href="https://github.com/s0md3v">s0md3v</a>
+
+### Arjun Modifications
+
+Arjun was slightly modified to fix false negatives with HTTP Basic Auth Sites.
