@@ -54,6 +54,7 @@ class UrlSpider(scrapy.Spider):
         for link in le.extract_links(response):
             if link.url not in viclist:
                 viclist.append(link.url)
+                print("{0}[INFO]{1} found{4}|{2} {3}".format(color.RD, color.END + color.O, color.END, link.url, color.END+color.RD))
             yield Request(link.url, callback=self.parse)
 
 def arjunEnum(post=False):
@@ -76,8 +77,12 @@ def arjunEnum(post=False):
     
 
     siteparams = None
-    with open(cachedir+subdir+"spider-phase1.json") as f:
-        siteparams = json.load(f)
+    if post:
+        with open(cachedir+subdir+"spider-phase5.json") as f:
+            siteparams = json.load(f)
+    else:
+        with open(cachedir+subdir+"spider-phase1.json") as f:
+            siteparams = json.load(f)
     assert siteparams != None
     return siteparams
 
@@ -88,13 +93,13 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie):
         for victim, paramlist in siteparams.items():
             sub = {}
             print("\n{0}[INFO]{1} param{4}|{2} Attacking {3}".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
-            time.sleep(1.5)
+            time.sleep(0.5)
             for param in paramlist:
                 payloads = []
                 nullbytes = []
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 print("\n{0}[INFO]{1} param{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, param, color.END+color.RD))
-                time.sleep(1.5)
+                time.sleep(1.0)
                 res = [pool.apply_async(phase1, args=(1,victim,victim2,param,None,"",verbose,depth,l,file,authcookie,"",)) for l in paysplit]
                 for i in res:
                     #fetch results
@@ -104,7 +109,6 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie):
                 payloads = list(set(payloads))
                 nullbytes = list(set(nullbytes))
                 sub[param] = (payloads, nullbytes)
-                time.sleep(3)
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
@@ -120,7 +124,7 @@ def analyzePath(victim2, verbose, depth, file, authcookie):
             payloads = []
             nullbytes = []
             print("\n{0}[INFO]{1} path{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
-            time.sleep(1.5)
+            time.sleep(1.0)
             paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
             res = [pool.apply_async(phase1, args=(2,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,"",)) for l in paysplit]
             for i in res:
@@ -131,7 +135,6 @@ def analyzePath(victim2, verbose, depth, file, authcookie):
             payloads = list(set(payloads))
             nullbytes = list(set(nullbytes))
             result[victim] = (payloads, nullbytes)
-            time.sleep(3)
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
 
@@ -150,12 +153,12 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie):
                 print("\n{0}[INFO]{1} cookie{4}|{2} No cookies available for {3}.\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
                 continue
             print("\n{0}[INFO]{1} cookie{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
-            time.sleep(1.5)
+            time.sleep(0.5)
             for key in cookie.keys():
                 payloads = []
                 nullbytes = []
                 print("\n{0}[INFO]{1} cookie{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, key, color.END+color.RD))
-                time.sleep(1.5)
+                time.sleep(1.0)
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
 
                 res = [pool.apply_async(phase1, args=(3,victim,victim2,"",cookie,key,verbose,depth,l,file,authcookie,"",)) for l in paysplit]
@@ -181,12 +184,12 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie):
         for victim, paramlist in siteparams.items():
             sub = {}
             print("\n{0}[INFO]{1} post{4}|{2} Attacking {3}".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
-            time.sleep(1.5)
+            time.sleep(0.5)
             for param in paramlist:
                 payloads = []
                 nullbytes = []
                 print("\n{0}[INFO]{1} post{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, param, color.END+color.RD))
-                time.sleep(1.5)
+                time.sleep(1.0)
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 res = [pool.apply_async(phase1, args=(4,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,param+"=INJECT",)) for l in paysplit]
                 for i in res:
@@ -197,7 +200,6 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie):
                 payloads = list(set(payloads))
                 nullbytes = list(set(nullbytes))
                 sub[param] = (payloads, nullbytes)
-                time.sleep(3)
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
