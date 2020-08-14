@@ -237,7 +237,7 @@ class VailynApp(QtWidgets.QDialog):
         self.filedict = self.fileDictDisplay.text().strip()
         self.dirdict = self.dirDictDisplay.text().strip()
 
-        if self.victim == "" or (self.attack == 1 and self.param == "") or self.filedict == "" or self.dirdict == "":
+        if self.victim == "" or (self.attack == 1 and self.param == "") or ((self.filedict == "" or self.dirdict == "") and self.attack != 5):
             self.showError("Mandatory argument(s) not specified.")
             return
 
@@ -293,27 +293,28 @@ class VailynApp(QtWidgets.QDialog):
                 self.unix = True
                 enableTor(shell=False, sigLin=True)
 
-        with open(self.filedict) as filelisted:
-            for l in filelisted:
-                commons.append(l.strip())
-        with open(self.dirdict) as dirlisted:
-            for l in dirlisted:
-                if not l.strip().endswith("/"):
-                    l = l + "/"
-                sdirs.append(l.strip())
+        if self.attack != 5:
+            with open(self.filedict) as filelisted:
+                for l in filelisted:
+                    commons.append(l.strip())
+            with open(self.dirdict) as dirlisted:
+                for l in dirlisted:
+                    if not l.strip().endswith("/"):
+                        l = l + "/"
+                    sdirs.append(l.strip())
 
-        #create directory permutations from dictionary
-        iter=1
-        ndirs=list.copy(sdirs)
-        #remove empty string causing duplicates
-        del ndirs[0]
-        mdirs=[]
-        while (iter<=(self.depth2)):
-            mdirs += permutations(ndirs,(iter+1))
-            iter+=1
-        for elem in mdirs:
-            diri=''.join(elem)
-            sdirs.append(diri)
+            #create directory permutations from dictionary
+            iter=1
+            ndirs=list.copy(sdirs)
+            #remove empty string causing duplicates
+            del ndirs[0]
+            mdirs=[]
+            while (iter<=(self.depth2)):
+                mdirs += permutations(ndirs,(iter+1))
+                iter+=1
+            for elem in mdirs:
+                diri=''.join(elem)
+                sdirs.append(diri)
 
         #equally split dictionary entries and payloads to all threads
         splitted = listsplit(sdirs, round(len(sdirs)/processes))
@@ -342,7 +343,7 @@ class VailynApp(QtWidgets.QDialog):
             self.timeLabel.setText("Active Phase: URL Enumeration")
             self.show()
             starting_time = time.time()
-            process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393'})
+            process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
             process.crawl(UrlSpider)
             process.start()
 
@@ -641,7 +642,7 @@ class VailynApp(QtWidgets.QDialog):
 """Vailyn's main - parse args, start attacks & print results"""
 def main(parser, opt, args, shell=True) -> int:    
     
-    if not (opt["lists"] and opt["victim"] and opt["attack"]):
+    if not (opt["victim"] and opt["attack"]) or (args.attack != 5 and not opt["lists"]):
         parser.print_usage()
         sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -v, -a and -l mandatory')
@@ -696,17 +697,18 @@ def main(parser, opt, args, shell=True) -> int:
 
 
     #create directory permutations from dictionary
-    iter=1
-    ndirs=list.copy(sdirs)
-    #remove empty string causing duplicates
-    del ndirs[0]
-    mdirs=[]
-    while (iter<=(depth)):
-        mdirs += permutations(ndirs,(iter+1))
-        iter+=1
-    for elem in mdirs:
-        diri=''.join(elem)
-        sdirs.append(diri)
+    if opt["lists"]:
+        iter=1
+        ndirs=list.copy(sdirs)
+        #remove empty string causing duplicates
+        del ndirs[0]
+        mdirs=[]
+        while (iter<=(depth)):
+            mdirs += permutations(ndirs,(iter+1))
+            iter+=1
+        for elem in mdirs:
+            diri=''.join(elem)
+            sdirs.append(diri)
 
     #equally split dictionary entries and payloads to all threads
     splitted = listsplit(sdirs, round(len(sdirs)/processes))

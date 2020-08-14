@@ -19,14 +19,14 @@ _____, ___
 
 from core.colors import color
 from core.variables import CLEAR_CMD
-import subprocess, shutil, math, sys
+import subprocess, shutil, math, sys, random
 from core.methods.list import listsplit
-from core.variables import payloadlist
+from core.variables import payloadlist, e_version
 
 
 """prints asciiart when starting the tool"""
 def banner():
-    vaile = '''{0}                      |
+    large = '''{0}                      |
                       :   
                       |   
                       :   
@@ -56,8 +56,53 @@ ____, __              |
                      | '  
                      '    {0}
     '''.format(color.END, color.BOLD, color.CURSIVE)
+    
+    mixed = '''{0}
+    
+____, __
+   + ;  
+   .{1}:,                       
+     ’     ; /_ '/                   
+    .      |/(//((//) {2}
+    + ;    '     /  
+    ;.           
+   {0}  ;     
+     ;      
+     ’ {0}
+     
+    '''.format(color.END, color.BOLD, color.END + color.CURSIVE + e_version + color.END + color.BOLD)
+    
+    small1 = '''; /_ '/    
+|/(//((//) 
+'     /   
+
+    '''
+    
+    small2 = '''| /  .|  ,_
+|/ (|||\\/||
+'      /  
+
+    '''
+
+    medium1 = ''' __  _, ___,   ____, __    __  _, ____,  
+  \\ |  (-|_\\_,(-|   (-|   (-\\ |  (-|  |  
+   \\|   _|  )  _|__, _|__,   \\|   _|  |_,
+    '  (      (     (      (__/  (       
+    
+    '''
+    
+    medium2 = ''' __  _,_    ___, ,    ,  ,  , 
+  \\ |  |\\  ' |   |    \\_/|\\ | 
+   \\|  |-\\  _|_,'|__ , /`|'\\| 
+    '  '  `'       '(_/  '  `
+    
+    '''
+    
+    #banners = [large, large, large, medium1, medium2, small1, small2, mixed, mixed, mixed]
+    banners = [large, mixed]
+    
     subprocess.run(CLEAR_CMD)
-    print(vaile)
+    print(banners[random.randrange(0, len(banners))])
 
 """
 the following methods nicely output lists for the payload selection
