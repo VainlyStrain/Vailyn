@@ -59,6 +59,14 @@ ____, __              |
     
     mixed = '''{0}
     
+    
+
+
+
+
+
+    
+    
 ____, __
    + ;  
    .{1}:,                       
@@ -69,6 +77,8 @@ ____, __
    {0}  ;     
      ;      
      ’ {0}
+
+
      
     '''.format(color.END, color.BOLD, color.END + color.CURSIVE + e_version + color.END + color.BOLD)
     

