@@ -177,10 +177,10 @@ will infect DATA2 with the payload
 (will start a ncat listener for you)
 
 * Full automation in crawler mode:
-`$ Vailyn -v "http://root-url.site" -a 5 -l ANY ANY` _you can also specify depths, lookup file here_ 
+`$ Vailyn -v "http://root-url.site" -a 5` _you can also specify depths, lookup file here_ 
 
 * Full automation, but Arjun needs `--stable`:
-`$ Vailyn -v "http://root-url.site" -a 5 -l ANY ANY -k ANY`
+`$ Vailyn -v "http://root-url.site" -a 5 -k ANY`
 
 ### Demo
 
