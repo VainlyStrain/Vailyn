@@ -56,6 +56,37 @@ ____, __              |
                      | '  
                      '    {0}
     '''.format(color.END, color.BOLD, color.CURSIVE)
+
+    largemixed = '''{0}                      |
+                      :   
+                      |   
+                      :   
+                      . 
+                      .
+____, __              |   
+   + ;               :|   
+   .{1}:,                       
+     ’                      
+    .              /      
+    + ;           :,      
+    ;.           /,       
+   {0}  ;          /;' ;    
+     ;         /;{2}|{0}  : ^  
+     ’      / {2}:{0}  ;.’  °   
+          '/; \\           
+         ./ '. \\      
+          '.  ’·  ; /_ '/ 
+         {1}   '.    {0}|/(//((//) {1} 
+              \\   {0}'     /  {1}
+              .\\.      
+                \\.               
+                 .,.      
+                   .'.    
+                  ''.;:     
+                    .|.   
+                     | '  
+                     '    {0}
+    '''.format(color.END, color.BOLD, color.CURSIVE)
     
     mixed = '''{0}
     
@@ -109,7 +140,7 @@ ____, __
     '''
     
     #banners = [large, large, large, medium1, medium2, small1, small2, mixed, mixed, mixed]
-    banners = [large, mixed]
+    banners = [large, largemixed]
     
     subprocess.run(CLEAR_CMD)
     print(banners[random.randrange(0, len(banners))])
