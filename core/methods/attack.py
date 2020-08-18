@@ -17,10 +17,13 @@ _____, ___
 └──╼ VainlyStrain
 """
 
+
+import core.variables as vars
+
 from core.methods.session import session
 import requests, sys, subprocess
 from core.colors import color
-from core.variables import payloadlist, nullchars, timeout, LISTENIP, LISTENPORT
+from core.variables import payloadlist, nullchars, LISTENIP, LISTENPORT
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 from core.methods.print import progress, progresswin
@@ -28,6 +31,7 @@ from core.methods.cookie import cookieFromFile
 
 global maxlen
 maxlen = len(max(payloadlist, key=len))
+
 
 """prepare request for inpath attack"""
 def inpath(traverse, dir, file, nb, url, url2, s):
@@ -73,7 +77,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     #variables for the progress counter
     requestcount = 0
     totalrequests = len(paylist) * (len(nullchars) + 1) * depth
-
+    timeout = vars.timeout
     #resolve issues with inpath attack
     if not url.endswith("/"):
         url += "/"
@@ -242,6 +246,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie, postdata):
     #variables for the progress counter
     requestcount = 0
+    timeout = vars.timeout
     if len(selected_nullbytes) == 0:
         totalrequests = len(selected_payloads) * len(files) * len(dirs) * depth
     else:
@@ -421,6 +426,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         url += "/"
 
     s = session()
+    timeout = vars.timeout
 
     depth = 10
     if technique == 1:
