@@ -142,6 +142,7 @@ The techniques (only work for LFI inclusions):
 To distinguish real results from false positives, Vailyn does the following checks:
 * check the status code of the response
 * check if the response is identical to one taken before attack start: this is useful e.g, when the server returns 200, but ignores the payload input or returns a default page if the file is not found.
+* similar to #2, perform an additional check for query GET parameter handling (useful when server returns error that a needed parameter is missing)
 * check for empty responses
 * check if common error signatures are in the response content
 * check if the payload is contained in the response: this is an additional check for the case the server responds 200 for non-existing files, and reflects the payload in a message like (../../secret not found)
