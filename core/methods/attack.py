@@ -97,12 +97,20 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
         try:
             con2 = s.get(url, timeout=timeout).content
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout with the initial check.")
+            sys.exit("Timeout on initial check.")
     else:
         try:
             con2 = s.post(url, data={}, timeout=timeout).content
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout with the initial check.")
+            sys.exit("Timeout on initial check.")
+
+    con3 = None
+    if attack == 1:
+        try:
+            con3 = s.get(url + "?" + keyword + "=vailyn" + url2, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout on initial check.")
+
     for i in paylist:
         d = 0
         while d <= depth:
@@ -203,7 +211,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                 else:
                     progress(requestcount, totalrequests, prefix=" ", suffix=" ")
                 if str(r.status_code).startswith("2") or r.status_code == 302:
-                    if filecheck(r, con2, p) and attack != 4 or filecheck(r, con2, p, post=True) and attack == 4:
+                    if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
                         payloads.append(i)
                         if nb != "":
                             nullbytes.append(nb)
@@ -271,12 +279,19 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
         try:
             con2 = s.get(url, timeout=timeout).content
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout with the initial check.")
+            sys.exit("Timeout on initial check.")
     else:
         try:
             con2 = s.post(url, data={}, timeout=timeout).content
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout with the initial check.")
+            sys.exit("Timeout on initial check.")
+
+    con3 = None
+    if attack == 1:
+        try:
+            con3 = s.get(url + "?" + keyword + "=vailyn" + url2, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout on initial check.")
 
     try:
         for dir in dirs:
@@ -383,7 +398,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
 
                             vfound = False
                             if str(r.status_code).startswith("2") or r.status_code == 302:
-                                if filecheck(r, con2, p) and attack != 4 or filecheck(r, con2, p, post=True) and attack == 4:
+                                if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
                                     vfound = True
                                     if attack == 1 or attack == 2:
                                         print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
@@ -450,12 +465,20 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         try:
             con2 = s.get(url, timeout=timeout).content
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout with the initial check.")
+            sys.exit("Timeout on initial check.")
     else:
         try:
             con2 = s.post(url, data={}, timeout=timeout).content
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout with the initial check.")
+            sys.exit("Timeout on initial check.")
+
+    con3 = None
+    if attack == 1:
+        try:
+            con3 = s.get(url + "?" + keyword + "=vailyn" + url2, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout on initial check.")
+
     for i in paylist:
         d = 0
         while d <= depth:
@@ -553,7 +576,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 if attack == 3:
                     s.cookies.set(selected, p)
                 if str(r.status_code).startswith("2"):
-                    if filecheck(r, con2, p) and attack != 4 or filecheck(r, con2, p, post=True) and attack == 4:
+                    if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
                         success = (r, p, nb, data, traverse)
                         found = True
                         break
