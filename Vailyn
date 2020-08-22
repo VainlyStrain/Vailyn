@@ -481,7 +481,7 @@ class VailynApp(QtWidgets.QDialog):
             if variables.revshell:
                 if sys.platform.lower().startswith("win"):
                     lis = self.showQuestion("Are you listening on {}, port {}?".format(variables.LISTENIP, variables.LISTENPORT))
-                    if lis:
+                    if not lis:
                         self.showError("Please start a listener manually before starting the attack.")
                         sys.exit(1)
                 else:
