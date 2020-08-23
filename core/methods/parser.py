@@ -44,14 +44,15 @@ additional:
   -q V, --vic2 V        {0}Attack Target, part 2 (post injection point){1}
   -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}
   -k T, --timeout T     {0}Request Timeout; stable switch for Arjun{1}
-  -g, --app             {0}Start Vailyn's Qt5 interface{1}'''.format(color.RC, color.END))
+  -m, --nosploit        {0}skip Phase 2 (does not need -l FIL PATH){1}
+  --app                 {0}Start Vailyn's Qt5 interface{1}'''.format(color.RC, color.END))
 
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
         if prefix is None:
             prefix = color.RC + 'Vsynta ' + color.END
             #return super(VainFormatter, self).add_usage("{}Vailyn{} [-v VIC] [-a ACK] [-p PARAM] [-s]\n          [-l FIL PATH] [-d INT] [--loot]\n        [-f] [-h] [--vic2 VIC2]".format(color.RB,color.END), actions, groups, prefix)
-            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n        [-p P] [-s D] [-j A P] [-n] \n          [-c C] [-i F] [-t] \n     [-k T] [-d I J] \n   [-q V] [--app] ".format(color.RB,color.END), actions, groups, prefix)
+            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n        [-p P] [-s D] [-j A P] [-n] \n      [-c C] [-i F] [-t] [-m] \n        [-k T] [-d I J] \n   [-q V] [--app] ".format(color.RB,color.END), actions, groups, prefix)
 
 def build_parser():
     p = ArgumentParser(formatter_class=VainFormatter,add_help=False)
@@ -106,6 +107,9 @@ def build_parser():
                    action="store_true",)
     p.add_argument('--debug',
                    help="display every path tried, even 404s",
+                   action="store_true",)
+    p.add_argument('-m', '--nosploit',
+                   help="skip Phase 2 (does not need -l FIL PATH)",
                    action="store_true",)
     p.add_argument('-g', '--app',
                    help="Start Vailyn's Qt5 interface",

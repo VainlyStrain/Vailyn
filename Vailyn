@@ -72,6 +72,8 @@ class VailynApp(QtWidgets.QDialog):
     vlnfile = "/etc/passwd"
     victim2 = ""
 
+    nosploit = False
+
     #initialise results
     foundfiles = [""]
     foundurls = [""]
@@ -98,6 +100,7 @@ class VailynApp(QtWidgets.QDialog):
         self.dirDictButton.clicked.connect(self.getDirDictionary)
         self.addCookieButton.clicked.connect(self.getAuthCookie)
         self.shellBox.stateChanged.connect(self.handleShell)
+        self.nosploitBox.stateChanged.connect(self.handlePhase2)
         self.attackOption.currentIndexChanged.connect(self.updateAttack)
         self.attack = self.attackOption.currentIndex() + 1
         self.treeView.setHeaderHidden(True)
@@ -180,6 +183,25 @@ class VailynApp(QtWidgets.QDialog):
             return None
         return self.selection
 
+    def showPayloads(self, payloadlist, nullbytelist):
+
+        #filter duplicates
+        payloadlist = list(set(payloadlist))
+        nullbytelist = list(set(nullbytelist))
+        pstr = ""
+        pstr = pstr + "Payloads:\n"
+        for i in range(0, len(payloadlist)):
+            pstr = pstr + "  " + payloadlist[i] + "\n"
+        pstr = pstr + "\nNullbytes:\n"
+        for i in range(0, len(nullbytelist)):
+            pstr = pstr + "  " + nullbytelist[i] + "\n"
+
+        self.payloadShowDialog = QtWidgets.QDialog()
+        uic.loadUi("core/qt5/PayloadShow.ui", self.payloadShowDialog)
+        self.payloadShowDialog.payloadBrowser.setText(pstr)
+        self.payloadShowDialog.okButton.clicked.connect(self.payloadShowDialog.close)
+        self.payloadShowDialog.exec_()
+
     def readCookieGui(self, target):
         def intern():
             self.selected = self.cookieDialog.cookieSelectInput.text().strip()
@@ -226,6 +248,12 @@ class VailynApp(QtWidgets.QDialog):
             self.portEdit.setEnabled(False)
             self.ipEdit.setEnabled(False)
 
+    def handlePhase2(self):
+        if self.nosploitBox.isChecked():
+            self.nosploit = True
+        else:
+            self.nosploit = False
+
     def attackGui(self):
         sdirs = ['']
         commons = []
@@ -237,7 +265,7 @@ class VailynApp(QtWidgets.QDialog):
         self.filedict = self.fileDictDisplay.text().strip()
         self.dirdict = self.dirDictDisplay.text().strip()
 
-        if self.victim == "" or (self.attack == 1 and self.param == "") or ((self.filedict == "" or self.dirdict == "") and self.attack != 5):
+        if self.victim == "" or (self.attack == 1 and self.param == "") or ((self.filedict == "" or self.dirdict == "") and self.attack != 5 and not self.nosploit):
             self.showError("Mandatory argument(s) not specified.")
             return
 
@@ -293,7 +321,7 @@ class VailynApp(QtWidgets.QDialog):
                 self.unix = True
                 enableTor(shell=False, sigLin=True)
 
-        if self.attack != 5:
+        if self.attack != 5 and not self.nosploit:
             with open(self.filedict) as filelisted:
                 for l in filelisted:
                     commons.append(l.strip())
@@ -460,21 +488,32 @@ class VailynApp(QtWidgets.QDialog):
         attackphase = False
         if self.foundpayloads:
             attackphase = True
-            self.selectedpayloads = self.guiSelect(self.foundpayloads)
-            if self.foundnullbytes:
-                self.selectednullbytes = self.guiSelect(self.foundnullbytes, nullbytes=True)
+            if not self.nosploit:
+                self.selectedpayloads = self.guiSelect(self.foundpayloads)
+                if self.foundnullbytes:
+                    self.selectednullbytes = self.guiSelect(self.foundnullbytes, nullbytes=True)
+                else:
+                    self.selectednullbytes = []
             else:
-                self.selectednullbytes = []
+                self.showPayloads(self.foundpayloads, self.foundnullbytes)
+                return
         else:
-            cont = self.showQuestion("No payload succeeded. Attack anyways?")
-            if cont:
-                attackphase = True
-                #attack with everything if phase 1 was unsuccessful
-                self.selectedpayloads = payloadlist
-                self.selectednullbytes = nullchars
+            if not self.nosploit:
+                cont = self.showQuestion("No payload succeeded. Attack anyways?")
+                if cont:
+                    attackphase = True
+                    #attack with everything if phase 1 was unsuccessful
+                    self.selectedpayloads = payloadlist
+                    self.selectednullbytes = nullchars
+            else:
+                self.showInfo("No payload succeeded.")
+                return
 
         #if self.selectedpayloads == None or self.selectednullbytes == None:
         #    return
+
+        if self.nosploit:
+            attackphase = False
 
         starting_time = time.time()
         if attackphase:
@@ -645,7 +684,7 @@ class VailynApp(QtWidgets.QDialog):
 """Vailyn's main - parse args, start attacks & print results"""
 def main(parser, opt, args, shell=True) -> int:    
     
-    if not (opt["victim"] and opt["attack"]) or (args.attack != 5 and not opt["lists"]):
+    if not (opt["victim"] and opt["attack"]) or (args.attack != 5 and not opt["lists"] and not opt["nosploit"]):
         parser.print_usage()
         sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -v, -a and -l mandatory')
@@ -888,18 +927,22 @@ def main(parser, opt, args, shell=True) -> int:
     attack = False
     if foundpayloads:
         attack = True
-        selectedpayloads = select(foundpayloads)
+        selectedpayloads = select(foundpayloads, nosploit=args.nosploit)
         if foundnullbytes:
-            selectednullbytes = select(foundnullbytes, nullbytes=True)
+            selectednullbytes = select(foundnullbytes, nullbytes=True, nosploit=args.nosploit)
         else:
             selectednullbytes = []
     else:
-        cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
-        if cont != "":
-            attack = True
-            #attack with everything if phase 1 was unsuccessful
-            selectedpayloads = payloadlist
-            selectednullbytes = nullchars
+        if not opt["nosploit"]:
+            cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
+            if cont != "":
+                attack = True
+                #attack with everything if phase 1 was unsuccessful
+                selectedpayloads = payloadlist
+                selectednullbytes = nullchars
+
+    if opt["nosploit"]:
+        attack = False
 
     #start the exploitation phase
     starting_time = time.time()

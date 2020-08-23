@@ -1587,6 +1587,13 @@ image: none;
                </widget>
               </item>
               <item>
+               <widget class="QCheckBox" name="nosploitBox">
+                <property name="text">
+                 <string>NoSploit</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_9">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
