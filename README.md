@@ -50,7 +50,7 @@ Once on your system, you'll need to install the dependencies.
 $ pip install -r requirements.txt   # --user
 ```
 
-If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by distro. Note that this module is currently Linux-only.
+If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by distro. On Windows, you'll need to start the listener manually beforehand.
 
 That's it! Fire Vailyn up by moving to its installation directory and performing
 
