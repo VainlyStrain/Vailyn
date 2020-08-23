@@ -63,6 +63,12 @@ $ python Vailyn -h
 Vailyn has 3 mandatory arguments: `-v VIC, -a INT and -l FIL PATH`. However, depending on `-a`, more arguments may be required.
 
 ```
+       Vailyn -v VIC -a INT -l FIL PATH 
+        [-p P] [-s D] [-j A P] [-n] 
+      [-c C] [-i F] [-t] [-m] 
+        [-k T] [-d I J] 
+   [-q V] [--app] 
+
 mandatory:
   -v VIC, --victim VIC  Target to attack, part 1 [pre injection point]
   -a INT, --attack INT  Attack type (int, 1-5)[see the Markdown docs]
@@ -80,7 +86,8 @@ additional:
   -q V, --vic2 V        Attack Target, part 2 (post injection point)
   -t, --tor             Pipe attacks through the Tor anonymity network
   -k T, --timeout T     Request Timeout; stable switch for Arjun
-  -g, --app             Start Vailyn's Qt5 interface
+  -m, --nosploit        skip Phase 2 (does not need -l FIL PATH)
+  --app                 Start Vailyn's Qt5 interface
 ```
 
 Vailyn currently supports 4 attack vectors. The attack performed is identified by the `-a INT` argument.
