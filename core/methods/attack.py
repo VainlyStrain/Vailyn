@@ -210,7 +210,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                         progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
                 else:
                     progress(requestcount, totalrequests, prefix=" ", suffix=" ")
-                if str(r.status_code).startswith("2") or r.status_code == 302:
+                if str(r.status_code).startswith("2"):
                     if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
                         payloads.append(i)
                         if nb != "":
@@ -397,7 +397,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                 progress(requestcount, totalrequests, prefix=" ", suffix=" ")
 
                             vfound = False
-                            if str(r.status_code).startswith("2") or r.status_code == 302:
+                            if str(r.status_code).startswith("2"):
                                 if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
                                     vfound = True
                                     if attack == 1 or attack == 2:
