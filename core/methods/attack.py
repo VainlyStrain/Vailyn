@@ -685,4 +685,3 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
 def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
     for technique in range(1, 5):
         sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata)
-    #sheller(1, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata)

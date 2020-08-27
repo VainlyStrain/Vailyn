@@ -28,10 +28,17 @@ class ArgumentParser(argparse.ArgumentParser):
         self.print_usage(sys.stderr)
         print('''
 mandatory:
-  -v VIC, --victim VIC  {0}Target to attack, part 1 [pre injection point]{1}
-  -a INT, --attack INT  {0}Attack type (int, 1-5)[see the Markdown docs]{1}
+  -v VIC, --victim VIC  {0}Target to attack, part 1 [pre-payload]{1}
+  -a INT, --attack INT  {0}Attack type (int, 1-5){1}
+
+    {2}  1{1}{3}|{1}  Query Parameter
+    {2}  2{1}{3}|{1}  Path
+    {2}  3{1}{3}|{1}  Cookie
+    {2}  4{1}{3}|{1}  POST Data
+    {2}  5{1}{3}|{1}  Crawler (automatic)
+
   -l FIL PATH, --lists FIL PATH      
-                        {0}Dictionaries to use (see templates for syntax){1}
+                        {0}Dictionaries (files and dirs){1}
 additional:
   -p P, --param P       {0}query parameter to use for --attack 1{1}
   -s D, --post D        {0}POST Data (set injection point with INJECT){1}
@@ -41,11 +48,11 @@ additional:
   -c C, --cookie C      {0}File containing authentication cookie (if needed){1}
   -h, --help            {0}show this help menu and exit{1}
   -i F, --check F       {0}File to check for in Phase 1 (df: /etc/passwd){1}
-  -q V, --vic2 V        {0}Attack Target, part 2 (post injection point){1}
+  -q V, --vic2 V        {0}Attack Target, part 2 [post-payload]{1}
   -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}
   -k T, --timeout T     {0}Request Timeout; stable switch for Arjun{1}
   -m, --nosploit        {0}skip Phase 2 (does not need -l FIL PATH){1}
-  --app                 {0}Start Vailyn's Qt5 interface{1}'''.format(color.RC, color.END))
+  --app                 {0}Start Vailyn's Qt5 interface{1}'''.format(color.RC, color.END, color.O, color.RD))
 
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
