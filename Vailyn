@@ -522,7 +522,7 @@ class VailynApp(QtWidgets.QDialog):
                     lis = self.showQuestion("Are you listening on {}, port {}?".format(variables.LISTENIP, variables.LISTENPORT))
                     if not lis:
                         self.showError("Please start a listener manually before starting the attack.")
-                        sys.exit(1)
+                        return
                 else:
                     #subprocess.Popen(["konsole", "-e", "nc", "-lvp", variables.LISTENPORT], close_fds=True)
                     subprocess.Popen(["konsole", "--hold", "-e", "nc -lvp {}".format(variables.LISTENPORT)], close_fds=True)

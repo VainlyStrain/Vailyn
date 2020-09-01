@@ -1669,11 +1669,31 @@ image: none;
              </layout>
             </item>
             <item>
-             <widget class="QLabel" name="timeLabel">
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QProgressBar" name="progressBar">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="value">
+                 <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="timeLabel">
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
