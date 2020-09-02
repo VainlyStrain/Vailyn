@@ -44,6 +44,7 @@ from core.methods.cookie import readCookie, getCookie
 from core.methods.cache import load, save, parseUrl
 from core.methods.tor import initcheck, enableTor
 from core.methods.version import checkUpdate
+from core.methods.loot import setDate
 
 from core.colors import color
 from core.variables import payloadlist, nullchars, version, sdirs, commons, processes, cachedir
@@ -592,6 +593,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     subprocess.Popen(["konsole", "--hold", "-e", "nc -lvp {}".format(variables.LISTENPORT)], close_fds=True)
                 lfishell(self.attack, self.victim, self.victim2, self.param, self.cookie, self.selected, variables.verbose, self.selectedpayloads, self.selectednullbytes, self.authcookie, self.post)
             else:
+                setDate()
                 with Pool(processes=processes) as pool:
                     res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,dirlen,self,)) for l in splitted]
                     for i in res:
@@ -1031,6 +1033,7 @@ def main(parser, opt, args, shell=True) -> int:
                 subprocess.Popen(["konsole", "--hold","-e", "nc -lvp {}".format(variables.LISTENPORT)], close_fds=True)
             lfishell(args.attack, args.victim, victim2, param, cookie, selected, verbose, selectedpayloads, selectednullbytes, cookiefile, postdata)
         else:
+            setDate()
             with Pool(processes=processes) as pool:
                 res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,postdata,dirlen,None,)) for l in splitted]
                 for i in res:
