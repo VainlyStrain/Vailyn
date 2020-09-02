@@ -132,6 +132,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         else:
             self.status = "update available"
         self.versionLabel.setText("Vailyn {} : {}".format(variables.e_version, self.status))
+        self.stackedWidget.setCurrentWidget(self.fileTree)
         self.show()
 
     def updateAttack(self):
@@ -366,7 +367,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             with open(self.dirdict) as dirlisted:
                 for l in dirlisted:
                     if not l.strip().endswith("/"):
-                        l = l + "/"
+                        l = l.strip() + "/"
                     sdirs.append(l.strip())
 
             #create directory permutations from dictionary
@@ -764,7 +765,7 @@ def main(parser, opt, args, shell=True) -> int:
         with open(args.lists[1]) as dirlisted:
             for l in dirlisted:
                 if not l.strip().endswith("/"):
-                    l = l + "/"
+                    l = l.strip() + "/"
                 sdirs.append(l.strip())
 
   
