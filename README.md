@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/VainlyStrain/Vailyn/blob/master/Vailyn">
-    <img src="https://img.shields.io/static/v1.svg?label=Version&message=2.1&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
+    <img src="https://img.shields.io/static/v1.svg?label=Version&message=2.2&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7%2B&color=lightgrey&style=flat-square&logo=python&logoColor=white">
@@ -63,12 +63,6 @@ $ python Vailyn -h
 Vailyn has 3 mandatory arguments: `-v VIC, -a INT and -l FIL PATH`. However, depending on `-a`, more arguments may be required.
 
 ```
-       Vailyn -v VIC -a INT -l FIL PATH 
-        [-p P] [-s D] [-j A P] [-n] 
-      [-c C] [-i F] [-t] [-m] 
-        [-k T] [-d I J] 
-   [-q V] [--app] 
-
 mandatory:
   -v VIC, --victim VIC  Target to attack, part 1 [pre injection point]
   -a INT, --attack INT  Attack type (int, 1-5)[see the Markdown docs]

@@ -80,5 +80,5 @@ else:
 
 verbose = False
 
-version = "2.1"
-e_version = "2.1.5-10"
+version = "2.2"
+e_version = "2.2.0-5"
