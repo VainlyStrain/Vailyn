@@ -92,7 +92,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     #variables for the progress counter
     global requestcount
     #totalrequests = len(paylist) * (len(nullchars) + 1) * depth
-    totalrequests = len(payloadlist) * (len(nullchars) + 1) * (depth + 1)
+    totalrequests = len(payloadlist) * (len(nullchars) + 1) * (depth)
     timeout = vars.timeout
     if gui:
         lock.acquire()
@@ -136,7 +136,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             sys.exit("Timeout on initial check.")
 
     for i in paylist:
-        d = 0
+        d = 1
         while d <= depth:
             traverse=''
             j=1
@@ -527,7 +527,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             sys.exit("Timeout on initial check.")
 
     for i in paylist:
-        d = 0
+        d = 1
         while d <= depth:
             traverse=''
             j=1
