@@ -408,7 +408,7 @@ class VailynApp(QtWidgets.QDialog):
             self.show()
             postattack = analyzeParam(postparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             ending_time = time.time()
-            total_time = starting_time - ending_time
+            total_time = ending_time - starting_time
             atime = datetime.timedelta(seconds=total_time)
             self.timeLabel.setText("Done after " + str(atime) + ".")
             print("\n\n{}FINAL RESULTS{}\n".format(color.BOLD+color.UNDERLINE, color.END))
