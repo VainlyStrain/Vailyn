@@ -1671,16 +1671,6 @@ image: none;
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
-               <widget class="QProgressBar" name="progressBar">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="value">
-                 <number>0</number>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QLabel" name="timeLabel">
                 <property name="minimumSize">
                  <size>
@@ -1690,6 +1680,16 @@ image: none;
                 </property>
                 <property name="text">
                  <string/>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QProgressBar" name="progressBar">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="value">
+                 <number>0</number>
                 </property>
                </widget>
               </item>

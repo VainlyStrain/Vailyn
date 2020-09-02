@@ -265,6 +265,8 @@ class VailynApp(QtWidgets.QDialog):
         self.filedict = self.fileDictDisplay.text().strip()
         self.dirdict = self.dirDictDisplay.text().strip()
 
+        self.timeLabel.setText("")
+
         if self.victim == "" or (self.attack == 1 and self.param == "") or ((self.filedict == "" or self.dirdict == "") and self.attack != 5 and not self.nosploit):
             self.showError("Mandatory argument(s) not specified.")
             return
@@ -364,6 +366,7 @@ class VailynApp(QtWidgets.QDialog):
             return
 
         self.progressBar.setEnabled(True)
+        self.treeView.clear()
         
         if self.attack == 5:
             variables.viclist.append(self.victim)
@@ -372,36 +375,36 @@ class VailynApp(QtWidgets.QDialog):
             from scrapy.crawler import CrawlerProcess
             self.tabWidget.setCurrentIndex(1)
             print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
-            self.timeLabel.setText("Active Phase: URL Enumeration")
+            self.timeLabel.setText("Active Phase: 0")
             self.show()
             starting_time = time.time()
             process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
             process.crawl(UrlSpider)
             process.start()
 
-            self.timeLabel.setText("Active Phase: Parameter Enumeration")
+            self.timeLabel.setText("Active Phase: 1")
             self.show()
             siteparams = arjunEnum()
 
-            self.timeLabel.setText("Active Phase: Query Attack")
+            self.timeLabel.setText("Active Phase: 2")
             self.show()
             queryattack = analyzeParam(siteparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
 
-            self.timeLabel.setText("Active Phase: Path Attack")
+            self.timeLabel.setText("Active Phase: 3")
             self.show()
             pathattack = analyzePath(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             time.sleep(1)
 
-            self.timeLabel.setText("Active Phase: Cookie Attack")
+            self.timeLabel.setText("Active Phase: 4")
             self.show()
             cookieattack = analyzeCookie(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             time.sleep(1)
 
-            self.timeLabel.setText("Active Phase: POST Enumeration")
+            self.timeLabel.setText("Active Phase: 5")
             self.show()
             postparams = arjunEnum(post=True)
 
-            self.timeLabel.setText("Active Phase: POST Attack")
+            self.timeLabel.setText("Active Phase: 6")
             self.show()
             postattack = analyzeParam(postparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             ending_time = time.time()
@@ -477,6 +480,7 @@ class VailynApp(QtWidgets.QDialog):
             starting_time = time.time()
             #initiate phase 1 - vulnerability analysis
             resetCounter()
+            self.timeLabel.setText("Active Phase: 1")
             with Pool(processes=processes) as pool:
                 res = [pool.apply_async(phase1, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,variables.verbose,self.depth1,l,self.vlnfile,self.authcookie,self.post,self,)) for l in paysplit]
                 for i in res:
@@ -526,6 +530,7 @@ class VailynApp(QtWidgets.QDialog):
         starting_time = time.time()
         if attackphase:
             resetCounter()
+            self.timeLabel.setText("Active Phase: 2")
             if variables.revshell:
                 if sys.platform.lower().startswith("win"):
                     lis = self.showQuestion("Are you listening on {}, port {}?".format(variables.LISTENIP, variables.LISTENPORT))
@@ -634,7 +639,7 @@ class VailynApp(QtWidgets.QDialog):
 
     def guiTree(self, atime):
         self.timeLabel.setText("Done after " + str(atime) + ".")
-        self.treeView.clear()
+        #self.treeView.clear()
         root = QTreeWidgetItem(self.treeView)
         root.setText(0, "/")
 
