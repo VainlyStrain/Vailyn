@@ -88,7 +88,7 @@ def query(traverse, dir, file, nb, keyword, url, url2, s):
 @authcookie: Authentication Cookie File to bypass Login Screens
 @postdata: POST Data for --attack 4
 """
-def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie, postdata, gui=None):
+def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie, postdata, gui):
     #variables for the progress counter
     global requestcount
     #totalrequests = len(paylist) * (len(nullchars) + 1) * depth
@@ -232,7 +232,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                 try:
                     requestcount += 1
                     if gui:
-                        progressgui(requestcount, totalrequests)
+                        progressgui(requestcount, totalrequests, gui)
                     else:
                         if sys.platform.lower().startswith('win'):
                             if requestcount % 1000 == 0:
@@ -282,7 +282,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 @authcookie: Authentication Cookie File to bypass Login Screens
 @postdata: POST Data for --attack 4
 """
-def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie, postdata, dirlen):
+def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie, postdata, dirlen, gui):
     #variables for the progress counter
     global requestcount
     timeout = vars.timeout
@@ -290,6 +290,15 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
         totalrequests = len(selected_payloads) * len(files) * dirlen * depth
     else:
         totalrequests = len(selected_payloads) * len(selected_nullbytes) * len(files) * dirlen * depth
+
+    if gui:
+        lock.acquire()
+        try:
+            gui.progressBar.reset()
+            gui.progressBar.setMinimum(0)
+            gui.progressBar.setMaximum(totalrequests)
+        finally:
+            lock.release()
 
     #resolve issues with inpath attack and loot function
     if not url.endswith("/"):
@@ -423,11 +432,14 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                             lock.acquire()
                             try:
                                 requestcount += 1
-                                if sys.platform.lower().startswith('win'):
-                                    if requestcount % 1000 == 0:
-                                        progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
+                                if gui:
+                                    progressgui(requestcount, totalrequests, gui)
                                 else:
-                                    progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+                                    if sys.platform.lower().startswith('win'):
+                                        if requestcount % 1000 == 0:
+                                            progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
+                                    else:
+                                        progress(requestcount, totalrequests, prefix=" ", suffix=" ")
                             finally:
                                 lock.release()
 

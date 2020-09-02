@@ -362,12 +362,15 @@ class VailynApp(QtWidgets.QDialog):
         if self.attack == 4 and "=" not in self.post:
             self.showError("POST Data needs to be of form P1=V1&P2=V2")
             return
+
+        self.progressBar.setEnabled(True)
         
         if self.attack == 5:
             variables.viclist.append(self.victim)
             assert len(variables.viclist) > 0
             from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
             from scrapy.crawler import CrawlerProcess
+            self.tabWidget.setCurrentIndex(1)
             print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: URL Enumeration")
             self.show()
@@ -382,16 +385,16 @@ class VailynApp(QtWidgets.QDialog):
 
             self.timeLabel.setText("Active Phase: Query Attack")
             self.show()
-            queryattack = analyzeParam(siteparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie)
+            queryattack = analyzeParam(siteparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
 
             self.timeLabel.setText("Active Phase: Path Attack")
             self.show()
-            pathattack = analyzePath(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie)
+            pathattack = analyzePath(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             time.sleep(1)
 
             self.timeLabel.setText("Active Phase: Cookie Attack")
             self.show()
-            cookieattack = analyzeCookie(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie)
+            cookieattack = analyzeCookie(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             time.sleep(1)
 
             self.timeLabel.setText("Active Phase: POST Enumeration")
@@ -400,7 +403,7 @@ class VailynApp(QtWidgets.QDialog):
 
             self.timeLabel.setText("Active Phase: POST Attack")
             self.show()
-            postattack = analyzeParam(postparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie)
+            postattack = analyzeParam(postparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             ending_time = time.time()
             total_time = starting_time - ending_time
             atime = datetime.timedelta(seconds=total_time)
@@ -459,6 +462,9 @@ class VailynApp(QtWidgets.QDialog):
 
         vlnysis = True
 
+        self.tabWidget.setCurrentIndex(1)
+        self.show()
+
         #present option to skip phase 1 if cache from previous attack present
         targetcache = parseUrl(self.victim)
         if os.path.exists(cachedir+targetcache+"payloads.cache") and os.path.exists(cachedir+targetcache+"nullbytes.cache"):
@@ -472,7 +478,7 @@ class VailynApp(QtWidgets.QDialog):
             #initiate phase 1 - vulnerability analysis
             resetCounter()
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(phase1, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,variables.verbose,self.depth1,l,self.vlnfile,self.authcookie,self.post,)) for l in paysplit]
+                res = [pool.apply_async(phase1, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,variables.verbose,self.depth1,l,self.vlnfile,self.authcookie,self.post,self,)) for l in paysplit]
                 for i in res:
                     #fetch results
                     tuples = i.get()
@@ -532,7 +538,7 @@ class VailynApp(QtWidgets.QDialog):
                 lfishell(self.attack, self.victim, self.victim2, self.param, self.cookie, self.selected, variables.verbose, self.selectedpayloads, self.selectednullbytes, self.authcookie, self.post)
             else:
                 with Pool(processes=processes) as pool:
-                    res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,dirlen,)) for l in splitted]
+                    res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,dirlen,self,)) for l in splitted]
                     for i in res:
                         #fetch results
                         restuple = i.get()
@@ -916,7 +922,7 @@ def main(parser, opt, args, shell=True) -> int:
         #initiate phase 1 - vulnerability analysis
         resetCounter()
         with Pool(processes=processes) as pool:
-            res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,cookiefile,postdata,)) for l in paysplit]
+            res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,cookiefile,postdata,None,)) for l in paysplit]
             for i in res:
                 #fetch results
                 tuples = i.get()
@@ -967,7 +973,7 @@ def main(parser, opt, args, shell=True) -> int:
             lfishell(args.attack, args.victim, victim2, param, cookie, selected, verbose, selectedpayloads, selectednullbytes, cookiefile, postdata)
         else:
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,postdata,dirlen,)) for l in splitted]
+                res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,postdata,dirlen,None,)) for l in splitted]
                 for i in res:
                     #fetch results
                     restuple = i.get()

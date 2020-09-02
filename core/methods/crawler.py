@@ -86,7 +86,7 @@ def arjunEnum(post=False):
     assert siteparams != None
     return siteparams
 
-def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie):
+def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie, gui=None):
     result = {}
     subdir = parseUrl(viclist[0])
     with Pool(processes=processes) as pool:
@@ -101,7 +101,7 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie):
                 print("\n{0}[INFO]{1} param{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, param, color.END+color.RD))
                 time.sleep(1.0)
                 resetCounter()
-                res = [pool.apply_async(phase1, args=(1,victim,victim2,param,None,"",verbose,depth,l,file,authcookie,"",)) for l in paysplit]
+                res = [pool.apply_async(phase1, args=(1,victim,victim2,param,None,"",verbose,depth,l,file,authcookie,"",gui,)) for l in paysplit]
                 for i in res:
                     #fetch results
                     tuples = i.get()
@@ -117,7 +117,7 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie):
         json.dump(result, f, sort_keys=True, indent=4)
     return result
 
-def analyzePath(victim2, verbose, depth, file, authcookie):
+def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
     result = {}
     subdir = parseUrl(viclist[0])
     with Pool(processes=processes) as pool:
@@ -128,7 +128,7 @@ def analyzePath(victim2, verbose, depth, file, authcookie):
             time.sleep(1.0)
             paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
             resetCounter()
-            res = [pool.apply_async(phase1, args=(2,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,"",)) for l in paysplit]
+            res = [pool.apply_async(phase1, args=(2,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,"",gui,)) for l in paysplit]
             for i in res:
                 #fetch results
                 tuples = i.get()
@@ -144,7 +144,7 @@ def analyzePath(victim2, verbose, depth, file, authcookie):
         json.dump(result, f, sort_keys=True, indent=4)
     return result
 
-def analyzeCookie(victim2, verbose, depth, file, authcookie):
+def analyzeCookie(victim2, verbose, depth, file, authcookie, gui=None):
     result = {}
     subdir = parseUrl(viclist[0])
     with Pool(processes=processes) as pool:
@@ -163,7 +163,7 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie):
                 time.sleep(1.0)
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 resetCounter()
-                res = [pool.apply_async(phase1, args=(3,victim,victim2,"",cookie,key,verbose,depth,l,file,authcookie,"",)) for l in paysplit]
+                res = [pool.apply_async(phase1, args=(3,victim,victim2,"",cookie,key,verbose,depth,l,file,authcookie,"",gui,)) for l in paysplit]
                 for i in res:
                     #fetch results
                     tuples = i.get()
@@ -179,7 +179,7 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie):
         json.dump(result, f, sort_keys=True, indent=4)
     return result
 
-def analyzePost(siteparams, victim2, verbose, depth, file, authcookie):
+def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None):
     result = {}
     subdir = parseUrl(viclist[0])
     with Pool(processes=processes) as pool:
@@ -194,7 +194,7 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie):
                 time.sleep(1.0)
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 resetCounter()
-                res = [pool.apply_async(phase1, args=(4,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,param+"=INJECT",)) for l in paysplit]
+                res = [pool.apply_async(phase1, args=(4,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,param+"=INJECT",gui,)) for l in paysplit]
                 for i in res:
                     #fetch results
                     tuples = i.get()
