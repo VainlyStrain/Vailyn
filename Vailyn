@@ -447,10 +447,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             total_time = ending_time - starting_time
             atime = datetime.timedelta(seconds=total_time)
             self.timeLabel.setText("Done after " + str(atime) + ".")
-            FINAL = "FINAL RESULTS\n\n"
-            #print("\n\n{}FINAL RESULTS{}\n".format(color.BOLD+color.UNDERLINE, color.END))
-            #print("Query Attack\n")
-            FINAL += "Query Attack\n\n"
+            FINAL += "Query Attack\n"
             for victim, sub in queryattack.items():
                 #print(victim)
                 FINAL += "\n" + victim
