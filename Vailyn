@@ -110,9 +110,9 @@ class VailynApp(QtWidgets.QDialog):
         self.attack = self.attackOption.currentIndex() + 1
         self.treeView.setHeaderHidden(True)
         self.textBrowser.setMarkdown("""
-Vailyn is a tool to find Path Traversal & LFI vulnerabilities, and to exploit them. It uses a number of evasive payloads & techniques, and covers multiple attack vectors (query, path, cookie, POST data). It also provides a crawler for automation and takes an authentication cookie if needed. 
-
-To improve performance, it detects the vulnerability in a first phase, and only uses confirmed working payloads in the exploitation phase (instead of using every combination with every file path).
+```
+A phased, evasive Path Traversal + LFI scanning & exploitation tool in Python 
+```
 
 #### Credits & Copyright
 
