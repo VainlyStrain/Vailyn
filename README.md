@@ -30,7 +30,7 @@ Now, the user can choose freely which payloads to use. Only these payloads will 
 
 The second phase is the exploitation phase. Now, it tries to leak all possible files from the server using a file and a directory dictionary. The search depth and the directory permutation level can be adapted via arguments. Optionally, it can download found files, and save them in its loot folder. Alternatively, it will try to obtain a reverse shell on the system, letting the attacker gain full control over the server.
 
-Right now, it supports multiple attack methods: injection via query, path, cookie and post data.
+Right now, it supports multiple attack vectors: injection via query, path, cookie and post data.
 
 ### Why the phase separation?
 
@@ -50,7 +50,7 @@ Once on your system, you'll need to install the dependencies.
 $ pip install -r requirements.txt   # --user
 ```
 
-If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by distro. On Windows, you'll need to start the listener manually beforehand.
+If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by distribution. On Windows, you'll need to start the listener manually beforehand.
 
 That's it! Fire Vailyn up by moving to its installation directory and performing
 
@@ -101,8 +101,8 @@ You also must specify a target to attack. This is done via `-v VIC` and `-q V`, 
 Example: if the final URL should look like: `https://site.com/download.php?file=<ATTACK>&param2=necessaryvalue`, you can specify `-v https://site.com/download.php` and `-q &param2=necessaryvalue` (and `-p file`, since this is a query attack).
 
 To perform the bruteforce attack in phase 2, you need to specify 2 dictionaries:
-* FIL, containing filenames only (e.g. index.php)
-* PATH, containing directory names only. Note that each directory entry MUST end with a "/". Also, Vailyn will handle directory permutation for you, so you'll need only single directories in a line.
+* FIL, containing **filenames only** (e.g. index.php)
+* PATH, containing **directory names only**. Vailyn will handle directory permutation for you, so you'll need only one directory per line.
 
 If the attacked site is behind a login page, you can supply an authentication cookie via `-c COOKIEFILE`. If you want to attack over Tor, use `--tor`.
 
@@ -110,7 +110,7 @@ If the attacked site is behind a login page, you can supply an authentication co
 
 This is the analysis phase, where working payloads are separated from the others.
 
-By default, `/etc/passwd` is looked up. If the server is not running Linux, you can specify a custom file by `-i FILENAME`. Note that you must include subdirectories in FILENAME.
+By default, `/etc/passwd` is looked up. If the server is not running Linux, you can specify a custom file by `-i FILENAME`. Note that you must **include subdirectories in FILENAME**.
 You can modify the lookup depth with the first value of `-d` (default=8).
 
 #### Phase 2
