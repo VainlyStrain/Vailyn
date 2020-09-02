@@ -715,6 +715,14 @@ background-color: #1d161d;
 selection-background-color: #271d27;
 }
 
+QTextBrowser {
+border: 1px solid #4a3e4a;
+padding: 2;
+border-radius: 2px;
+background-color: #1d161d;
+selection-background-color: #271d27;
+}
+
 QLineEdit {
 border: 1px solid #4a3e4a;
 padding: 2;
@@ -959,13 +967,62 @@ image: none;
           <property name="tabBarAutoHide">
            <bool>false</bool>
           </property>
-          <widget class="QWidget" name="configTab">
+          <widget class="QWidget" name="titleTab">
            <attribute name="icon">
             <iconset>
              <normaloff>icons/tid.png</normaloff>icons/tid.png</iconset>
            </attribute>
            <attribute name="title">
             <string notr="true">Vailyn‹›</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_tab5">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="QLabel" name="infoLabel">
+                <property name="font">
+                 <font>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>Info</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTextBrowser" name="textBrowser">
+                <property name="openLinks">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QLabel" name="versionLabel">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="text">
+                   <string>Vailyn ‹› : ‹›</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="configTab">
+           <attribute name="icon">
+            <iconset>
+             <normaloff>icons/Vailyn.png</normaloff>icons/Vailyn.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string notr="true">Conf.</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_tab5">
             <item>
@@ -1624,7 +1681,7 @@ image: none;
           <widget class="QWidget" name="filetreeTab">
            <attribute name="icon">
             <iconset>
-             <normaloff>icons/Vailyn.png</normaloff>icons/Vailyn.png</iconset>
+             <normaloff>icons/attacks.png</normaloff>icons/attacks.png</iconset>
            </attribute>
            <attribute name="title">
             <string>Attack</string>

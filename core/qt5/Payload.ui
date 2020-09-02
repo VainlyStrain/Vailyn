@@ -774,6 +774,14 @@ QTreeView::indicator:unchecked {
 background-color: #221922;
 image: none;
 }
+
+QTextBrowser {
+border: 1px solid #4a3e4a;
+padding: 2;
+border-radius: 2px;
+background-color: #1d161d;
+selection-background-color: #271d27;
+}
 </string>
   </property>
   <property name="sizeGripEnabled">
