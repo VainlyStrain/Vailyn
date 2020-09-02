@@ -176,6 +176,7 @@ class VailynApp(QtWidgets.QDialog):
             self.payloadDialog.selectLabel.setText("Select Payloads")
         self.payloadDialog.selectPayloadButton.clicked.connect(intern)
         self.payloadDialog.cancelButton.clicked.connect(cancel)
+        self.payloadDialog.payloadSelectInput.returnPressed.connect(self.payloadDialog.selectPayloadButton.click)
         self.selection = []
         self.payloadDialog.exec_()
 
@@ -218,7 +219,7 @@ class VailynApp(QtWidgets.QDialog):
             return (None, None)
         self.cstr = ""
         for key in cookie.keys():
-            self.cstr = self.cstr + str(i) + ": " + key + "\n"
+            self.cstr = self.cstr + key + "\n"
             i += 1
 
         def cancel():
@@ -231,9 +232,11 @@ class VailynApp(QtWidgets.QDialog):
         self.cookieDialog.cookieBrowser.setText(self.cstr)
         self.cookieDialog.selectCookieButton.clicked.connect(intern)
         self.cookieDialog.cancelButton.clicked.connect(cancel)
+        self.cookieDialog.cookieSelectInput.returnPressed.connect(self.cookieDialog.selectCookieButton.click)
         self.cookieDialog.exec_()
         if self.cocancel:
             return (None, None)
+        #print(self.selected)
         return (cookie, self.selected)
 
     def handleShell(self):
@@ -634,6 +637,10 @@ class VailynApp(QtWidgets.QDialog):
         self.targetDialog.vic2Field.setText(self.victim2)
         self.targetDialog.cancelButton.clicked.connect(self.targetDialog.close)
         self.targetDialog.setTargetButton.clicked.connect(intern)
+        self.targetDialog.vicField.returnPressed.connect(self.targetDialog.setTargetButton.click)
+        self.targetDialog.paramField.returnPressed.connect(self.targetDialog.setTargetButton.click)
+        self.targetDialog.postInput.returnPressed.connect(self.targetDialog.setTargetButton.click)
+        self.targetDialog.vic2Field.returnPressed.connect(self.targetDialog.setTargetButton.click)
         self.targetDialog.exec_()
 
 
