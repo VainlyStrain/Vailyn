@@ -87,11 +87,7 @@ class VailynApp(QtWidgets.QDialog):
     unix = False
 
     attackIndex = 2
-
-    if checkUpdate():
-        status = "latest version"
-    else:
-        status = "update available"
+    status = ""
 
     def __init__(self):
         super(VailynApp, self).__init__()
@@ -131,6 +127,10 @@ Arjun was slightly modified to fix false negatives with HTTP Basic Auth Sites.
 
 Found some false positives/negatives (or want to point out other bugs/improvements): please leave an issue!
         """)
+        if checkUpdate():
+            self.status = "latest version"
+        else:
+            self.status = "update available"
         self.versionLabel.setText("Vailyn {} : {}".format(variables.e_version, self.status))
         self.show()
 
