@@ -28,7 +28,7 @@ from multiprocessing.pool import ThreadPool as Pool
 
 from core.variables import viclist, processes, stable, cachedir, payloadlist
 from core.colors import color
-from core.methods.attack import phase1
+from core.methods.attack import phase1, resetCounter
 from core.methods.cache import parseUrl
 from core.methods.cookie import getCookie
 from core.methods.list import listsplit
@@ -100,6 +100,7 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie):
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 print("\n{0}[INFO]{1} param{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, param, color.END+color.RD))
                 time.sleep(1.0)
+                resetCounter()
                 res = [pool.apply_async(phase1, args=(1,victim,victim2,param,None,"",verbose,depth,l,file,authcookie,"",)) for l in paysplit]
                 for i in res:
                     #fetch results
@@ -126,6 +127,7 @@ def analyzePath(victim2, verbose, depth, file, authcookie):
             print("\n{0}[INFO]{1} path{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
             time.sleep(1.0)
             paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
+            resetCounter()
             res = [pool.apply_async(phase1, args=(2,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,"",)) for l in paysplit]
             for i in res:
                 #fetch results
@@ -160,7 +162,7 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie):
                 print("\n{0}[INFO]{1} cookie{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, key, color.END+color.RD))
                 time.sleep(1.0)
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
-
+                resetCounter()
                 res = [pool.apply_async(phase1, args=(3,victim,victim2,"",cookie,key,verbose,depth,l,file,authcookie,"",)) for l in paysplit]
                 for i in res:
                     #fetch results
@@ -191,6 +193,7 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie):
                 print("\n{0}[INFO]{1} post{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, param, color.END+color.RD))
                 time.sleep(1.0)
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
+                resetCounter()
                 res = [pool.apply_async(phase1, args=(4,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,param+"=INJECT",)) for l in paysplit]
                 for i in res:
                     #fetch results

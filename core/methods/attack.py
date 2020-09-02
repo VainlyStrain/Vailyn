@@ -18,6 +18,8 @@ _____, ___
 """
 
 
+import multiprocessing
+
 import core.variables as vars
 
 from core.methods.session import session
@@ -26,11 +28,24 @@ from core.colors import color
 from core.variables import payloadlist, nullchars, LISTENIP, LISTENPORT
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
-from core.methods.print import progress, progresswin
+from core.methods.progress import progress, progresswin, progressgui
 from core.methods.cookie import cookieFromFile
 
 global maxlen
 maxlen = len(max(payloadlist, key=len))
+
+requestcount = 0
+
+lock = multiprocessing.Lock()
+
+
+def resetCounter():
+    lock.acquire()
+    try:
+        global requestcount
+        requestcount = 0
+    finally:
+        lock.release()
 
 
 """prepare request for inpath attack"""
@@ -73,11 +88,20 @@ def query(traverse, dir, file, nb, keyword, url, url2, s):
 @authcookie: Authentication Cookie File to bypass Login Screens
 @postdata: POST Data for --attack 4
 """
-def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie, postdata):
+def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie, postdata, gui=None):
     #variables for the progress counter
-    requestcount = 0
-    totalrequests = len(paylist) * (len(nullchars) + 1) * depth
+    global requestcount
+    #totalrequests = len(paylist) * (len(nullchars) + 1) * depth
+    totalrequests = len(payloadlist) * (len(nullchars) + 1) * (depth + 1)
     timeout = vars.timeout
+    if gui:
+        lock.acquire()
+        try:
+            gui.progressBar.reset()
+            gui.progressBar.setMinimum(0)
+            gui.progressBar.setMaximum(totalrequests)
+        finally:
+            lock.release()
     #resolve issues with inpath attack
     if not url.endswith("/"):
         url += "/"
@@ -204,12 +228,19 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             #analyze result
             found = False
             for (r, p, nb) in requestlist:
-                requestcount += 1
-                if sys.platform.lower().startswith('win'):
-                    if requestcount % 1000 == 0:
-                        progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
-                else:
-                    progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+                lock.acquire()
+                try:
+                    requestcount += 1
+                    if gui:
+                        progressgui(requestcount, totalrequests)
+                    else:
+                        if sys.platform.lower().startswith('win'):
+                            if requestcount % 1000 == 0:
+                                progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
+                        else:
+                            progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+                finally:
+                    lock.release()
                 if str(r.status_code).startswith("2"):
                     if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
                         payloads.append(i)
@@ -251,14 +282,14 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 @authcookie: Authentication Cookie File to bypass Login Screens
 @postdata: POST Data for --attack 4
 """
-def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie, postdata):
+def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie, postdata, dirlen):
     #variables for the progress counter
-    requestcount = 0
+    global requestcount
     timeout = vars.timeout
     if len(selected_nullbytes) == 0:
-        totalrequests = len(selected_payloads) * len(files) * len(dirs) * depth
+        totalrequests = len(selected_payloads) * len(files) * dirlen * depth
     else:
-        totalrequests = len(selected_payloads) * len(selected_nullbytes) * len(files) * len(dirs) * depth
+        totalrequests = len(selected_payloads) * len(selected_nullbytes) * len(files) * dirlen * depth
 
     #resolve issues with inpath attack and loot function
     if not url.endswith("/"):
@@ -389,12 +420,16 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
 
                         #analyze result
                         for (r, p, data) in requestlist:
-                            requestcount += 1
-                            if sys.platform.lower().startswith('win'):
-                                if requestcount % 1000 == 0:
-                                    progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
-                            else:
-                                progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+                            lock.acquire()
+                            try:
+                                requestcount += 1
+                                if sys.platform.lower().startswith('win'):
+                                    if requestcount % 1000 == 0:
+                                        progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
+                                else:
+                                    progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+                            finally:
+                                lock.release()
 
                             vfound = False
                             if str(r.status_code).startswith("2"):

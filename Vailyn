@@ -39,7 +39,7 @@ from core.methods.print import banner, listprint2
 from core.methods.list import listsplit
 from core.methods.select import select
 from core.methods.tree import create_tree
-from core.methods.attack import phase1, phase2, lfishell
+from core.methods.attack import phase1, phase2, lfishell, resetCounter
 from core.methods.cookie import readCookie, getCookie
 from core.methods.cache import load, save, parseUrl
 from core.methods.tor import initcheck, enableTor
@@ -345,6 +345,7 @@ class VailynApp(QtWidgets.QDialog):
                 sdirs.append(diri)
 
         #equally split dictionary entries and payloads to all threads
+        dirlen = len(sdirs)
         splitted = listsplit(sdirs, round(len(sdirs)/processes))
         paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
 
@@ -469,6 +470,7 @@ class VailynApp(QtWidgets.QDialog):
         if vlnysis:
             starting_time = time.time()
             #initiate phase 1 - vulnerability analysis
+            resetCounter()
             with Pool(processes=processes) as pool:
                 res = [pool.apply_async(phase1, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,variables.verbose,self.depth1,l,self.vlnfile,self.authcookie,self.post,)) for l in paysplit]
                 for i in res:
@@ -517,6 +519,7 @@ class VailynApp(QtWidgets.QDialog):
 
         starting_time = time.time()
         if attackphase:
+            resetCounter()
             if variables.revshell:
                 if sys.platform.lower().startswith("win"):
                     lis = self.showQuestion("Are you listening on {}, port {}?".format(variables.LISTENIP, variables.LISTENPORT))
@@ -529,7 +532,7 @@ class VailynApp(QtWidgets.QDialog):
                 lfishell(self.attack, self.victim, self.victim2, self.param, self.cookie, self.selected, variables.verbose, self.selectedpayloads, self.selectednullbytes, self.authcookie, self.post)
             else:
                 with Pool(processes=processes) as pool:
-                    res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,)) for l in splitted]
+                    res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,dirlen,)) for l in splitted]
                     for i in res:
                         #fetch results
                         restuple = i.get()
@@ -699,6 +702,7 @@ def main(parser, opt, args, shell=True) -> int:
                 if not l.strip().endswith("/"):
                     l = l + "/"
                 sdirs.append(l.strip())
+
   
     loot = False
     victim2 = ""
@@ -751,6 +755,8 @@ def main(parser, opt, args, shell=True) -> int:
         for elem in mdirs:
             diri=''.join(elem)
             sdirs.append(diri)
+
+    dirlen = len(sdirs)
 
     #equally split dictionary entries and payloads to all threads
     splitted = listsplit(sdirs, round(len(sdirs)/processes))
@@ -908,6 +914,7 @@ def main(parser, opt, args, shell=True) -> int:
         print("{0}[+]{1} Loaded {2}{3}{1} payloads.\n".format(color.RD, color.END, color.BOLD, len(payloadlist)*len(nullchars)))
         starting_time = time.time()
         #initiate phase 1 - vulnerability analysis
+        resetCounter()
         with Pool(processes=processes) as pool:
             res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,cookiefile,postdata,)) for l in paysplit]
             for i in res:
@@ -947,6 +954,7 @@ def main(parser, opt, args, shell=True) -> int:
     #start the exploitation phase
     starting_time = time.time()
     if attack:
+        resetCounter()
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Sploit Phase\n'.format(color.RD, color.END))
         if variables.revshell:
             if sys.platform.lower().startswith("win"):
@@ -959,7 +967,7 @@ def main(parser, opt, args, shell=True) -> int:
             lfishell(args.attack, args.victim, victim2, param, cookie, selected, verbose, selectedpayloads, selectednullbytes, cookiefile, postdata)
         else:
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,postdata,)) for l in splitted]
+                res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,postdata,dirlen,)) for l in splitted]
                 for i in res:
                     #fetch results
                     restuple = i.get()

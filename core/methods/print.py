@@ -194,39 +194,3 @@ def listdisplay(gen, maxlen, nb):
         print("{0}{1}|{2}  {3}".format(color.RB, space+"N"+color.END+color.RD, color.END, "NONE"))
     print()
 
-"""prints progress in percentage"""
-def progress (iteration, total, prefix = '', suffix = '', decimals = 1):
-    """
-    Call in a loop to create terminal progress bar
-    @params:
-        iteration   - Required  : current iteration (Int)
-        total       - Required  : total iterations (Int)
-        prefix      - Optional  : prefix string (Str)
-        suffix      - Optional  : suffix string (Str)
-        decimals    - Optional  : positive number of decimals in percent complete (Int)
-        length      - Optional  : character length of bar (Int)
-        fill        - Optional  : bar fill character (Str)
-        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
-    """
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    if float(percent) > 100.0:
-        percent = "100.0"
-    erase()
-    sys.stdout.write('%s %s%5s%%%s %s' % (prefix, color.RB, percent, color.END+color.RD+"|"+color.END, suffix))
-    sys.stdout.flush()
-
-def progresswin(iteration, total, prefix = '', suffix = '', decimals = 1):
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    if float(percent) > 100.0:
-        percent = "100.0"
-    print("{}[VAILYN]{} {}{}%{} done.".format(color.RD, color.END, color.BOLD, percent, color.END))
-    
-
-"""prevent progress() from flooding the terminal output"""
-def erase():
-    sys.stdout.write('\033[1K')
-    if sys.platform.lower().startswith('win'):
-        termwidth = shutil.get_terminal_size()[0]
-        sys.stdout.write('\033[{}D'.format(termwidth))
-    else:
-        sys.stdout.write('\033[0G')
