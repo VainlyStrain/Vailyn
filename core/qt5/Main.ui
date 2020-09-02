@@ -783,6 +783,7 @@ QTreeView::indicator:unchecked {
 background-color: #221922;
 image: none;
 }
+
 </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -1707,23 +1708,52 @@ image: none;
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="moduleLayout_1">
-              <item>
-               <widget class="QTreeWidget" name="treeView">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>1</horstretch>
-                  <verstretch>1</verstretch>
-                 </sizepolicy>
+             <widget class="QStackedWidget" name="stackedWidget">
+              <property name="currentIndex">
+               <number>1</number>
+              </property>
+              <widget class="QWidget" name="fileTree">
+               <layout class="QVBoxLayout" name="verticalLayout_8">
+                <property name="leftMargin">
+                 <number>0</number>
                 </property>
-                <column>
-                 <property name="text">
-                  <string notr="true">1</string>
-                 </property>
-                </column>
-               </widget>
-              </item>
-             </layout>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QTreeWidget" name="treeView">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>1</horstretch>
+                    <verstretch>1</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <column>
+                   <property name="text">
+                    <string notr="true">1</string>
+                   </property>
+                  </column>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="crawlerOutput">
+               <layout class="QVBoxLayout" name="verticalLayout_9">
+                <item>
+                 <widget class="QTextBrowser" name="crawlerResultDisplay"/>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="moduleLayout_1"/>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout">

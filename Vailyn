@@ -136,6 +136,11 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
     def updateAttack(self):
         self.attack = self.attackOption.currentIndex() + 1
+        if self.attack == 5:
+            self.stackedWidget.setCurrentWidget(self.crawlerOutput)
+        else:
+            self.stackedWidget.setCurrentWidget(self.fileTree)
+        self.show()
 
     def getFileName(self):
         return QFileDialog.getOpenFileName()
@@ -442,10 +447,13 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             total_time = ending_time - starting_time
             atime = datetime.timedelta(seconds=total_time)
             self.timeLabel.setText("Done after " + str(atime) + ".")
-            print("\n\n{}FINAL RESULTS{}\n".format(color.BOLD+color.UNDERLINE, color.END))
-            print("Query Attack\n")
+            FINAL = "FINAL RESULTS\n\n"
+            #print("\n\n{}FINAL RESULTS{}\n".format(color.BOLD+color.UNDERLINE, color.END))
+            #print("Query Attack\n")
+            FINAL += "Query Attack\n\n"
             for victim, sub in queryattack.items():
-                print(victim)
+                #print(victim)
+                FINAL += "\n" + victim
                 for param, pair in sub.items():
                     paystring = ""
                     nullstring = ""
@@ -453,20 +461,26 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         paystring = paystring + "            " + str(payload) + "\n"
                     for nullbyte in pair[1]:
                         nullstring = nullstring + "            " + str(nullbyte) + "\n"
-                    print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
-            print("Path Attack\n")
+                    FINAL += "\n    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring 
+                    #print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+            FINAL += "\nPath Attack\n"
+            #print("Path Attack\n")
             for victim, pair in pathattack.items():
-                print(victim)
+                #print(victim)
+                FINAL += "\n" + victim
                 paystring = ""
                 nullstring = ""
                 for payload in pair[0]:
                     paystring = paystring + "        " + str(payload) + "\n"
                 for nullbyte in pair[1]:
                     nullstring = nullstring + "        " + str(nullbyte) + "\n"
-                print("    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring)
-            print("Cookie Attack\n")
+                FINAL += "\n    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring 
+                #print("    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring)
+            #print("Cookie Attack\n")
+            FINAL += "\nCookie Attack\n"
             for victim, sub in cookieattack.items():
-                print(victim)
+                #print(victim)
+                FINAL += "\n" + victim + "\n"
                 for cname, pair in sub.items():
                     paystring = ""
                     nullstring = ""
@@ -474,10 +488,13 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         paystring = paystring + "            " + str(payload) + "\n"
                     for nullbyte in pair[1]:
                         nullstring = nullstring + "            " + str(nullbyte) + "\n"
-                    print("    " + cname + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
-            print("POST Attack\n")
+                    FINAL += "\n    " + cname + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring
+                    #print("    " + cname + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+            #print("POST Attack\n")
+            FINAL += "\nPOST Attack\n"
             for victim, sub in postattack.items():
-                print(victim)
+                FINAL += "\n" + victim + "\n"
+                #print(victim)
                 for param, pair in sub.items():
                     paystring = ""
                     nullstring = ""
@@ -485,7 +502,11 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         paystring = paystring + "            " + str(payload) + "\n"
                     for nullbyte in pair[1]:
                         nullstring = nullstring + "            " + str(nullbyte) + "\n"
-                    print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+                    FINAL += "\n    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring
+                    #print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+            
+            self.crawlerResultDisplay.setText(FINAL)
+            self.show()
                 
             return
 
