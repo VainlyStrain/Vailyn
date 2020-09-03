@@ -1026,6 +1026,9 @@ image: none;
                 </item>
                 <item>
                  <widget class="QPushButton" name="exitButton">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Exit the application.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
                   <property name="text">
                    <string>Close</string>
                   </property>
@@ -1371,6 +1374,9 @@ image: none;
                       </item>
                       <item row="0" column="3">
                        <widget class="QPushButton" name="newTargetButton">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the attack target.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="text">
                          <string>New</string>
                         </property>
@@ -1401,6 +1407,9 @@ image: none;
                       </item>
                       <item row="1" column="3">
                        <widget class="QPushButton" name="infoButton">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show description of the currenly selected attack.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="text">
                          <string>Info</string>
                         </property>
@@ -1425,6 +1434,9 @@ image: none;
                <layout class="QFormLayout" name="formLayout">
                 <item row="0" column="0">
                  <widget class="QPushButton" name="fileDictButton">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify a dictionary containing filenames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
                   <property name="text">
                    <string>Choose</string>
                   </property>
@@ -1439,6 +1451,9 @@ image: none;
                 </item>
                 <item row="1" column="0">
                  <widget class="QPushButton" name="dirDictButton">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify a dictionary containing directory names.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
                   <property name="text">
                    <string>Choose</string>
                   </property>
@@ -1504,6 +1519,9 @@ image: none;
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IP listening for a reverse shell.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="placeholderText">
                  <string>127.0.0.1</string>
                 </property>
@@ -1513,6 +1531,9 @@ image: none;
                <widget class="QLineEdit" name="portEdit">
                 <property name="enabled">
                  <bool>false</bool>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Port listening for a reverse shell.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
                  <string/>
@@ -1535,6 +1556,9 @@ image: none;
               </item>
               <item row="0" column="1">
                <widget class="QLineEdit" name="vlnFileInput">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;File to be checked for during Vulnerability Analysis.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string>/etc/passwd</string>
                 </property>
@@ -1566,6 +1590,9 @@ image: none;
               </item>
               <item>
                <widget class="QLineEdit" name="phase1Depth">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lookup Depth of the Vulnerability Analysis phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="placeholderText">
                  <string>Phase 1</string>
                 </property>
@@ -1573,6 +1600,9 @@ image: none;
               </item>
               <item>
                <widget class="QLineEdit" name="phase2Depth">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lookup Depth and permutation level of the Exploitation phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="placeholderText">
                  <string>Phase 2</string>
                 </property>
@@ -1600,6 +1630,9 @@ image: none;
               </item>
               <item>
                <widget class="QLineEdit" name="timeoutEdit">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Timeout for requests. Will also trigger the --stable flag in Arjun.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="placeholderText">
                  <string>seconds</string>
                 </property>
@@ -1621,6 +1654,9 @@ image: none;
               </item>
               <item>
                <widget class="QPushButton" name="addCookieButton">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add an authentication cookie to bypass login screens.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string>Add</string>
                 </property>
@@ -1649,6 +1685,9 @@ image: none;
              <layout class="QHBoxLayout" name="horizontalLayout_10">
               <item>
                <widget class="QCheckBox" name="lootBox">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Download files found during the Exploitation Phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string>Loot</string>
                 </property>
@@ -1656,6 +1695,9 @@ image: none;
               </item>
               <item>
                <widget class="QCheckBox" name="shellBox">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Try to obtain a reverse shell by LFI exploitation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string>LFI Shell</string>
                 </property>
@@ -1663,6 +1705,9 @@ image: none;
               </item>
               <item>
                <widget class="QCheckBox" name="torBox">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pipe attacks through the Tor anonymity network.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string>Tor</string>
                 </property>
@@ -1670,6 +1715,9 @@ image: none;
               </item>
               <item>
                <widget class="QCheckBox" name="nosploitBox">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not exploit found vulnerabilities.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string>NoSploit</string>
                 </property>
@@ -1690,6 +1738,9 @@ image: none;
               </item>
               <item>
                <widget class="QPushButton" name="attackButton">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Launch the attack.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string>Attack</string>
                 </property>

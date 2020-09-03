@@ -849,6 +849,9 @@ selection-background-color: #271d27;
      </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="vicField">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Target URL, before the injection point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="placeholderText">
         <string>http://localhost:8000/download.php</string>
        </property>
@@ -874,6 +877,9 @@ selection-background-color: #271d27;
        <property name="enabled">
         <bool>false</bool>
        </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Parameter to use in query attacks.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="placeholderText">
         <string>file</string>
        </property>
@@ -893,6 +899,9 @@ selection-background-color: #271d27;
      </item>
      <item row="3" column="1">
       <widget class="QLineEdit" name="vic2Field">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Target URL, after the injection point.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="placeholderText">
         <string/>
        </property>
@@ -916,6 +925,9 @@ selection-background-color: #271d27;
       <widget class="QLineEdit" name="postInput">
        <property name="enabled">
         <bool>false</bool>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;POST Data to infect.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="placeholderText">
         <string>p1=v1&amp;p2=INJECT</string>
