@@ -17,7 +17,7 @@ _____, ___
 └──╼ VainlyStrain
 """
 
-import requests
+import requests, random
 import core.variables as variables
 from core.methods.tor import torcheck
 
@@ -39,3 +39,6 @@ def session():
         VaileSession.proxies['https'] = None
 
     return VaileSession 
+
+def random_ua(session):
+    session.headers["User-agent"] = variables.user_agents[random.randrange(0, len(variables.user_agents))]

