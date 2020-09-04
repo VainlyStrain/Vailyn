@@ -29,6 +29,7 @@ import os
 import core.variables as variables
 
 from itertools import permutations
+from math import factorial
 from multiprocessing.pool import ThreadPool as Pool
 from PyQt5.QtCore import Qt
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
@@ -590,8 +591,20 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 #equally split dictionary entries to all threads
                 if opt["lists"] and len(sdirs) > 100:
                     self.showInfo("Preparing dictionaries...")
-                dirlen = sum(1 for dummy in listperm(sdirs, self.permutationLevel))
+                #dirlen = sum(1 for dummy in listperm(sdirs, self.permutationLevel))
+                dirlen2 = len(sdirs)
+                felems = dirlen2 -1
+                i = 1
+                while (i <= self.permutationLevel):
+                    if 0 <= i+1 and i+1 <= felems:
+                        cur = factorial(felems) / factorial(felems-i-1)
+                    else:
+                        cur = 0
+                    dirlen2 += cur
+                    i += 1
+                dirlen = int(dirlen2)
                 splitted = gensplit(listperm(sdirs, self.permutationLevel), round(dirlen/processes))
+
                 starting_time = time.time()
                 with Pool(processes=processes) as pool:
                     res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,dirlen,self,)) for l in splitted]
@@ -1018,7 +1031,18 @@ def main(parser, opt, args, shell=True) -> int:
             setDate()
             if opt["lists"] and len(sdirs) > 100:
                 print("{}  Preparing dictionaries...{}".format(color.RC, color.END))
-            dirlen = sum(1 for dummy in listperm(sdirs, permutationLevel))
+            #dirlen = sum(1 for dummy in listperm(sdirs, permutationLevel))
+            dirlen2 = len(sdirs)
+            felems = dirlen2 -1
+            i = 1
+            while (i <= permutationLevel):
+                if 0 <= i+1 and i+1 <= felems:
+                    cur = factorial(felems) / factorial(felems-i-1)
+                else:
+                    cur = 0
+                dirlen2 += cur
+                i += 1
+            dirlen = int(dirlen2)
             splitted = gensplit(listperm(sdirs, permutationLevel), round(dirlen/processes))
 
             starting_time = time.time()
