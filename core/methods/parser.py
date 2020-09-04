@@ -20,6 +20,8 @@ _____, ___
 import sys, argparse
 from core.colors import color
 
+
+"""Vailyn's argument parser"""
 class ArgumentParser(argparse.ArgumentParser):
     def error(self, message):
         self.print_usage(sys.stderr)
@@ -55,6 +57,8 @@ additional:
   -m, --nosploit        {0}skip Phase 2 (does not need -l FIL PATH){1}
   --app                 {0}Start Vailyn's Qt5 interface{1}'''.format(color.RC, color.END, color.O, color.RD))
 
+
+"""Formatter for the argument parser"""
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
         if prefix is None:
@@ -62,6 +66,8 @@ class VainFormatter(argparse.RawDescriptionHelpFormatter):
             #return super(VainFormatter, self).add_usage("{}Vailyn{} [-v VIC] [-a ACK] [-p PARAM] [-s]\n          [-l FIL PATH] [-d INT] [--loot]\n        [-f] [-h] [--vic2 VIC2]".format(color.RB,color.END), actions, groups, prefix)
             return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n        [-p P] [-s D] [-j A P] [-n] \n      [-c C] [-i F] [-t] [-m] \n       [-k T] [-d I J K] \n   [-q V] [--app] ".format(color.RB,color.END), actions, groups, prefix)
 
+
+"""constructs and returns an argument parser"""
 def build_parser():
     p = ArgumentParser(formatter_class=VainFormatter,add_help=False)
     p.add_argument('-v', '--victim',

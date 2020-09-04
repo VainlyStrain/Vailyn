@@ -21,6 +21,7 @@ _____, ___
 from core.methods.session import session
 from core.variables import e_version
 
+"""compare local version with online version"""
 def checkUpdate():
     try:
         s = session()

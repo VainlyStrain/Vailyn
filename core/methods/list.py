@@ -27,25 +27,32 @@ def listsplit(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]  
 
+"""
+create directory dictionary permutations
+generator to be more memory-friendly
+"""
 def listperm(sdirs, depth):
-    #print("sdirs: {}".format(sdirs))
     for idir in sdirs:
         yield idir
     iter=1
+    """
+    TODO avoid list copy, improve memory footprint further
+    """
     ndirs=list.copy(sdirs)
     #remove empty string causing duplicates
     del ndirs[0]
     mdirs=[]
     while (iter<=(depth)):
         for mdirs in permutations(ndirs,(iter+1)):
-            #print("mdirs: {}".format(mdirs))
             diri = ""
             for elem in mdirs:
                 diri += str(elem)
             yield diri
-                #sdirs.append(diri)
         iter+=1
 
+"""
+equally split generator elements for threads
+"""
 def gensplit(g, n):
     i = iter(g)
     piece = list(islice(i, n))

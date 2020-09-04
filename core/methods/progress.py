@@ -46,6 +46,7 @@ def progress (iteration, total, prefix = '', suffix = '', decimals = 1):
 
 """
 ATTENTION: ONLY CALL ME LOCKED !!!
+handle progressbar in GUI
 """
 def progressgui(iteration, total, dialog):
     percent = int(100 * (iteration / float(total)))
@@ -54,6 +55,7 @@ def progressgui(iteration, total, dialog):
         dialog.show()
 
 
+"""progress() alternative compatible with Windows"""
 def progresswin(iteration, total, prefix = '', suffix = '', decimals = 1):
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     if float(percent) > 100.0:

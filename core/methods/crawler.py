@@ -45,6 +45,9 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
+"""
+URL crawler - enumerates all links related to the target for further analysis
+"""
 class UrlSpider(scrapy.Spider):
     name = "vailyn_url_spider"
     start_urls = viclist
@@ -57,6 +60,9 @@ class UrlSpider(scrapy.Spider):
                 print("{0}[INFO]{1} found{4}|{2} {3}".format(color.RD, color.END + color.O, color.END, link.url, color.END+color.RD))
             yield Request(link.url, callback=self.parse)
 
+"""
+enumerate GET and POST parameters using Arjun by s0md3v to attack in respective phase
+"""
 def arjunEnum(post=False):
     subdir = parseUrl(viclist[0])
     if not os.path.exists(cachedir+subdir):
@@ -86,6 +92,12 @@ def arjunEnum(post=False):
     assert siteparams != None
     return siteparams
 
+
+"""
+attack each GET parameter found for each target URL
+
+TODO intelligently determine & favorize parameters likely to be vulnerable
+"""
 def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie, gui=None):
     result = {}
     subdir = parseUrl(viclist[0])
@@ -117,6 +129,9 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie, gui=None
         json.dump(result, f, sort_keys=True, indent=4)
     return result
 
+"""
+attack each URL using the path vector
+"""
 def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
     result = {}
     subdir = parseUrl(viclist[0])
@@ -144,6 +159,9 @@ def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
         json.dump(result, f, sort_keys=True, indent=4)
     return result
 
+"""
+attack each cookie delivered by the site
+"""
 def analyzeCookie(victim2, verbose, depth, file, authcookie, gui=None):
     result = {}
     subdir = parseUrl(viclist[0])
@@ -179,6 +197,11 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie, gui=None):
         json.dump(result, f, sort_keys=True, indent=4)
     return result
 
+"""
+attack each POST parameter found for each target URL
+
+TODO intelligently determine & favorize parameters likely to be vulnerable
+"""
 def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None):
     result = {}
     subdir = parseUrl(viclist[0])

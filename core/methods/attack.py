@@ -38,7 +38,7 @@ requestcount = 0
 
 lock = multiprocessing.Lock()
 
-
+"""reset the request counter"""
 def resetCounter():
     lock.acquire()
     try:
@@ -87,6 +87,7 @@ def query(traverse, dir, file, nb, keyword, url, url2, s):
 @file: file to be looked up (-i FIL, default: /etc/passwd)
 @authcookie: Authentication Cookie File to bypass Login Screens
 @postdata: POST Data for --attack 4
+@gui: GUI frame to set the graphical progress bar
 """
 def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie, postdata, gui):
     #variables for the progress counter
@@ -289,6 +290,8 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 @selected_nullbytes: terminators selected in phase 1
 @authcookie: Authentication Cookie File to bypass Login Screens
 @postdata: POST Data for --attack 4
+@dirlen: total directory dictionary size (after permutations)
+@gui: GUI frame to set the graphical progress bar
 """
 def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie, postdata, dirlen, gui):
     #variables for the progress counter
@@ -498,6 +501,15 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
     except KeyboardInterrupt:
         return (found, urls)
 
+"""
+second exploitation module: try to gain a reverse shell over the system
+@technique:
+1) /proc/self/environ User-agent poisoning
+2) Apache log poisoning
+3) SSH log poisoning
+4) Poisoned mail to web user
+@others: see phase1()
+"""
 def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
     #resolve issues with inpath attack
     if not url.endswith("/"):
@@ -752,7 +764,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 print("Timeout reached @technique 4")
 
 
-        
+"""invoke sheller() for each technique"""
 def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
     for technique in range(1, 5):
         sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata)
