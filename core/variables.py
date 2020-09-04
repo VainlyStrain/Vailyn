@@ -80,7 +80,7 @@ else:
 
 verbose = False
 
-version = "2.2"
+version = "2.3"
 e_version = ""
 with open("core/doc/VERSION", "r") as versionfile:
     e_version = versionfile.read().strip()

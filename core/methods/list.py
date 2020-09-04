@@ -52,3 +52,4 @@ def gensplit(g, n):
     while piece:
         yield piece
         piece = list(islice(i, n))
+        
