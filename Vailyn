@@ -36,7 +36,7 @@ from PyQt5.QtWidgets import QTreeWidgetItem, QTableWidgetItem, QFileDialog
 
 from core.methods.parser import build_parser
 from core.methods.print import banner, listprint2
-from core.methods.list import listsplit
+from core.methods.list import listsplit, listperm, gensplit
 from core.methods.select import select
 from core.methods.tree import create_tree
 from core.methods.attack import phase1, phase2, lfishell, resetCounter
@@ -372,22 +372,12 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         l = l.strip() + "/"
                     sdirs.append(l.strip())
 
-            #create directory permutations from dictionary
-            iter=1
-            ndirs=list.copy(sdirs)
-            #remove empty string causing duplicates
-            del ndirs[0]
-            mdirs=[]
-            while (iter<=(self.depth2)):
-                mdirs += permutations(ndirs,(iter+1))
-                iter+=1
-            for elem in mdirs:
-                diri=''.join(elem)
-                sdirs.append(diri)
 
         #equally split dictionary entries and payloads to all threads
-        dirlen = len(sdirs)
-        splitted = listsplit(sdirs, round(len(sdirs)/processes))
+        if opt["lists"] and len(sdirs) > 100:
+            self.showInfo("Preparing dictionaries...")
+        dirlen = sum(1 for dummy in listperm(sdirs, self.depth2))
+        splitted = gensplit(listperm(sdirs, self.depth2), round(dirlen/processes))
         paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
 
         if self.attack == 1 and self.param == "":
@@ -809,25 +799,10 @@ def main(parser, opt, args, shell=True) -> int:
     if opt["tor"]:        
         enableTor()
 
-
-    #create directory permutations from dictionary
-    if opt["lists"]:
-        iter=1
-        ndirs=list.copy(sdirs)
-        #remove empty string causing duplicates
-        del ndirs[0]
-        mdirs=[]
-        while (iter<=(depth)):
-            mdirs += permutations(ndirs,(iter+1))
-            iter+=1
-        for elem in mdirs:
-            diri=''.join(elem)
-            sdirs.append(diri)
-
-    dirlen = len(sdirs)
-
-    #equally split dictionary entries and payloads to all threads
-    splitted = listsplit(sdirs, round(len(sdirs)/processes))
+    if opt["lists"] and len(sdirs) > 100:
+        print("{}  Preparing dictionaries...{}".format(color.RC, color.END))
+    dirlen = sum(1 for dummy in listperm(sdirs, depth))
+    splitted = gensplit(listperm(sdirs, depth), round(dirlen/processes))
     paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
 
     if (args.attack == 1):  #query mode
