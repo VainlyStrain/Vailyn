@@ -66,6 +66,7 @@ class VailynApp(QtWidgets.QDialog):
     dirdict = ""
     depth1 = 8
     depth2 = 2
+    permutationLevel = 2
     param = ""
     post = ""
     authcookie = ""
@@ -320,6 +321,12 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.depth2 = int(self.phase2Depth.text().strip())
         except ValueError:
             if self.phase2Depth.text().strip() != "":
+                self.showError("Depths must be valid positive integers!")
+                return
+        try:
+            self.permutationLevel = int(self.phase2PLevel.text().strip())
+        except ValueError:
+            if self.phase2PLevel.text().strip() != "":
                 self.showError("Depths must be valid positive integers!")
                 return
         if self.attack == 4:
@@ -583,8 +590,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 #equally split dictionary entries to all threads
                 if opt["lists"] and len(sdirs) > 100:
                     self.showInfo("Preparing dictionaries...")
-                dirlen = sum(1 for dummy in listperm(sdirs, self.depth2))
-                splitted = gensplit(listperm(sdirs, self.depth2), round(dirlen/processes))
+                dirlen = sum(1 for dummy in listperm(sdirs, self.permutationLevel))
+                splitted = gensplit(listperm(sdirs, self.permutationLevel), round(dirlen/processes))
                 starting_time = time.time()
                 with Pool(processes=processes) as pool:
                     res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,dirlen,self,)) for l in splitted]
@@ -773,6 +780,7 @@ def main(parser, opt, args, shell=True) -> int:
     foundnullbytes = []
     vlnfile = "/etc/passwd"
     checkdepth = 8
+    permutationLevel = 2
     cookiefile = ""
 
     #handle optional arguments
@@ -785,6 +793,7 @@ def main(parser, opt, args, shell=True) -> int:
     if opt["depths"]:
         checkdepth = args.depths[0]
         depth = args.depths[1]
+        permutationLevel = args.depths[2]
 
     if opt["check"]:
         vlnfile = args.check
@@ -1009,8 +1018,8 @@ def main(parser, opt, args, shell=True) -> int:
             setDate()
             if opt["lists"] and len(sdirs) > 100:
                 print("{}  Preparing dictionaries...{}".format(color.RC, color.END))
-            dirlen = sum(1 for dummy in listperm(sdirs, depth))
-            splitted = gensplit(listperm(sdirs, depth), round(dirlen/processes))
+            dirlen = sum(1 for dummy in listperm(sdirs, permutationLevel))
+            splitted = gensplit(listperm(sdirs, permutationLevel), round(dirlen/processes))
 
             starting_time = time.time()
             with Pool(processes=processes) as pool:

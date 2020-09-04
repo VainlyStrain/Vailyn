@@ -43,7 +43,8 @@ additional:
   -p P, --param P       {0}query parameter to use for --attack 1{1}
   -s D, --post D        {0}POST Data (set injection point with INJECT){1}
   -j A P, --listen A P  {0}Try a reverse shell in Phase 2 (A:IP, P:port){1}
-  -d I J, --depths I J  {0}depths of checking (I: phase 1, J: phase 2){1}
+  -d I J K, --depths I J K  
+                        {0}depths (I: phase 1, J: phase 2, K: permutation level){1}
   -n, --loot            {0}Download found files into the loot folder{1}
   -c C, --cookie C      {0}File containing authentication cookie (if needed){1}
   -h, --help            {0}show this help menu and exit{1}
@@ -59,7 +60,7 @@ class VainFormatter(argparse.RawDescriptionHelpFormatter):
         if prefix is None:
             prefix = color.RC + 'Vsynta ' + color.END
             #return super(VainFormatter, self).add_usage("{}Vailyn{} [-v VIC] [-a ACK] [-p PARAM] [-s]\n          [-l FIL PATH] [-d INT] [--loot]\n        [-f] [-h] [--vic2 VIC2]".format(color.RB,color.END), actions, groups, prefix)
-            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n        [-p P] [-s D] [-j A P] [-n] \n      [-c C] [-i F] [-t] [-m] \n        [-k T] [-d I J] \n   [-q V] [--app] ".format(color.RB,color.END), actions, groups, prefix)
+            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n        [-p P] [-s D] [-j A P] [-n] \n      [-c C] [-i F] [-t] [-m] \n       [-k T] [-d I J K] \n   [-q V] [--app] ".format(color.RB,color.END), actions, groups, prefix)
 
 def build_parser():
     p = ArgumentParser(formatter_class=VainFormatter,add_help=False)
@@ -78,10 +79,10 @@ def build_parser():
                    help="POST Data (set injection point with INJECT)",
                    metavar="D",)
     p.add_argument('-d', '--depths',
-                   help="depths of checking (I: phase 1, J: phase 2)",
-                   metavar="I J",
+                   help="depths (I: phase 1, J: phase 2, K: permutation level)",
+                   metavar="I J K",
                    type=int,
-                   nargs=2)
+                   nargs=3)
     p.add_argument('-h', '--help',
                    help="0 » display this help message and exit",
                    action="help",

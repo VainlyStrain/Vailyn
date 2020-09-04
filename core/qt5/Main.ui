@@ -1601,10 +1601,20 @@ image: none;
               <item>
                <widget class="QLineEdit" name="phase2Depth">
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lookup Depth and permutation level of the Exploitation phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lookup Depth of the Exploitation phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="placeholderText">
                  <string>Phase 2</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="phase2PLevel">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Permutation Level of the Exploitation Phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="placeholderText">
+                 <string>Permutation Level</string>
                 </property>
                </widget>
               </item>
@@ -1630,6 +1640,12 @@ image: none;
               </item>
               <item>
                <widget class="QLineEdit" name="timeoutEdit">
+                <property name="maximumSize">
+                 <size>
+                  <width>105</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Timeout for requests. Will also trigger the --stable flag in Arjun.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
