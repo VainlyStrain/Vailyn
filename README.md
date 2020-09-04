@@ -187,7 +187,7 @@ will infect DATA2 with the payload
 
 ### Demo
 
-[![asciicast](https://asciinema.org/a/348613.svg)](https://asciinema.org/a/348613)
+[![asciicast](https://asciinema.org/a/357882.svg)](https://asciinema.org/a/357882)
 [GUI Demonstration (v2.2.1-5)](https://www.youtube.com/watch?v=rFlR_SHk9fc)
 
 ### Possible Issues
