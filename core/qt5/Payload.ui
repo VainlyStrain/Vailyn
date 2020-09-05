@@ -837,7 +837,7 @@ selection-background-color: #271d27;
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Index list of payloads to use (&amp;quot;,&amp;quot; as separator).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="placeholderText">
-        <string>‹p1›,‹p2›,...</string>
+        <string>‹int›,‹int›,...</string>
        </property>
       </widget>
      </item>
