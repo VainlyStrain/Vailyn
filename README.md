@@ -38,7 +38,7 @@ The separation in several phases is done to hugely improve the performance of th
 
 ### Installation
 
-Recommended Python version is 3.7+, but it should work fine with prior Python 3 versions, too. To install Vailyn, download the archive from the release tab, or perform
+Recommended & tested Python versions are 3.7+, but it should work fine with Python 3.5 & Python 3.6, too. To install Vailyn, download the archive from the release tab, or perform
 
 ```
 $ git clone https://github.com/VainlyStrain/Vailyn
