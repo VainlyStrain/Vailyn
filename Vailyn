@@ -169,7 +169,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         elif self.attack == 4:
             self.showInfo("[POST] http://example.com POST=../../../")
         elif self.attack == 5:
-            self.showInfo("Automatically retreive all links & perform tests")
+            self.showInfo("Automatically retreive all links & perform all tests")
 
     def showInfo(self, message):
         self.infoDialog = QtWidgets.QDialog()
