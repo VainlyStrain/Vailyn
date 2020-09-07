@@ -403,6 +403,9 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         if self.attack == 5:
             variables.viclist.append(self.victim)
             assert len(variables.viclist) > 0
+            crawlcookies = {}
+            if self.authcookie != "":
+                crawlcookies = requests.utils.dict_from_cookiejar(cookieFromFile(self.authcookie))
             from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
             from scrapy.crawler import CrawlerProcess
             self.tabWidget.setCurrentIndex(self.attackIndex)
@@ -411,7 +414,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.show()
             starting_time = time.time()
             process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
-            process.crawl(UrlSpider)
+            process.crawl(UrlSpider, cookiedict=crawlcookies)
             process.start()
 
             self.timeLabel.setText("Active Phase: 1")
