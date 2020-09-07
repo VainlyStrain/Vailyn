@@ -404,8 +404,10 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             variables.viclist.append(self.victim)
             assert len(variables.viclist) > 0
             crawlcookies = {}
+            arjunjar = None
             if self.authcookie != "":
-                crawlcookies = requests.utils.dict_from_cookiejar(cookieFromFile(self.authcookie))
+                arjunjar = cookieFromFile(self.authcookie)
+                crawlcookies = requests.utils.dict_from_cookiejar(arjunjar)
             from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
             from scrapy.crawler import CrawlerProcess
             self.tabWidget.setCurrentIndex(self.attackIndex)
@@ -419,7 +421,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
             self.timeLabel.setText("Active Phase: 1")
             self.show()
-            siteparams = arjunEnum()
+            siteparams = arjunEnum(cookiejar=arjunjar)
 
             self.timeLabel.setText("Active Phase: 2")
             self.show()
@@ -437,7 +439,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
             self.timeLabel.setText("Active Phase: 5")
             self.show()
-            postparams = arjunEnum(post=True)
+            postparams = arjunEnum(post=True, cookiejar=arjunjar)
 
             self.timeLabel.setText("Active Phase: 6")
             self.show()
@@ -870,8 +872,10 @@ def main(parser, opt, args, shell=True) -> int:
         variables.viclist.append(args.victim)
         assert len(variables.viclist) > 0
         crawlcookies = {}
+        arjunjar = None
         if cookiefile != "":
-            crawlcookies = requests.utils.dict_from_cookiejar(cookieFromFile(cookiefile))
+            arjunjar = cookieFromFile(cookiefile)
+            crawlcookies = requests.utils.dict_from_cookiejar(arjunjar)
         from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
         from scrapy.crawler import CrawlerProcess
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} URL Enum\n'.format(color.RD, color.END))
@@ -884,7 +888,7 @@ def main(parser, opt, args, shell=True) -> int:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (GET)\n'.format(color.RD, color.END))
         #print("\n{0}Phase 1|{1} {2}Parameter Enumeration{1}\n".format(color.RD, color.END, color.O))
         time.sleep(0.5)
-        siteparams = arjunEnum()
+        siteparams = arjunEnum(cookiejar=arjunjar)
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Query Analysis\n'.format(color.RD, color.END))
         #print("\n{0}Phase 2|{1} {2}Query Attack{1}\n".format(color.RD, color.END, color.O))
@@ -904,7 +908,7 @@ def main(parser, opt, args, shell=True) -> int:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (POST)\n'.format(color.RD, color.END))
         #print("\n{0}Phase 5|{1} {2}POST Enumeration{1}\n".format(color.RD, color.END, color.O))
         time.sleep(0.5)
-        postparams = arjunEnum(post=True)
+        postparams = arjunEnum(post=True, cookiejar=arjunjar)
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} POST Analysis\n'.format(color.RD, color.END))
         #print("\n{0}Phase 6|{1} {2}POST Attack{1}\n".format(color.RD, color.END, color.O))

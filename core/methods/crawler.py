@@ -73,7 +73,7 @@ class UrlSpider(scrapy.Spider):
 """
 enumerate GET and POST parameters using Arjun by s0md3v to attack in respective phase
 """
-def arjunEnum(post=False):
+def arjunEnum(post=False, cookiejar=None):
     subdir = parseUrl(viclist[0])
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
@@ -91,6 +91,9 @@ def arjunEnum(post=False):
         command += ["--stable"]
     else:
         command += ["-t", str(processes)]
+
+    if cookiejar:
+        command += ["--cookies", cookiejar]
 
     #print(command)
     subprocess.run(command)

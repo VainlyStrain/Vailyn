@@ -20,6 +20,7 @@ import re
 import json
 import time
 import argparse
+import http.cookiejar
 
 import core.config
 from core.prompt import prompt
@@ -40,6 +41,7 @@ parser.add_argument('--headers', help='add headers', dest='headers', nargs='?', 
 parser.add_argument('--json', help='treat post data as json', dest='jsonData', action='store_true')
 parser.add_argument('--stable', help='prefer stability over speed', dest='stable', action='store_true')
 parser.add_argument('--include', help='include this data in every request', dest='include', default={})
+parser.add_argument('--cookies', help='include this cookiejar in every request', dest='cookies', default=None, type=http.cookiejar.FileCookieJar)
 args = parser.parse_args() # arguments to be parsed
 
 url = args.url
@@ -51,6 +53,7 @@ jsonData = args.jsonData
 url_file = args.url_file
 wordlist = args.wordlist
 threadCount = args.threads
+cookiejar = args.cookies
 
 if stable or delay:
     threadCount = 1
@@ -129,9 +132,9 @@ def heuristic(response, paramList):
         print('%s Heuristic found a potential parameter: %s%s%s' % (good, green, inpName, end))
         print('%s Prioritizing it' % info)
 
-def quickBruter(params, originalResponse, originalCode, reflections, factors, include, delay, headers, url, GET):
+def quickBruter(params, originalResponse, originalCode, reflections, factors, include, delay, headers, url, GET, cookiejar):
     joined = joiner(params, include)
-    newResponse = requester(url, joined, headers, GET, delay)
+    newResponse = requester(url, joined, headers, GET, delay, cookiejar)
     if newResponse.status_code == 429:
         if core.config.globalVariables['stable']:
             print('%s Hit rate limit, stabilizing the connection..')
@@ -156,27 +159,27 @@ def quickBruter(params, originalResponse, originalCode, reflections, factors, in
 def narrower(oldParamList, url, include, headers, GET, delay, originalResponse, originalCode, reflections, factors, threadCount):
     newParamList = []
     threadpool = concurrent.futures.ThreadPoolExecutor(max_workers=threadCount)
-    futures = (threadpool.submit(quickBruter, part, originalResponse, originalCode, reflections, factors, include, delay, headers, url, GET) for part in oldParamList)
+    futures = (threadpool.submit(quickBruter, part, originalResponse, originalCode, reflections, factors, include, delay, headers, url, GET, cookiejar) for part in oldParamList)
     for i, result in enumerate(concurrent.futures.as_completed(futures)):
         if result.result():
             newParamList.extend(slicer(result.result()))
         print('%s Processing: %i/%-6i' % (info, i + 1, len(oldParamList)), end='\r')
     return newParamList
 
-def initialize(url, include, headers, GET, delay, paramList, threadCount):
+def initialize(url, include, headers, GET, delay, paramList, threadCount, cookiejar):
     url = stabilize(url)
     if not url:
         return {}
     else:
         print('%s Analysing the content of the webpage' % run)
-        firstResponse = requester(url, include, headers, GET, delay)
+        firstResponse = requester(url, include, headers, GET, delay, cookiejar)
 
         print('%s Analysing behaviour for a non-existent parameter' % run)
 
         originalFuzz = randomString(6)
         data = {originalFuzz : originalFuzz[::-1]}
         data.update(include)
-        response = requester(url, data, headers, GET, delay)
+        response = requester(url, data, headers, GET, delay, cookiejar)
         reflections = response.text.count(originalFuzz[::-1])
         print('%s Reflections: %s%i%s' % (info, green, reflections, end))
 
@@ -216,7 +219,7 @@ def initialize(url, include, headers, GET, delay, paramList, threadCount):
         foundParams = []
 
         for param in foundParamsTemp:
-            exists = quickBruter([param], originalResponse, originalCode, reflections, factors, include, delay, headers, url, GET)
+            exists = quickBruter([param], originalResponse, originalCode, reflections, factors, include, delay, headers, url, GET, cookiejar)
             if exists:
                 foundParams.append(param)
 
@@ -234,7 +237,7 @@ try:
     if url:
         finalResult[url] = []
         try:
-            finalResult[url] = initialize(url, include, headers, GET, delay, paramList, threadCount)
+            finalResult[url] = initialize(url, include, headers, GET, delay, paramList, threadCount, cookiejar)
         except ConnectionError:
             print('%s Target has rate limiting in place, please use --stable switch.' % bad)
             quit()
@@ -243,7 +246,7 @@ try:
             finalResult[url] = []
             print('%s Scanning: %s' % (run, url))
             try:
-                finalResult[url] = initialize(url, include, headers, GET, delay, list(paramList), threadCount)
+                finalResult[url] = initialize(url, include, headers, GET, delay, list(paramList), threadCount, cookiejar)
                 if finalResult[url]:
                     print('%s Parameters found: %s' % (good, ', '.join(finalResult[url])))
             except ConnectionError:
