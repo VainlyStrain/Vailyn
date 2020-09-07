@@ -212,4 +212,4 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
 ### Arjun Modifications
 
-Arjun was slightly modified to fix false negatives with HTTP Basic Auth Sites.
+Arjun was slightly modified to fix false negatives with HTTP Basic Auth Sites, and to accept session cookies specified by Vailyn arguments.
