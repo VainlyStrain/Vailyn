@@ -33,11 +33,11 @@ mandatory:
   -v VIC, --victim VIC  {0}Target to attack, part 1 [pre-payload]{1}
   -a INT, --attack INT  {0}Attack type (int, 1-5){1}
 
-    {2}  1{1}{3}|{1}  Query Parameter
-    {2}  2{1}{3}|{1}  Path
-    {2}  3{1}{3}|{1}  Cookie
-    {2}  4{1}{3}|{1}  POST Data
-    {2}  5{1}{3}|{1}  Crawler (automatic)
+  {2}  1{1}{3}|;{1}  Query Parameter
+  {2}  2{1}{3}|:{1}  Path
+  {2}  3{1}{3}|;{1}  Cookie
+  {2}  4{1}{3}|:{1}  POST Data
+  {2}  5{1}{3}|;{1}  Crawler (automatic)
 
   -l FIL PATH, --lists FIL PATH      
                         {0}Dictionaries (files and dirs){1}
@@ -55,7 +55,11 @@ additional:
   -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}
   -k T, --timeout T     {0}Request Timeout; stable switch for Arjun{1}
   -m, --nosploit        {0}skip Phase 2 (does not need -l FIL PATH){1}
-  --app                 {0}Start Vailyn's Qt5 interface{1}'''.format(color.RC, color.END, color.O, color.RD))
+  --app                 {0}Start Vailyn's Qt5 interface{1}
+  
+develop:
+  --debug               {0}Display every path tried, even 404s.{1}
+  --version             {0}Print program version and exit.{1}'''.format(color.RC, color.END, color.BOLD, color.RD))
 
 
 """Formatter for the argument parser"""
@@ -127,6 +131,9 @@ def build_parser():
                    action="store_true",)
     p.add_argument('-g', '--app',
                    help="Start Vailyn's Qt5 interface",
+                   action="store_true",)
+    p.add_argument('--version',
+                   help="Print program version and exit.",
                    action="store_true",)
                
     return p 

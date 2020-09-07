@@ -1099,6 +1099,13 @@ if __name__ == "__main__":
         parser = build_parser()
         opt = vars(parser.parse_args())
         args = parser.parse_args()
+        if opt["version"]:
+            print("\n\n{}".format(variables.e_version))
+            if checkUpdate():
+                print("latest available version.")
+            else:
+                print("an update is available.")
+            sys.exit(0)
         if opt["timeout"]:
             variables.timeout = args.timeout
             variables.stable = True
