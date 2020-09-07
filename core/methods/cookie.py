@@ -57,3 +57,4 @@ def cookieFromFile(cookiefile):
         cookie.expires = time.time() + 14 * 24 * 3600
     assert(len(jar) > 0)
     return jar
+    

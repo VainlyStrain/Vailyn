@@ -51,6 +51,16 @@ URL crawler - enumerates all links related to the target for further analysis
 class UrlSpider(scrapy.Spider):
     name = "vailyn_url_spider"
     start_urls = viclist
+    cookiedict = {}
+
+    def __init__(self, cookiedict=None, *args, **kwargs):
+        super(UrlSpider, self).__init__(*args, **kwargs)
+        if cookiedict:
+            self.cookiedict = cookiedict
+
+    def start_requests(self):
+        for target in viclist:
+            yield Request(target, callback=self.parse, cookies=self.cookiedict)
 
     def parse(self, response):
         le = LinkExtractor(allow=".*{}.*".format(domain)) 
@@ -58,7 +68,7 @@ class UrlSpider(scrapy.Spider):
             if link.url not in viclist:
                 viclist.append(link.url)
                 print("{0}[INFO]{1} found{4}|{2} {3}".format(color.RD, color.END + color.O, color.END, link.url, color.END+color.RD))
-            yield Request(link.url, callback=self.parse)
+            yield Request(link.url, callback=self.parse, cookies=self.cookiedict)
 
 """
 enumerate GET and POST parameters using Arjun by s0md3v to attack in respective phase
@@ -70,18 +80,21 @@ def arjunEnum(post=False):
     with open(cachedir+subdir+"spider-phase0.txt", "w") as vicfile:
         for target in viclist:
             vicfile.write(target + "\n")
-    if post:
-        if stable:
-            subprocess.run(["python3", "lib/Arjun/arjun.py", "-o", cachedir+subdir+"spider-phase5.json", "--urls", cachedir+subdir+"spider-phase0.txt", "--post", "-f", "lib/Arjun/db/params.txt"])
-        else:
-            subprocess.run(["python3", "lib/Arjun/arjun.py", "-t", str(processes), "-o", cachedir+subdir+"spider-phase5.json", "--urls", cachedir+subdir+"spider-phase0.txt", "--post", "-f", "lib/Arjun/db/params.txt"])
-    else:
-        if stable:
-            subprocess.run(["python3", "lib/Arjun/arjun.py", "-o", cachedir+subdir+"spider-phase1.json", "--urls", cachedir+subdir+"spider-phase0.txt", "--get", "-f", "lib/Arjun/db/params.txt"])
-        else:
-            subprocess.run(["python3", "lib/Arjun/arjun.py", "-t", str(processes), "-o", cachedir+subdir+"spider-phase1.json", "--urls", cachedir+subdir+"spider-phase0.txt", "--get", "-f", "lib/Arjun/db/params.txt"])
-    
 
+    command = ["python3", "lib/Arjun/arjun.py", "--urls", cachedir+subdir+"spider-phase0.txt", "-f", "lib/Arjun/db/params.txt"]
+    if post:
+        command += ["-o", cachedir+subdir+"spider-phase5.json", "--post"]
+    else:
+        command += ["-o", cachedir+subdir+"spider-phase1.json", "--get"]
+
+    if stable:
+        command += ["--stable"]
+    else:
+        command += ["-t", str(processes)]
+
+    #print(command)
+    subprocess.run(command)
+    
     siteparams = None
     if post:
         with open(cachedir+subdir+"spider-phase5.json") as f:
