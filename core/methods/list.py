@@ -36,9 +36,6 @@ def listperm(sdirs, depth):
         yield idir
         #print(idir)
     iter=1
-    """
-    TODO avoid list copy, improve memory footprint further
-    """
 
     #remove empty string causing duplicates
     mdirs=[]
