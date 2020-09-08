@@ -411,9 +411,9 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
             from scrapy.crawler import CrawlerProcess
             self.tabWidget.setCurrentIndex(self.attackIndex)
-            print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
             self.timeLabel.setText("Active Phase: 0")
             self.show()
+            app.processEvents()
             starting_time = time.time()
             process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
             process.crawl(UrlSpider, cookiedict=crawlcookies)
@@ -421,28 +421,34 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
             self.timeLabel.setText("Active Phase: 1")
             self.show()
+            app.processEvents()
             siteparams = arjunEnum(cookiejar=arjunjar)
 
             self.timeLabel.setText("Active Phase: 2")
             self.show()
+            app.processEvents()
             queryattack = analyzeParam(siteparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
 
             self.timeLabel.setText("Active Phase: 3")
             self.show()
+            app.processEvents()
             pathattack = analyzePath(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             time.sleep(1)
 
             self.timeLabel.setText("Active Phase: 4")
             self.show()
+            app.processEvents()
             cookieattack = analyzeCookie(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             time.sleep(1)
 
             self.timeLabel.setText("Active Phase: 5")
             self.show()
+            app.processEvents()
             postparams = arjunEnum(post=True, cookiejar=arjunjar)
 
             self.timeLabel.setText("Active Phase: 6")
             self.show()
+            app.processEvents()
             postattack = analyzeParam(postparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             ending_time = time.time()
             total_time = ending_time - starting_time
@@ -517,6 +523,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
         self.tabWidget.setCurrentIndex(self.attackIndex)
         self.show()
+        app.processEvents()
 
         #present option to skip phase 1 if cache from previous attack present
         targetcache = parseUrl(self.victim)
