@@ -18,7 +18,7 @@ _____, ___
 """
 
 
-from itertools import permutations, islice
+from itertools import permutations, islice, combinations
 
 """equally split list for threads"""
 def listsplit(l, n):
@@ -32,22 +32,24 @@ create directory dictionary permutations
 generator to be more memory-friendly
 """
 def listperm(sdirs, depth):
-    for idir in sdirs:
+    for idir in filegen(sdirs, dirs=True):
         yield idir
+        #print(idir)
     iter=1
     """
     TODO avoid list copy, improve memory footprint further
     """
-    ndirs=list.copy(sdirs)
+
     #remove empty string causing duplicates
-    del ndirs[0]
     mdirs=[]
     while (iter<=(depth)):
+        ndirs = filegen(sdirs)
         for mdirs in permutations(ndirs,(iter+1)):
             diri = ""
             for elem in mdirs:
                 diri += str(elem)
             yield diri
+            #print(diri)
         iter+=1
 
 """
@@ -59,4 +61,13 @@ def gensplit(g, n):
     while piece:
         yield piece
         piece = list(islice(i, n))
-        
+
+"""read dictionary file into generator"""
+def filegen(path, dirs=False):
+    if dirs:
+        yield ""
+    with open(path, "r") as dfile:
+        for line in dfile:
+            if dirs and not line.strip().endswith("/"):
+                line = line.strip() + "/"
+            yield line.strip()

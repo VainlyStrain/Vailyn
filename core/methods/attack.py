@@ -30,6 +30,7 @@ from core.methods.filecheck import filecheck
 from core.methods.loot import download
 from core.methods.progress import progress, progresswin, progressgui
 from core.methods.cookie import cookieFromFile
+from core.methods.list import filegen
 
 global maxlen
 maxlen = len(max(payloadlist, key=len))
@@ -293,14 +294,15 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 @dirlen: total directory dictionary size (after permutations)
 @gui: GUI frame to set the graphical progress bar
 """
-def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie, postdata, dirlen, gui):
+def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie, postdata, dirlen, gui):
     #variables for the progress counter
     global requestcount
     timeout = vars.timeout
+    fileslen = sum(1 for dummy in filegen(filespath))
     if len(selected_nullbytes) == 0:
-        totalrequests = len(selected_payloads) * len(files) * dirlen * depth
+        totalrequests = len(selected_payloads) * fileslen * dirlen * depth
     else:
-        totalrequests = len(selected_payloads) * len(selected_nullbytes) * len(files) * dirlen * depth
+        totalrequests = len(selected_payloads) * len(selected_nullbytes) * fileslen * dirlen * depth
 
     if gui:
         lock.acquire()
@@ -346,6 +348,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, files, dirs, depth, ver
 
     try:
         for dir in dirs:
+            files = filegen(filespath)
             for file in files:
                 d=1
                 while d <= depth:

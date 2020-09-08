@@ -37,7 +37,7 @@ from PyQt5.QtWidgets import QTreeWidgetItem, QTableWidgetItem, QFileDialog
 
 from core.methods.parser import build_parser
 from core.methods.print import banner, listprint2
-from core.methods.list import listsplit, listperm, gensplit
+from core.methods.list import listsplit, listperm, gensplit, filegen
 from core.methods.select import select
 from core.methods.tree import create_tree
 from core.methods.attack import phase1, phase2, lfishell, resetCounter
@@ -48,7 +48,7 @@ from core.methods.version import checkUpdate
 from core.methods.loot import setDate
 
 from core.colors import color
-from core.variables import payloadlist, nullchars, version, sdirs, commons, processes, cachedir
+from core.variables import payloadlist, nullchars, version, processes, cachedir
 
 
 #initialize colorama
@@ -296,8 +296,6 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.nosploit = False
 
     def attackGui(self):
-        sdirs = ['']
-        commons = []
         self.foundfiles = [""]
         self.foundurls = [""]
         self.foundpayloads = []
@@ -369,17 +367,6 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     return
                 self.unix = True
                 enableTor(shell=False, sigLin=True)
-
-        if self.attack != 5 and not self.nosploit:
-            with open(self.filedict) as filelisted:
-                for l in filelisted:
-                    commons.append(l.strip())
-            with open(self.dirdict) as dirlisted:
-                for l in dirlisted:
-                    if not l.strip().endswith("/"):
-                        l = l.strip() + "/"
-                    sdirs.append(l.strip())
-
 
         paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
 
@@ -602,10 +589,11 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             else:
                 setDate()
                 #equally split dictionary entries to all threads
-                if opt["lists"] and len(sdirs) > 100:
+                sdirlen = sum(1 for dummy in filegen(self.dirdict, dirs=True))
+                if opt["lists"] and sdirlen > 100:
                     self.showInfo("Preparing dictionaries...")
                 #dirlen = sum(1 for dummy in listperm(sdirs, self.permutationLevel))
-                dirlen2 = len(sdirs)
+                dirlen2 = sdirlen
                 felems = dirlen2 -1
                 i = 1
                 while (i <= self.permutationLevel):
@@ -616,11 +604,13 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     dirlen2 += cur
                     i += 1
                 dirlen = int(dirlen2)
-                splitted = gensplit(listperm(sdirs, self.permutationLevel), round(dirlen/processes))
+                #sdirs = filegen(self.dirdict, dirs=True)
+                #commons = filegen(self.filedict)
+                splitted = gensplit(listperm(self.dirdict, self.permutationLevel), round(dirlen/processes))
 
                 starting_time = time.time()
                 with Pool(processes=processes) as pool:
-                    res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,commons,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,dirlen,self,)) for l in splitted]
+                    res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,self.filedict,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,dirlen,self,)) for l in splitted]
                     for i in res:
                         #fetch results
                         restuple = i.get()
@@ -783,18 +773,6 @@ def main(parser, opt, args, shell=True) -> int:
         parser.print_help()
         sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -v, -a and -l mandatory')
-
-    #load dictionaries
-    if opt['lists']:
-        with open(args.lists[0]) as filelisted:
-            for l in filelisted:
-                commons.append(l.strip())
-        with open(args.lists[1]) as dirlisted:
-            for l in dirlisted:
-                if not l.strip().endswith("/"):
-                    l = l.strip() + "/"
-                sdirs.append(l.strip())
-
   
     loot = False
     victim2 = ""
@@ -1047,10 +1025,11 @@ def main(parser, opt, args, shell=True) -> int:
             lfishell(args.attack, args.victim, victim2, param, cookie, selected, verbose, selectedpayloads, selectednullbytes, cookiefile, postdata)
         else:
             setDate()
-            if opt["lists"] and len(sdirs) > 100:
+            sdirlen = sum(1 for dummy in filegen(args.lists[1], dirs=True))
+            if opt["lists"] and sdirlen > 100:
                 print("{}  Preparing dictionaries...{}".format(color.RC, color.END))
             #dirlen = sum(1 for dummy in listperm(sdirs, permutationLevel))
-            dirlen2 = len(sdirs)
+            dirlen2 = sdirlen
             felems = dirlen2 -1
             i = 1
             while (i <= permutationLevel):
@@ -1061,11 +1040,13 @@ def main(parser, opt, args, shell=True) -> int:
                 dirlen2 += cur
                 i += 1
             dirlen = int(dirlen2)
-            splitted = gensplit(listperm(sdirs, permutationLevel), round(dirlen/processes))
+            #sdirs = filegen(args.lists[1], dirs=True)
+            #commons = filegen(args.lists[0])
+            splitted = gensplit(listperm(args.lists[1], permutationLevel), round(dirlen/processes))
 
             starting_time = time.time()
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,commons,l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,postdata,dirlen,None,)) for l in splitted]
+                res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,args.lists[0],l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,postdata,dirlen,None,)) for l in splitted]
                 for i in res:
                     #fetch results
                     restuple = i.get()
