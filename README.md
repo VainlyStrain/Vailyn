@@ -86,7 +86,7 @@ additional:
   
 develop:
   --debug               Display every path tried, even 404s.
-  --version              Start Vailyn's Qt5 interface
+  --version             Print program version and exit.
 ```
 
 Vailyn currently supports 4 attack vectors, and provides a crawler to automate all of them. The attack performed is identified by the `-a INT` argument.
