@@ -83,6 +83,10 @@ additional:
   -k T, --timeout T     Request Timeout; stable switch for Arjun
   -m, --nosploit        skip Phase 2 (does not need -l FIL PATH)
   --app                 Start Vailyn's Qt5 interface
+  
+develop:
+  --debug               Display every path tried, even 404s.
+  --version              Start Vailyn's Qt5 interface
 ```
 
 Vailyn currently supports 4 attack vectors, and provides a crawler to automate all of them. The attack performed is identified by the `-a INT` argument.
