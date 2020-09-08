@@ -18,7 +18,7 @@ _____, ___
 """
 
 
-from itertools import permutations, islice, combinations
+from itertools import permutations, islice
 
 """equally split list for threads"""
 def listsplit(l, n):
