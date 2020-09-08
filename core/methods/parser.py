@@ -24,7 +24,7 @@ from core.colors import color
 """Vailyn's argument parser"""
 class ArgumentParser(argparse.ArgumentParser):
     def error(self, message):
-        self.print_usage(sys.stderr)
+        self.print_help()
         self.exit(2, "\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' %s\n' % (message))
     def print_help(self):
         self.print_usage(sys.stderr)
