@@ -44,8 +44,6 @@ payloadlist = generatePayloads()
 #special not in use
 special = ['.?/','?./','??/']
 nullchars = ['%00', '%2500', '%25%30%30', '%u0000', '%c0%80', '%e0%80']
-sdirs = ['']
-commons = []
 
 #Tor variables
 tor = False
@@ -80,7 +78,7 @@ else:
 
 verbose = False
 
-version = "2.4"
+version = "2.5"
 e_version = ""
 with open("core/doc/VERSION", "r") as versionfile:
     e_version = versionfile.read().strip()
