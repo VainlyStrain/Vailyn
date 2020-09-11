@@ -92,6 +92,8 @@ class VailynApp(QtWidgets.QDialog):
     attackIndex = 2
     status = ""
 
+    firstiter = True
+
     def __init__(self):
         super(VailynApp, self).__init__()
         uic.loadUi("core/qt5/Main.ui", self) # Load the .ui file
@@ -388,7 +390,9 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.treeView.clear()
         
         if self.attack == 5:
-            variables.viclist.append(self.victim)
+            self.crawlerResultDisplay.setText("")
+            if self.firstiter:
+                variables.viclist.append(self.victim)
             assert len(variables.viclist) > 0
             crawlcookies = {}
             arjunjar = None
@@ -396,15 +400,20 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 arjunjar = cookieFromFile(self.authcookie)
                 crawlcookies = requests.utils.dict_from_cookiejar(arjunjar)
             from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
-            from scrapy.crawler import CrawlerProcess
+            from scrapy.crawler import CrawlerRunner
+            from twisted.internet import reactor
             self.tabWidget.setCurrentIndex(self.attackIndex)
             self.timeLabel.setText("Active Phase: 0")
             self.show()
             app.processEvents()
             starting_time = time.time()
-            process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
+            process = CrawlerRunner({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
             process.crawl(UrlSpider, cookiedict=crawlcookies)
-            process.start()
+            d = process.join()
+            d.addBoth(lambda _: reactor.stop())
+            if self.firstiter:
+                reactor.run()
+                self.firstiter = False
 
             self.timeLabel.setText("Active Phase: 1")
             self.show()
