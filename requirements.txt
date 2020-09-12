@@ -4,3 +4,4 @@ argparse
 colorama
 PyQt5
 scrapy
+twisted
