@@ -33,11 +33,9 @@ mandatory:
   -v VIC, --victim VIC  {0}Target to attack, part 1 [pre-payload]{1}
   -a INT, --attack INT  {0}Attack type (int, 1-5){1}
 
-  {2}  1{1}{3}|;{1}  Query Parameter
-  {2}  2{1}{3}|:{1}  Path
+  {2}  1{1}{3}|;{1}  Query Parameter {2}  4{1}{3}|:{1}  POST Data
+  {2}  2{1}{3}|:{1}  Path            {2}  5{1}{3}|;{1}  Crawler (automatic)
   {2}  3{1}{3}|;{1}  Cookie
-  {2}  4{1}{3}|:{1}  POST Data
-  {2}  5{1}{3}|;{1}  Crawler (automatic)
 
   -l FIL PATH, --lists FIL PATH      
                         {0}Dictionaries (files and dirs){1}

@@ -88,6 +88,37 @@ ____, __              |
                      '    {0}
     '''.format(color.END, color.BOLD, color.CURSIVE)
     
+    largedark = '''{0}                      |
+                      :   
+                      |   
+                      :   
+                      . 
+                      .
+____{4},{0} __              |   
+   {4}+{0}{1} {4};{0}               :|   
+   {4}.{1}:,{0}{1}                       
+     {4}’{0}{1}                      
+    {4}.{0}{1}              /      
+    {4}+{0}{1} {4};{0}{1}           :,      
+    {4};.{0}{1}           /,       
+   {0}  {4};{0}          /;' ;    
+     {4};{0}         /;{2}|{0}  : ^  
+     {4}’{0}      / {2}:{0}  ;.’  °   
+          '/; \\           
+         ./ '. \\      
+          '.  ’·   {0}
+         {1}   '.    {0}|{3} Vailyn {0}|{1}
+               {0}[ {6}VainlyStrain{0} ]{0}{1}
+                    
+                \\.               
+                 .,.      
+                   .'.    
+                  ''.;:     
+                    .|.   
+                     | '  
+                     '    {5}
+    '''.format(color.END + color.RD, color.BOLD, color.CURSIVE, color.END+color.O, color.RD, color.END, color.END+color.R)
+    
     stealth = """{1}
    ,                \\                  /      {0}         , {1}
      ':.             \\.      /\\.     ./   {0}         .:'      
@@ -132,11 +163,11 @@ _____.,   ____       ____      ____      ____        ___    ___     ____    ____
     """
 
     #banners = [large, large, large, medium1, medium2, small1, small2, mixed, mixed, mixed]
-    banners = [large, largemixed, bold, bold2, stealth]
+    banners = [large, largemixed, bold, bold2, stealth, largedark, largedark, largedark]
     
     subprocess.run(CLEAR_CMD)
     print(banners[random.randrange(0, len(banners))])
-    #print(stealth)
+    #print(largedark)
 
 """
 the following methods nicely output lists for the payload selection
