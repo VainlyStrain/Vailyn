@@ -245,6 +245,6 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None)
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
-    with open(cachedir+subdir+"spider-phase2.json", "w+") as f:
+    with open(cachedir+subdir+"spider-phase6.json", "w+") as f:
         json.dump(result, f, sort_keys=True, indent=4)
     return result
