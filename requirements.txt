@@ -5,3 +5,4 @@ colorama
 PyQt5
 scrapy
 twisted
+PyDispatcher

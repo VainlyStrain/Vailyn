@@ -391,9 +391,11 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         
         if self.attack == 5:
             self.crawlerResultDisplay.setText("")
-            if self.firstiter:
-                variables.viclist.append(self.victim)
-            assert len(variables.viclist) > 0
+            #if not self.firstiter:
+            variables.viclist.clear()
+            #if self.firstiter:
+            #variables.viclist.append(self.victim)
+            #assert len(variables.viclist) > 0
             crawlcookies = {}
             arjunjar = None
             if self.authcookie != "":
@@ -402,18 +404,40 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
             from scrapy.crawler import CrawlerRunner
             from twisted.internet import reactor
+            from multiprocessing import Process, Queue
+
+            def runSpider():
+                def f(q):
+                    try:
+                        process = CrawlerRunner({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
+                        d = process.crawl(UrlSpider, cookiedict=crawlcookies, url=self.victim)
+                        d.addBoth(lambda _: reactor.stop())
+                        reactor.run()
+                        q.put(None)
+                    except Exception as e:
+                        q.put(e)
+
+                q = Queue()
+                p = Process(target=f, args=(q,))
+                p.start()
+                result = q.get()
+                p.join()
+                if result != None:
+                    print("Crawler error: {}".format(result))
+                    self.showError("A crawler error has occurred.")
+
             self.tabWidget.setCurrentIndex(self.attackIndex)
             self.timeLabel.setText("Active Phase: 0")
             self.show()
             app.processEvents()
             starting_time = time.time()
-            process = CrawlerRunner({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
-            process.crawl(UrlSpider, cookiedict=crawlcookies)
-            d = process.join()
-            d.addBoth(lambda _: reactor.stop())
-            if self.firstiter:
-                reactor.run()
-                self.firstiter = False
+
+            runSpider()
+            subdir = parseUrl(self.victim)
+
+            with open(cachedir+subdir+"spider-phase0.txt", "r") as vicfile:
+                for line in vicfile:
+                    variables.viclist.append(line.strip())
 
             self.timeLabel.setText("Active Phase: 1")
             self.show()
@@ -864,8 +888,6 @@ def main(parser, opt, args, shell=True) -> int:
         print("\n{0} [TOR]{1}{6} IP{1}{0}|{1}{5} {2} {1}{4}>{1} {3}".format(color.RD, color.END, variables.initip, variables.torip, color.BOLD, color.CURSIVE, color.O))
 
     if args.attack == 5:
-        variables.viclist.append(args.victim)
-        assert len(variables.viclist) > 0
         crawlcookies = {}
         arjunjar = None
         if cookiefile != "":
@@ -877,8 +899,12 @@ def main(parser, opt, args, shell=True) -> int:
         #print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
         time.sleep(0.5)
         process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
-        process.crawl(UrlSpider, cookiedict=crawlcookies)
+        process.crawl(UrlSpider, cookiedict=crawlcookies, url=args.victim)
         process.start()
+        subdir = parseUrl(args.victim)
+        with open(cachedir+subdir+"spider-phase0.txt", "r") as vicfile:
+            for line in vicfile:
+                variables.viclist.append(line.strip())
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (GET)\n'.format(color.RD, color.END))
         #print("\n{0}Phase 1|{1} {2}Parameter Enumeration{1}\n".format(color.RD, color.END, color.O))

@@ -22,9 +22,10 @@ import scrapy, logging
 import json, os, time
 import subprocess
 
-from scrapy import Request
+from scrapy import Request, signals
 from scrapy.linkextractors import LinkExtractor
 from multiprocessing.pool import ThreadPool as Pool
+from pydispatch import dispatcher
 
 from core.variables import viclist, processes, stable, cachedir, payloadlist
 from core.colors import color
@@ -32,13 +33,6 @@ from core.methods.attack import phase1, resetCounter
 from core.methods.cache import parseUrl
 from core.methods.cookie import getCookie
 from core.methods.list import listsplit
-
-global domain
-
-domain = viclist[0].split("://")[1]
-if "@" in domain:
-    domain = domain.split("@")[1]
-domain = domain.split("/")[0].split(":")[0]
 
 
 logging.getLogger("requests").setLevel(logging.WARNING)
@@ -50,36 +44,53 @@ URL crawler - enumerates all links related to the target for further analysis
 """
 class UrlSpider(scrapy.Spider):
     name = "vailyn_url_spider"
-    start_urls = viclist
+    start_urls = []
     cookiedict = {}
+    domain = ""
+    #donelist = []
+    subdir = ""
 
-    def __init__(self, cookiedict=None, *args, **kwargs):
+    def __init__(self, cookiedict=None, url=None, *args, **kwargs):
         super(UrlSpider, self).__init__(*args, **kwargs)
+        dispatcher.connect(self.closed, signals.spider_closed)
         if cookiedict:
             self.cookiedict = cookiedict
+        assert url != None
+        self.start_urls.append(url)
+        dom = url.split("://")[1]
+        if "@" in dom:
+            dom = dom.split("@")[1]
+        dom = dom.split("/")[0].split(":")[0]
+        self.domain = dom
+        assert self.domain != ""
+        self.subdir = parseUrl(url)
+        if not os.path.exists(cachedir+self.subdir):
+            os.makedirs(cachedir+self.subdir)
+
 
     def start_requests(self):
-        for target in viclist:
+        for target in self.start_urls:
             yield Request(target, callback=self.parse, cookies=self.cookiedict)
 
     def parse(self, response):
-        le = LinkExtractor(allow=".*{}.*".format(domain)) 
+        le = LinkExtractor(allow=".*{}.*".format(self.domain)) 
         for link in le.extract_links(response):
-            if link.url not in viclist:
-                viclist.append(link.url)
+            if link.url not in self.start_urls:
+                self.start_urls.append(link.url)
                 print("{0}[INFO]{1} found{4}|{2} {3}".format(color.RD, color.END + color.O, color.END, link.url, color.END+color.RD))
             yield Request(link.url, callback=self.parse, cookies=self.cookiedict)
+
+    def closed(self):
+        with open(cachedir+self.subdir+"spider-phase0.txt", "w") as vicfile:
+            for link in self.start_urls:
+                vicfile.write(link + "\n")
+
 
 """
 enumerate GET and POST parameters using Arjun by s0md3v to attack in respective phase
 """
 def arjunEnum(post=False, cookiejar=None):
     subdir = parseUrl(viclist[0])
-    if not os.path.exists(cachedir+subdir):
-        os.makedirs(cachedir+subdir)
-    with open(cachedir+subdir+"spider-phase0.txt", "w") as vicfile:
-        for target in viclist:
-            vicfile.write(target + "\n")
 
     command = ["python3", "lib/Arjun/arjun.py", "--urls", cachedir+subdir+"spider-phase0.txt", "-f", "lib/Arjun/db/params.txt"]
     if post:
