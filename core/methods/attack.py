@@ -104,7 +104,12 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             gui.progressBar.setMaximum(totalrequests)
         finally:
             lock.release()
+
     #resolve issues with inpath attack
+    if attack == 2:
+        #only root directory, else false positives
+        splitted = url.split("://")
+        url = splitted[0] + "://" + splitted[1].split("/")[0]
     if not url.endswith("/"):
         url += "/"
 

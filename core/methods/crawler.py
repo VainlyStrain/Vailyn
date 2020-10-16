@@ -172,7 +172,14 @@ def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
     result = {}
     subdir = parseUrl(viclist[0])
     with Pool(processes=processes) as pool:
+        pathviclist = []
         for victim in viclist:
+            #only root directory, else false positives
+            splitted = victim.split("://")
+            url = splitted[0] + "://" + splitted[1].split("/")[0]
+            if url not in pathviclist:
+                pathviclist.append(url)
+        for victim in pathviclist:
             payloads = []
             nullbytes = []
             print("\n{0}[INFO]{1} path{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
