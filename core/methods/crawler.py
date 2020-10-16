@@ -157,6 +157,7 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie, gui=None
                 sub[param] = (payloads, nullbytes)
                 if payloads and gui:
                     gui.crawlerResultDisplay.append("[+] Vulnerable!")
+                    gui.crawlerResultDisplay.append("Payloads: {}\nNullbytes: {}".format(payloads, nullbytes))
                     gui.show()
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
@@ -200,6 +201,7 @@ def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
             result[victim] = (payloads, nullbytes)
             if payloads and gui:
                 gui.crawlerResultDisplay.append("[+] Vulnerable!")
+                gui.crawlerResultDisplay.append("Payloads: {}\nNullbytes: {}".format(payloads, nullbytes))
                 gui.show()
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
@@ -250,6 +252,7 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie, gui=None):
                 sub[key] = (payloads, nullbytes)
                 if payloads and gui:
                     gui.crawlerResultDisplay.append("[+] Vulnerable!")
+                    gui.crawlerResultDisplay.append("Payloads: {}\nNullbytes: {}".format(payloads, nullbytes))
                     gui.show()
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
@@ -295,6 +298,7 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None)
                 sub[param] = (payloads, nullbytes)
                 if payloads and gui:
                     gui.crawlerResultDisplay.append("[+] Vulnerable!")
+                    gui.crawlerResultDisplay.append("Payloads: {}\nNullbytes: {}".format(payloads, nullbytes))
                     gui.show()
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
