@@ -132,12 +132,18 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie, gui=None
         for victim, paramlist in siteparams.items():
             sub = {}
             print("\n{0}[INFO]{1} param{4}|{2} Attacking {3}".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+            if gui:
+                gui.crawlerResultDisplay.append("\n[Info] param| Attacking {}".format(victim))
+                gui.show()
             time.sleep(0.5)
             for param in paramlist:
                 payloads = []
                 nullbytes = []
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 print("\n{0}[INFO]{1} param{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, param, color.END+color.RD))
+                if gui:
+                    gui.crawlerResultDisplay.append("[Info] param| Using {}".format(param))
+                    gui.show()
                 time.sleep(1.0)
                 resetCounter()
                 res = [pool.apply_async(phase1, args=(1,victim,victim2,param,None,"",verbose,depth,l,file,authcookie,"",gui,)) for l in paysplit]
@@ -149,6 +155,9 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie, gui=None
                 payloads = list(set(payloads))
                 nullbytes = list(set(nullbytes))
                 sub[param] = (payloads, nullbytes)
+                if payloads and gui:
+                    gui.crawlerResultDisplay.append("[+] Vulnerable!")
+                    gui.show()
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
@@ -167,6 +176,9 @@ def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
             payloads = []
             nullbytes = []
             print("\n{0}[INFO]{1} path{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+            if gui:
+                gui.crawlerResultDisplay.append("\n[Info] path| Attacking {}".format(victim))
+                gui.show()
             time.sleep(1.0)
             paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
             resetCounter()
@@ -179,6 +191,9 @@ def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
             payloads = list(set(payloads))
             nullbytes = list(set(nullbytes))
             result[victim] = (payloads, nullbytes)
+            if payloads and gui:
+                gui.crawlerResultDisplay.append("[+] Vulnerable!")
+                gui.show()
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
 
@@ -198,13 +213,22 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie, gui=None):
             cookie = getCookie(victim)
             if len(cookie.keys()) < 1:
                 print("\n{0}[INFO]{1} cookie{4}|{2} No cookies available for {3}.\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+                if gui:
+                    gui.crawlerResultDisplay.append("\n[Info] cookie| No cookies available for {}".format(victim))
+                    gui.show()
                 continue
             print("\n{0}[INFO]{1} cookie{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+            if gui:
+                gui.crawlerResultDisplay.append("\n[Info] cookie| Attacking {}".format(victim))
+                gui.show()
             time.sleep(0.5)
             for key in cookie.keys():
                 payloads = []
                 nullbytes = []
                 print("\n{0}[INFO]{1} cookie{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, key, color.END+color.RD))
+                if gui:
+                    gui.crawlerResultDisplay.append("[Info] cookie| Using {}".format(key))
+                    gui.show()
                 time.sleep(1.0)
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 resetCounter()
@@ -217,6 +241,9 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie, gui=None):
                 payloads = list(set(payloads))
                 nullbytes = list(set(nullbytes))
                 sub[key] = (payloads, nullbytes)
+                if payloads and gui:
+                    gui.crawlerResultDisplay.append("[+] Vulnerable!")
+                    gui.show()
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)
@@ -236,11 +263,17 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None)
         for victim, paramlist in siteparams.items():
             sub = {}
             print("\n{0}[INFO]{1} post{4}|{2} Attacking {3}".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+            if gui:
+                gui.crawlerResultDisplay.append("\n[Info] post| Attacking {}".format(victim))
+                gui.show()
             time.sleep(0.5)
             for param in paramlist:
                 payloads = []
                 nullbytes = []
                 print("\n{0}[INFO]{1} post{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, param, color.END+color.RD))
+                if gui:
+                    gui.crawlerResultDisplay.append("\n[Info] post| Using {}".format(param))
+                    gui.show()
                 time.sleep(1.0)
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 resetCounter()
@@ -253,6 +286,9 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None)
                 payloads = list(set(payloads))
                 nullbytes = list(set(nullbytes))
                 sub[param] = (payloads, nullbytes)
+                if payloads and gui:
+                    gui.crawlerResultDisplay.append("[+] Vulnerable!")
+                    gui.show()
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
         os.makedirs(cachedir+subdir)

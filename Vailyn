@@ -428,6 +428,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
             self.tabWidget.setCurrentIndex(self.attackIndex)
             self.timeLabel.setText("Active Phase: 0")
+            self.crawlerResultDisplay.append("[Info] Vailyn Scraper started.\n")
             self.show()
             app.processEvents()
             starting_time = time.time()
@@ -438,7 +439,9 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             with open(cachedir+subdir+"spider-phase0.txt", "r") as vicfile:
                 for line in vicfile:
                     variables.viclist.append(line.strip())
+                    self.crawlerResultDisplay.append("[+] Found {}".format(line.strip()))
 
+            self.crawlerResultDisplay.append("\n[Info] Arjun GET Scan started.")
             self.timeLabel.setText("Active Phase: 1")
             self.show()
             app.processEvents()
@@ -462,6 +465,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             cookieattack = analyzeCookie(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
             time.sleep(1)
 
+            self.crawlerResultDisplay.append("\n[Info] Arjun POST Scan started.")
             self.timeLabel.setText("Active Phase: 5")
             self.show()
             app.processEvents()
