@@ -24,7 +24,7 @@ Vailyn is a multi-phased vulnerability analysis and exploitation tool for path t
 
 ### How does it work?
 
-Vailyn operates in 2 phases. First, it checks if the vulnerability is present. It does so by trying to access /etc/passwd (or an user-specified file), with all of its evasive payloads. Analysing the response, payloads that worked are separated from the others.
+Vailyn operates in 2 phases. First, it checks if the vulnerability is present. It does so by trying to access /etc/passwd (or a user-specified file), with all of its evasive payloads. Analysing the response, payloads that worked are separated from the others.
 
 Now, the user can choose freely which payloads to use. Only these payloads will be used in the second phase.
 
@@ -151,7 +151,7 @@ To distinguish real results from false positives, Vailyn does the following chec
 * similar to #2, perform an additional check for query GET parameter handling (useful when server returns error that a needed parameter is missing)
 * check for empty responses
 * check if common error signatures are in the response content
-* check if the payload is contained in the response: this is an additional check for the case the server responds 200 for non-existing files, and reflects the payload in a message like (../../secret not found)
+* check if the payload is contained in the response: this is an additional check for the case the server responds 200 for non-existing files, and reflects the payload in a message (like ../../secret not found)
 
 ### Examples
 
