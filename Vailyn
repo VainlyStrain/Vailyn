@@ -860,8 +860,6 @@ def main(parser, opt, args, shell=True) -> int:
         print("{}Vailyn: {}PARAM{}".format(color.RC, color.END+color.RB, color.END))
         param = args.param
     elif (args.attack == 2):  #path mode
-        if not args.victim.endswith("/"):
-            args.victim = args.victim + "/"
         print("{}Vailyn: {}PATH{}".format(color.RC, color.END+color.RB, color.END))
     elif (args.attack == 3):  #cookie mode
         print("{}Vailyn: {}COOKIE{}".format(color.RC, color.END+color.RB, color.END))

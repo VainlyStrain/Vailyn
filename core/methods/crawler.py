@@ -177,7 +177,12 @@ def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
         for victim in viclist:
             #only root directory, else false positives
             splitted = victim.split("://")
-            url = splitted[0] + "://" + splitted[1].split("/")[0]
+            ulist = splitted[1].split("/")
+            last = ulist[-1]
+            #delete file, but not hidden directory
+            if "." in last and not last.startswith("."):
+                del ulist[-1]
+            url = splitted[0] + "://" + "/".join(ulist)
             if url not in pathviclist:
                 pathviclist.append(url)
         for victim in pathviclist:

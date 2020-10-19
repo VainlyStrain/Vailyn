@@ -109,7 +109,12 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     if attack == 2:
         #only root directory, else false positives
         splitted = url.split("://")
-        url = splitted[0] + "://" + splitted[1].split("/")[0]
+        ulist = splitted[1].split("/")
+        last = ulist[-1]
+        #delete file, but not hidden directory
+        if "." in last and not last.startswith("."):
+            del ulist[-1]
+        url = splitted[0] + "://" + "/".join(ulist)
     if not url.endswith("/"):
         url += "/"
 
@@ -319,6 +324,15 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
             lock.release()
 
     #resolve issues with inpath attack and loot function
+    if attack == 2:
+        #only root directory, else false positives
+        splitted = url.split("://")
+        ulist = splitted[1].split("/")
+        last = ulist[-1]
+        #delete file, but not hidden directory
+        if "." in last and not last.startswith("."):
+            del ulist[-1]
+        url = splitted[0] + "://" + "/".join(ulist)
     if not url.endswith("/"):
         url += "/"
 
@@ -520,6 +534,15 @@ second exploitation module: try to gain a reverse shell over the system
 """
 def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
     #resolve issues with inpath attack
+    if attack == 2:
+        #only root directory, else false positives
+        splitted = url.split("://")
+        ulist = splitted[1].split("/")
+        last = ulist[-1]
+        #delete file, but not hidden directory
+        if "." in last and not last.startswith("."):
+            del ulist[-1]
+        url = splitted[0] + "://" + "/".join(ulist)
     if not url.endswith("/"):
         url += "/"
 
