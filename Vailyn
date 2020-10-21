@@ -330,8 +330,6 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             if self.phase2PLevel.text().strip() != "":
                 self.showError("Depths must be valid positive integers!")
                 return
-        if self.attack == 4:
-            self.post = self.postInput.text()
 
         if variables.revshell:
             try:
@@ -735,6 +733,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.targetDialog.postInput.setEnabled(False)
         self.targetDialog.vicField.setText(self.victim)
         self.targetDialog.paramField.setText(self.param)
+        self.targetDialog.postInput.setText(self.post)
         self.targetDialog.vic2Field.setText(self.victim2)
         self.targetDialog.cancelButton.clicked.connect(self.targetDialog.close)
         self.targetDialog.setTargetButton.clicked.connect(intern)
