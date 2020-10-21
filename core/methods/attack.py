@@ -166,7 +166,6 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     r = s.send(prep, timeout=timeout)
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     print("Timeout reached for " + url)
-                    continue
             elif attack == 2:
                 prep, p = inpath(traverse, "", file, "", url, url2, s)
                 try:
@@ -174,7 +173,6 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     r = s.send(prep, timeout=timeout)
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     print("Timeout reached for " + url)
-                    continue
             elif attack == 3:
                 s.cookies.set(selected, traverse + file)
                 p = traverse + file
@@ -183,7 +181,6 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     r = s.get(url, timeout=timeout)
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     print("Timeout reached for " + url)
-                    continue
             elif attack == 4:
                 p = traverse + file
                 data = {}
@@ -198,8 +195,10 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     r = s.post(url, data=data, timeout=timeout)
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     print("Timeout reached for " + url)
-                    continue
-            requestlist.append((r, p, ""))
+            try:
+                requestlist.append((r, p, ""))
+            except:
+                pass
 
             #repeat for nullbytes
             for nb in nullchars:
@@ -243,7 +242,10 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
                         continue
-                requestlist.append((r, p, nb))
+                try:
+                    requestlist.append((r, p, nb))
+                except:
+                    pass
 
             #analyze result
             found = False
@@ -423,7 +425,10 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
                                     continue
-                            requestlist.append((r, p, data))
+                            try:
+                                requestlist.append((r, p, data))
+                            except:
+                                pass
                         else:
                             for nb in selected_nullbytes:
                                 data = {}
@@ -466,7 +471,10 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                         print("Timeout reached for " + url)
                                         continue
-                                requestlist.append((r, p, data))
+                                try:
+                                    requestlist.append((r, p, data))
+                                except:
+                                    pass
 
                         #analyze result
                         for (r, p, data) in requestlist:
@@ -606,7 +614,6 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         r = s.send(prep, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
-                        continue
                 elif attack == 2:
                     prep, p = inpath(traverse, "", file, "", url, url2, s)
                     try:
@@ -614,7 +621,6 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         r = s.send(prep, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
-                        continue
                 elif attack == 3:
                     s.cookies.set(selected, traverse + file)
                     p = traverse + file
@@ -623,7 +629,6 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         r = s.get(url, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
-                        continue
                 elif attack == 4:
                     p = traverse + file
                     for prop in postdata.split("&"):
@@ -637,8 +642,10 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         r = s.post(url, data=data, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
-                        continue
-                requestlist.append((r, p, "", data, traverse))
+                try:
+                    requestlist.append((r, p, "", data, traverse))
+                except:
+                    pass
             else:
                 for nb in nullist:
                     data = {}
@@ -681,7 +688,10 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
                             continue
-                    requestlist.append((r, p, "", data, traverse))
+                    try:
+                        requestlist.append((r, p, "", data, traverse))
+                    except:
+                        pass
 
 
             #analyze result
