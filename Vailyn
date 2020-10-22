@@ -856,18 +856,18 @@ def main(parser, opt, args, shell=True) -> int:
             parser.print_help()
             sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -p mandatory for -a 1')
-        print("{}Vailyn: {}PARAM{}".format(color.RC, color.END+color.RB, color.END))
+        print("{0}[Vailyn]{1} PARAM{2}|{3}".format(color.RD, color.END+color.RB, color.END+color.RD, color.END))
         param = args.param
     elif (args.attack == 2):  #path mode
-        print("{}Vailyn: {}PATH{}".format(color.RC, color.END+color.RB, color.END))
+        print("{0}[Vailyn]{1} PATH{2}|{3}".format(color.RD, color.END+color.RB, color.END+color.RD, color.END))
     elif (args.attack == 3):  #cookie mode
-        print("{}Vailyn: {}COOKIE{}".format(color.RC, color.END+color.RB, color.END))
+        print("{0}[Vailyn]{1} COOKIE{2}|{3}".format(color.RD, color.END+color.RB, color.END+color.RD, color.END))
     elif (args.attack == 4): #post traversal
         if not opt["post"]:
             parser.print_help()
             sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -s mandatory for -a 4')
-        print("{}Vailyn: {}POST{}".format(color.RC, color.END+color.RB, color.END))
+        print("{0}[Vailyn]{1} POST{2}|{3}".format(color.RD, color.END+color.RB, color.END+color.RD, color.END))
         postdata = args.post
         if "INJECT" not in postdata:
             sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
@@ -876,13 +876,14 @@ def main(parser, opt, args, shell=True) -> int:
             sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -s needs to be of form P1=V1&P2=V2')
     elif args.attack == 5:
-        print("{}Vailyn: {}CRAWLER{}".format(color.RC, color.END+color.RB, color.END))
+        print("{0}[Vailyn]{1} SPIDER{2}|{3}".format(color.RD, color.END+color.RB, color.END+color.RD, color.END))
     else:
         sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
                 'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -a needs to be in 1..5')
 
 
-    print("    v" + version)
+    #print("    v" + version)
+    print("{0} └──{1} {2}{3}vainly{1}".format(color.RD, color.END, color.CURSIVE, color.END + color.RC + color.BOLD))
     time.sleep(0.5)
 
     if variables.tor:
@@ -1005,7 +1006,7 @@ def main(parser, opt, args, shell=True) -> int:
             print()
 
     if vlnysis:
-        print("{0}[+]{1} Loaded {2}{3}{1} payloads.\n".format(color.RD, color.END, color.BOLD, len(payloadlist)*len(nullchars)))
+        #print("{0}[+]{1} Loaded {2}{3}{1} payloads.\n".format(color.RD, color.END, color.BOLD, len(payloadlist)*len(nullchars)*checkdepth))
         starting_time = time.time()
         #initiate phase 1 - vulnerability analysis
         resetCounter()
