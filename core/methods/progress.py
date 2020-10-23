@@ -71,3 +71,4 @@ def erase():
         sys.stdout.write('\033[{}D'.format(termwidth))
     else:
         sys.stdout.write('\033[0G')
+        

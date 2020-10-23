@@ -25,7 +25,8 @@ from core.colors import color
 class ArgumentParser(argparse.ArgumentParser):
     def error(self, message):
         self.print_help()
-        self.exit(2, "\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' %s\n' % (message))
+        self.exit(2, "\n" + color.R + '[-]' + color.END + color.BOLD + ' Invalid/missing params'
+        + color.END + '\n' + color.RD + '[HINT]' + color.END + ' %s\n' % (message))
     def print_help(self):
         self.print_usage(sys.stderr)
         print('''
@@ -65,8 +66,9 @@ class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
         if prefix is None:
             prefix = color.RC + 'Vsynta ' + color.END
-            #return super(VainFormatter, self).add_usage("{}Vailyn{} [-v VIC] [-a ACK] [-p PARAM] [-s]\n          [-l FIL PATH] [-d INT] [--loot]\n        [-f] [-h] [--vic2 VIC2]".format(color.RB,color.END), actions, groups, prefix)
-            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n        [-p P] [-s D] [-j A P] [-n] \n      [-c C] [-i F] [-t] [-m] \n       [-k T] [-d I J K] \n   [-q V] [--app] ".format(color.RB,color.END), actions, groups, prefix)
+            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n".format(color.RB,color.END)
+            + "        [-p P] [-s D] [-j A P] [-n] \n      [-c C] [-i F] [-t] [-m] \n       [-k T] [-d I J K] \n"
+            + "   [-q V] [--app] ", actions, groups, prefix)
 
 
 """constructs and returns an argument parser"""

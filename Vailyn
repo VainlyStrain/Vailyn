@@ -225,7 +225,6 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         return self.selection
 
     def showPayloads(self, payloadlist, nullbytelist):
-
         #filter duplicates
         payloadlist = list(set(payloadlist))
         nullbytelist = list(set(nullbytelist))
@@ -276,7 +275,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.cookieDialog.exec_()
         if self.cocancel:
             return (None, None)
-        #print(self.selected)
+        
         return (cookie, self.selected)
 
     def handleShell(self):
@@ -308,7 +307,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
         self.timeLabel.setText("")
 
-        if self.victim == "" or (self.attack == 1 and self.param == "") or ((self.filedict == "" or self.dirdict == "") and self.attack != 5 and not self.nosploit):
+        if self.victim == "" or (self.attack == 1 and self.param == "") or ((self.filedict == "" 
+          or self.dirdict == "") and self.attack != 5 and not self.nosploit):
             self.showError("Mandatory argument(s) not specified.")
             return
 
@@ -389,11 +389,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         
         if self.attack == 5:
             self.crawlerResultDisplay.setText("")
-            #if not self.firstiter:
             variables.viclist.clear()
-            #if self.firstiter:
-            #variables.viclist.append(self.victim)
-            #assert len(variables.viclist) > 0
             crawlcookies = {}
             arjunjar = None
             if self.authcookie != "":
@@ -407,7 +403,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             def runSpider():
                 def f(q):
                     try:
-                        process = CrawlerRunner({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
+                        ua = variables.user_agents[random.randrange(0, len(variables.user_agents))]
+                        process = CrawlerRunner({'USER_AGENT': ua, 'LOG_ENABLED': False})
                         d = process.crawl(UrlSpider, cookiedict=crawlcookies, url=self.victim)
                         d.addBoth(lambda _: reactor.stop())
                         reactor.run()
@@ -434,7 +431,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             runSpider()
             subdir = parseUrl(self.victim)
 
-            with open(cachedir+subdir+"spider-phase0.txt", "r") as vicfile:
+            with open(cachedir + subdir + "spider-phase0.txt", "r") as vicfile:
                 for line in vicfile:
                     variables.viclist.append(line.strip())
                     self.crawlerResultDisplay.append("[+] Found {}".format(line.strip()))
@@ -448,19 +445,22 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 2")
             self.show()
             app.processEvents()
-            queryattack = analyzeParam(siteparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
+            queryattack = analyzeParam(siteparams, self.victim2, variables.verbose, self.depth1, 
+            self.vlnfile, self.authcookie, gui=self)
             time.sleep(1)
 
             self.timeLabel.setText("Active Phase: 3")
             self.show()
             app.processEvents()
-            pathattack = analyzePath(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
+            pathattack = analyzePath(self.victim2, variables.verbose, self.depth1, self.vlnfile, 
+            self.authcookie, gui=self)
             time.sleep(1)
 
             self.timeLabel.setText("Active Phase: 4")
             self.show()
             app.processEvents()
-            cookieattack = analyzeCookie(self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
+            cookieattack = analyzeCookie(self.victim2, variables.verbose, self.depth1, self.vlnfile, 
+            self.authcookie, gui=self)
             time.sleep(1)
 
             self.crawlerResultDisplay.append("\n[Info] Arjun POST Scan started.")
@@ -472,14 +472,14 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 6")
             self.show()
             app.processEvents()
-            postattack = analyzeParam(postparams, self.victim2, variables.verbose, self.depth1, self.vlnfile, self.authcookie, gui=self)
+            postattack = analyzePost(postparams, self.victim2, variables.verbose, self.depth1, 
+            self.vlnfile, self.authcookie, gui=self)
             ending_time = time.time()
             total_time = ending_time - starting_time
             atime = datetime.timedelta(seconds=total_time)
             self.timeLabel.setText("Done after " + str(atime) + ".")
             FINAL = "Query Attack\n"
             for victim, sub in queryattack.items():
-                #print(victim)
                 FINAL += "\n" + victim
                 for param, pair in sub.items():
                     paystring = ""
@@ -488,12 +488,11 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         paystring = paystring + "            " + str(payload) + "\n"
                     for nullbyte in pair[1]:
                         nullstring = nullstring + "            " + str(nullbyte) + "\n"
-                    FINAL += "\n    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring 
-                    #print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+                    FINAL += "\n    " + param + ":\n" + "        Payloads:\n" + paystring
+                    FINAL += "        Nullbytes:\n" + nullstring 
+                    
             FINAL += "\nPath Attack\n"
-            #print("Path Attack\n")
             for victim, pair in pathattack.items():
-                #print(victim)
                 FINAL += "\n" + victim
                 paystring = ""
                 nullstring = ""
@@ -502,11 +501,9 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 for nullbyte in pair[1]:
                     nullstring = nullstring + "        " + str(nullbyte) + "\n"
                 FINAL += "\n    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring 
-                #print("    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring)
-            #print("Cookie Attack\n")
+               
             FINAL += "\nCookie Attack\n"
             for victim, sub in cookieattack.items():
-                #print(victim)
                 FINAL += "\n" + victim + "\n"
                 for cname, pair in sub.items():
                     paystring = ""
@@ -515,13 +512,12 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         paystring = paystring + "            " + str(payload) + "\n"
                     for nullbyte in pair[1]:
                         nullstring = nullstring + "            " + str(nullbyte) + "\n"
-                    FINAL += "\n    " + cname + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring
-                    #print("    " + cname + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
-            #print("POST Attack\n")
+                    FINAL += "\n    " + cname + ":\n" + "        Payloads:\n" + paystring 
+                    FINAL += "        Nullbytes:\n" + nullstring
+
             FINAL += "\nPOST Attack\n"
             for victim, sub in postattack.items():
                 FINAL += "\n" + victim + "\n"
-                #print(victim)
                 for param, pair in sub.items():
                     paystring = ""
                     nullstring = ""
@@ -529,8 +525,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         paystring = paystring + "            " + str(payload) + "\n"
                     for nullbyte in pair[1]:
                         nullstring = nullstring + "            " + str(nullbyte) + "\n"
-                    FINAL += "\n    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring
-                    #print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+                    FINAL += "\n    " + param + ":\n" + "        Payloads:\n" + paystring
+                    FINAL += "        Nullbytes:\n" + nullstring
             
             self.crawlerResultDisplay.append("\n\n—————————————————\nFINAL RESULTS\n\n" + FINAL)
             self.show()
@@ -562,7 +558,9 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             resetCounter()
             self.timeLabel.setText("Active Phase: 1")
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(phase1, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,variables.verbose,self.depth1,l,self.vlnfile,self.authcookie,self.post,self,)) for l in paysplit]
+                res = [pool.apply_async(phase1, args=(self.attack, self.victim, self.victim2, 
+                self.param, self.cookie, self.selected, variables.verbose, self.depth1, l, 
+                self.vlnfile, self.authcookie, self.post, self,)) for l in paysplit]
                 for i in res:
                     #fetch results
                     tuples = i.get()
@@ -601,9 +599,6 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 self.showInfo("No payload succeeded.")
                 return
 
-        #if self.selectedpayloads == None or self.selectednullbytes == None:
-        #    return
-
         if self.nosploit:
             attackphase = False
 
@@ -612,7 +607,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 2")
             if variables.revshell:
                 if sys.platform.lower().startswith("win"):
-                    lis = self.showQuestion("Are you listening on {}, port {}?".format(variables.LISTENIP, variables.LISTENPORT))
+                    question = "Are you listening on {}, port {}?".format(variables.LISTENIP, variables.LISTENPORT)
+                    lis = self.showQuestion(question)
                     if not lis:
                         self.showError("Please start a listener manually before starting the attack.")
                         return
@@ -620,32 +616,35 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     #subprocess.Popen(["konsole", "-e", "nc", "-lvp", variables.LISTENPORT], close_fds=True)
                     subprocess.Popen(["konsole", "--hold", "-e", "nc -lvp {}".format(variables.LISTENPORT)], close_fds=True)
                 starting_time = time.time()
-                lfishell(self.attack, self.victim, self.victim2, self.param, self.cookie, self.selected, variables.verbose, self.selectedpayloads, self.selectednullbytes, self.authcookie, self.post)
+                lfishell(self.attack, self.victim, self.victim2, self.param, self.cookie, self.selected, 
+                variables.verbose, self.selectedpayloads, self.selectednullbytes, self.authcookie, 
+                self.post)
             else:
                 setDate()
                 #equally split dictionary entries to all threads
                 sdirlen = sum(1 for dummy in filegen(self.dirdict, dirs=True))
                 if opt["lists"] and sdirlen > 100:
                     self.showInfo("Preparing dictionaries...")
-                #dirlen = sum(1 for dummy in listperm(sdirs, self.permutationLevel))
+
                 dirlen2 = sdirlen
-                felems = dirlen2 -1
+                felems = dirlen2 - 1
                 i = 1
                 while (i <= self.permutationLevel):
-                    if 0 <= i+1 and i+1 <= felems:
+                    if 0 <= i + 1 and i + 1 <= felems:
                         cur = factorial(felems) / factorial(felems-i-1)
                     else:
                         cur = 0
                     dirlen2 += cur
                     i += 1
                 dirlen = int(dirlen2)
-                #sdirs = filegen(self.dirdict, dirs=True)
-                #commons = filegen(self.filedict)
                 splitted = gensplit(listperm(self.dirdict, self.permutationLevel), round(dirlen/processes))
 
                 starting_time = time.time()
                 with Pool(processes=processes) as pool:
-                    res = [pool.apply_async(phase2, args=(self.attack,self.victim,self.victim2,self.param,self.cookie,self.selected,self.filedict,l,self.depth2,variables.verbose,self.loot,self.selectedpayloads,self.selectednullbytes,self.authcookie,self.post,dirlen,self,)) for l in splitted]
+                    res = [pool.apply_async(phase2, args=(self.attack, self.victim, self.victim2, self.param, 
+                    self.cookie, self.selected, self.filedict, l, self.depth2, variables.verbose, self.loot, 
+                    self.selectedpayloads, self.selectednullbytes, self.authcookie, self.post, dirlen, 
+                    self,)) for l in splitted]
                     for i in res:
                         #fetch results
                         restuple = i.get()
@@ -731,6 +730,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         else:
             self.targetDialog.postLabel.setEnabled(False)
             self.targetDialog.postInput.setEnabled(False)
+
         self.targetDialog.vicField.setText(self.victim)
         self.targetDialog.paramField.setText(self.param)
         self.targetDialog.postInput.setText(self.post)
@@ -757,7 +757,6 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 for j in filepaths:
                     if i != j and i != "" and i in j:
                         contained = True
-                        #print("i:"+i+"\nj:"+j)
                 if i != "" and not contained:
                     tree_append(i, root)
                     
@@ -807,8 +806,8 @@ def main(parser, opt, args, shell=True) -> int:
     
     if not (opt["victim"] and opt["attack"]) or (args.attack != 5 and not opt["lists"] and not opt["nosploit"]):
         parser.print_help()
-        sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
-                'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -v, -a and -l mandatory')
+        sys.exit("\n" + color.R + '[-]' + color.END + color.BOLD + ' Invalid/missing '
+                'params' + color.END + '\n' + color.RD + '[HINT]' + color.END + ' -v, -a and -l mandatory')
   
     loot = False
     victim2 = ""
@@ -854,40 +853,40 @@ def main(parser, opt, args, shell=True) -> int:
     if (args.attack == 1):  #query mode
         if not opt["param"]:
             parser.print_help()
-            sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
-                'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -p mandatory for -a 1')
-        print("{0}[Vailyn]{1} PARAM{2}|{3}".format(color.RD, color.END+color.RB, color.END+color.RD, color.END))
+            sys.exit("\n" + color.R + '[-]' + color.END + color.BOLD + ' Invalid/missing '
+                'params' + color.END + '\n' + color.RD + '[HINT]' + color.END + ' -p mandatory for -a 1')
+        print("{0}[Vailyn]{1} PARAM{2}|{3}".format(color.RD, color.END + color.RB, color.END + color.RD, color.END))
         param = args.param
     elif (args.attack == 2):  #path mode
-        print("{0}[Vailyn]{1} PATH{2}|{3}".format(color.RD, color.END+color.RB, color.END+color.RD, color.END))
+        print("{0}[Vailyn]{1} PATH{2}|{3}".format(color.RD, color.END + color.RB, color.END + color.RD, color.END))
     elif (args.attack == 3):  #cookie mode
-        print("{0}[Vailyn]{1} COOKIE{2}|{3}".format(color.RD, color.END+color.RB, color.END+color.RD, color.END))
+        print("{0}[Vailyn]{1} COOKIE{2}|{3}".format(color.RD, color.END + color.RB, color.END + color.RD, color.END))
     elif (args.attack == 4): #post traversal
         if not opt["post"]:
             parser.print_help()
-            sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
-                'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -s mandatory for -a 4')
-        print("{0}[Vailyn]{1} POST{2}|{3}".format(color.RD, color.END+color.RB, color.END+color.RD, color.END))
+            sys.exit("\n" + color.R + '[-]' + color.END + color.BOLD + ' Invalid/missing '
+                'params' + color.END + '\n' + color.RD + '[HINT]' + color.END + ' -s mandatory for -a 4')
+        print("{0}[Vailyn]{1} POST{2}|{3}".format(color.RD, color.END + color.RB, color.END + color.RD, color.END))
         postdata = args.post
         if "INJECT" not in postdata:
-            sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
-                'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -s needs to contain INJECT at injection point')
+            sys.exit("\n" + color.R + '[-]' + color.END + color.BOLD + ' Invalid/missing '
+                'params' + color.END + '\n' + color.RD + '[HINT]' + color.END + ' -s needs to contain INJECT'
+                ' at injection point')
         if "=" not in postdata:
-            sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
-                'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -s needs to be of form P1=V1&P2=V2')
+            sys.exit("\n" + color.R + '[-]' + color.END + color.BOLD + ' Invalid/missing '
+                'params' + color.END + '\n' + color.RD + '[HINT]' + color.END + ' -s needs to be of form P1=V1&P2=V2')
     elif args.attack == 5:
-        print("{0}[Vailyn]{1} SPIDER{2}|{3}".format(color.RD, color.END+color.RB, color.END+color.RD, color.END))
+        print("{0}[Vailyn]{1} SPIDER{2}|{3}".format(color.RD, color.END + color.RB, color.END + color.RD, color.END))
     else:
-        sys.exit("\n"+color.R+'[-]'+color.END+color.BOLD+' Invalid/missing '
-                'params'+color.END+'\n'+color.RD+'[HINT]'+color.END+' -a needs to be in 1..5')
+        sys.exit("\n" + color.R + '[-]' + color.END + color.BOLD + ' Invalid/missing '
+                'params' + color.END + '\n' + color.RD + '[HINT]' + color.END + ' -a needs to be in 1..5')
 
-
-    #print("    v" + version)
     print("{0} └──{1} {2}{3}vainly{1}".format(color.RD, color.END, color.CURSIVE, color.END + color.RC + color.BOLD))
     time.sleep(0.5)
 
     if variables.tor:
-        print("\n{0} [TOR]{1}{6} IP{1}{0}|{1}{5} {2} {1}{4}>{1} {3}".format(color.RD, color.END, variables.initip, variables.torip, color.BOLD, color.CURSIVE, color.O))
+        print("\n{0} [TOR]{1}{6} IP{1}{0}|{1}{5} {2} {1}{4}>{1} {3}".format(color.RD, color.END, 
+        variables.initip, variables.torip, color.BOLD, color.CURSIVE, color.O))
 
     if args.attack == 5:
         crawlcookies = {}
@@ -898,9 +897,10 @@ def main(parser, opt, args, shell=True) -> int:
         from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
         from scrapy.crawler import CrawlerProcess
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} URL Enum\n'.format(color.RD, color.END))
-        #print("\n{0}Phase 0|{1} {2}URL Enumeration{1}\n".format(color.RD, color.END, color.O))
+        
         time.sleep(0.5)
-        process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393', 'LOG_ENABLED': False})
+        ua = variables.user_agents[random.randrange(0, len(variables.user_agents))]
+        process = CrawlerProcess({'USER_AGENT': ua, 'LOG_ENABLED': False})
         process.crawl(UrlSpider, cookiedict=crawlcookies, url=args.victim)
         process.start()
         subdir = parseUrl(args.victim)
@@ -909,32 +909,32 @@ def main(parser, opt, args, shell=True) -> int:
                 variables.viclist.append(line.strip())
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (GET)\n'.format(color.RD, color.END))
-        #print("\n{0}Phase 1|{1} {2}Parameter Enumeration{1}\n".format(color.RD, color.END, color.O))
+        
         time.sleep(0.5)
         siteparams = arjunEnum(cookiejar=arjunjar)
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Query Analysis\n'.format(color.RD, color.END))
-        #print("\n{0}Phase 2|{1} {2}Query Attack{1}\n".format(color.RD, color.END, color.O))
+        
         time.sleep(0.5)
         queryattack = analyzeParam(siteparams, victim2, verbose, checkdepth, vlnfile, cookiefile)
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Path Analysis\n'.format(color.RD, color.END))
-        #print("\n{0}Phase 3|{1} {2}Path Attack{1}\n".format(color.RD, color.END, color.O))
+        
         time.sleep(0.5)
         pathattack = analyzePath(victim2, verbose, checkdepth, vlnfile, cookiefile)
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Cookie Analysis\n'.format(color.RD, color.END))
-        #print("\n{0}Phase 4|{1} {2}Cookie Attack{1}\n".format(color.RD, color.END, color.O))
+        
         time.sleep(0.5)
         cookieattack = analyzeCookie(victim2, verbose, checkdepth, vlnfile, cookiefile)
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (POST)\n'.format(color.RD, color.END))
-        #print("\n{0}Phase 5|{1} {2}POST Enumeration{1}\n".format(color.RD, color.END, color.O))
+        
         time.sleep(0.5)
         postparams = arjunEnum(post=True, cookiejar=arjunjar)
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} POST Analysis\n'.format(color.RD, color.END))
-        #print("\n{0}Phase 6|{1} {2}POST Attack{1}\n".format(color.RD, color.END, color.O))
+        
         time.sleep(0.5)
         postattack = analyzePost(postparams, victim2, verbose, checkdepth, vlnfile, cookiefile)
         time.sleep(2.5)
@@ -997,8 +997,8 @@ def main(parser, opt, args, shell=True) -> int:
     #present option to skip phase 1 if cache from previous attack present
     targetcache = parseUrl(args.victim)
     if os.path.exists(cachedir+targetcache+"payloads.cache") and os.path.exists(cachedir+targetcache+"nullbytes.cache"):
-        #choice = input("{0}[!]{1} Detected Payload cache from previous attack.\n{0}[?]{1} Do you want to load the cache and skip Phase 1? (enter if not) :> ".format(color.RD, color.END))
-        choice = input("{0}[?]{1}{3} Cache{1}{0}|{1} Load from previous attack?\n{0} └──{1} {2}enter if not{1} :> ".format(color.RD, color.END, color.CURSIVE, color.O))
+        choice = input("{0}[?]{1}{3} Cache{1}{0}|{1} Load from previous attack?\n{0} └──{1} {2}enter if not{1} :> ".format(
+            color.RD, color.END, color.CURSIVE, color.O))
         if choice != "":
             vlnysis = False
             foundpayloads, foundnullbytes = load(targetcache)
@@ -1006,12 +1006,12 @@ def main(parser, opt, args, shell=True) -> int:
             print()
 
     if vlnysis:
-        #print("{0}[+]{1} Loaded {2}{3}{1} payloads.\n".format(color.RD, color.END, color.BOLD, len(payloadlist)*len(nullchars)*checkdepth))
         starting_time = time.time()
         #initiate phase 1 - vulnerability analysis
         resetCounter()
         with Pool(processes=processes) as pool:
-            res = [pool.apply_async(phase1, args=(args.attack,args.victim,victim2,param,cookie,selected,verbose,checkdepth,l,vlnfile,cookiefile,postdata,None,)) for l in paysplit]
+            res = [pool.apply_async(phase1, args=(args.attack, args.victim, victim2, param, cookie, 
+            selected, verbose, checkdepth, l, vlnfile, cookiefile, postdata, None,)) for l in paysplit]
             for i in res:
                 #fetch results
                 tuples = i.get()
@@ -1036,7 +1036,8 @@ def main(parser, opt, args, shell=True) -> int:
             selectednullbytes = []
     else:
         if not opt["nosploit"]:
-            cont = input("[!] No payload succeeded. Attack anyways? (enter if not) :> ")
+            cont = input("\n{0}[✗]{1} No payload succeeded. Attack anyways?\n{0} └──{1} {2}enter if not{1} :> ".format(
+                color.RD, color.END, color.CURSIVE))
             if cont != "":
                 attack = True
                 #attack with everything if phase 1 was unsuccessful
@@ -1052,38 +1053,39 @@ def main(parser, opt, args, shell=True) -> int:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Sploit Phase\n'.format(color.RD, color.END))
         if variables.revshell:
             if sys.platform.lower().startswith("win"):
-                lis = input("[?] Are you listening on {}, port {}? (enter if not) :> ".format(variables.LISTENIP, variables.LISTENPORT))
+                lis = input("[?] Are you listening on {}, port {}? (enter if not) :> ".format(variables.LISTENIP, 
+                variables.LISTENPORT))
                 if lis == "":
                     sys.exit("Please start a listener manually before starting the attack.")
             else:
-                #subprocess.Popen(["konsole", "-e", "nc", "-lvp", variables.LISTENPORT], close_fds=True)
                 subprocess.Popen(["konsole", "--hold","-e", "nc -lvp {}".format(variables.LISTENPORT)], close_fds=True)
             starting_time = time.time()
-            lfishell(args.attack, args.victim, victim2, param, cookie, selected, verbose, selectedpayloads, selectednullbytes, cookiefile, postdata)
+            lfishell(args.attack, args.victim, victim2, param, cookie, selected, verbose, 
+            selectedpayloads, selectednullbytes, cookiefile, postdata)
         else:
             setDate()
             sdirlen = sum(1 for dummy in filegen(args.lists[1], dirs=True))
             if opt["lists"] and sdirlen > 100:
                 print("{}  Preparing dictionaries...{}".format(color.RC, color.END))
-            #dirlen = sum(1 for dummy in listperm(sdirs, permutationLevel))
+
             dirlen2 = sdirlen
-            felems = dirlen2 -1
+            felems = dirlen2 - 1
             i = 1
             while (i <= permutationLevel):
-                if 0 <= i+1 and i+1 <= felems:
+                if 0 <= i + 1 and i + 1 <= felems:
                     cur = factorial(felems) / factorial(felems-i-1)
                 else:
                     cur = 0
                 dirlen2 += cur
                 i += 1
             dirlen = int(dirlen2)
-            #sdirs = filegen(args.lists[1], dirs=True)
-            #commons = filegen(args.lists[0])
             splitted = gensplit(listperm(args.lists[1], permutationLevel), round(dirlen/processes))
 
             starting_time = time.time()
             with Pool(processes=processes) as pool:
-                res = [pool.apply_async(phase2, args=(args.attack,args.victim,victim2,param,cookie,selected,args.lists[0],l,depth,verbose,loot,selectedpayloads,selectednullbytes,cookiefile,postdata,dirlen,None,)) for l in splitted]
+                res = [pool.apply_async(phase2, args=(args.attack, args.victim, victim2, param, cookie, 
+                selected, args.lists[0], l, depth, verbose, loot, selectedpayloads, 
+                selectednullbytes, cookiefile, postdata, dirlen, None,)) for l in splitted]
                 for i in res:
                     #fetch results
                     restuple = i.get()
@@ -1107,7 +1109,7 @@ def main(parser, opt, args, shell=True) -> int:
 
     print("{}Scan completed in {}.{}".format(color.RC, readable_time, color.END))
     if variables.tor and not sys.platform.lower().startswith("win"):
-        stop = input(color.END+" [?] Do you want to terminate the Tor service? (enter if not) :> ")
+        stop = input(color.END + " [?] Do you want to terminate the Tor service? (enter if not) :> ")
         if stop != "":
             try:
                 subprocess.run(["systemctl", "stop", "tor"])

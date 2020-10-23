@@ -77,7 +77,8 @@ class UrlSpider(scrapy.Spider):
         for link in le.extract_links(response):
             if link.url not in self.start_urls:
                 self.start_urls.append(link.url)
-                print("{0}[INFO]{1} found{4}|{2} {3}".format(color.RD, color.END + color.O, color.END, link.url, color.END+color.RD))
+                print("{0}[INFO]{1} found{4}|{2} {3}".format(color.RD, color.END + color.O, 
+                color.END, link.url, color.END+color.RD))
             yield Request(link.url, callback=self.parse, cookies=self.cookiedict)
 
     def closed(self):
@@ -92,7 +93,8 @@ enumerate GET and POST parameters using Arjun by s0md3v to attack in respective 
 def arjunEnum(post=False, cookiejar=None):
     subdir = parseUrl(viclist[0])
 
-    command = ["python3", "lib/Arjun/arjun.py", "--urls", cachedir+subdir+"spider-phase0.txt", "-f", "lib/Arjun/db/params.txt"]
+    command = ["python3", "lib/Arjun/arjun.py", "--urls", cachedir+subdir+"spider-phase0.txt", 
+    "-f", "lib/Arjun/db/params.txt"]
     if post:
         command += ["-o", cachedir+subdir+"spider-phase5.json", "--post"]
     else:
@@ -131,7 +133,8 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie, gui=None
     with Pool(processes=processes) as pool:
         for victim, paramlist in siteparams.items():
             sub = {}
-            print("\n{0}[INFO]{1} param{4}|{2} Attacking {3}".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+            print("\n{0}[INFO]{1} param{4}|{2} Attacking {3}".format(color.RD, color.END + color.O, 
+            color.END, victim, color.END+color.RD))
             if gui:
                 gui.crawlerResultDisplay.append("\n[Info] param| Attacking {}".format(victim))
                 gui.show()
@@ -140,13 +143,15 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie, gui=None
                 payloads = []
                 nullbytes = []
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
-                print("\n{0}[INFO]{1} param{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, param, color.END+color.RD))
+                print("\n{0}[INFO]{1} param{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, 
+                color.END, param, color.END+color.RD))
                 if gui:
                     gui.crawlerResultDisplay.append("[Info] param| Using {}".format(param))
                     gui.show()
                 time.sleep(1.0)
                 resetCounter()
-                res = [pool.apply_async(phase1, args=(1,victim,victim2,param,None,"",verbose,depth,l,file,authcookie,"",gui,)) for l in paysplit]
+                res = [pool.apply_async(phase1, args=(1, victim, victim2, param, None, "", verbose, 
+                depth, l, file, authcookie, "", gui,)) for l in paysplit]
                 for i in res:
                     #fetch results
                     tuples = i.get()
@@ -188,14 +193,16 @@ def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
         for victim in pathviclist:
             payloads = []
             nullbytes = []
-            print("\n{0}[INFO]{1} path{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+            print("\n{0}[INFO]{1} path{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O, 
+            color.END, victim, color.END+color.RD))
             if gui:
                 gui.crawlerResultDisplay.append("\n[Info] path| Attacking {}".format(victim))
                 gui.show()
             time.sleep(1.0)
             paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
             resetCounter()
-            res = [pool.apply_async(phase1, args=(2,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,"",gui,)) for l in paysplit]
+            res = [pool.apply_async(phase1, args=(2, victim, victim2, "", None, "", verbose, depth, 
+            l, file, authcookie, "", gui,)) for l in paysplit]
             for i in res:
                 #fetch results
                 tuples = i.get()
@@ -226,12 +233,14 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie, gui=None):
             sub = {}
             cookie = getCookie(victim)
             if len(cookie.keys()) < 1:
-                print("\n{0}[INFO]{1} cookie{4}|{2} No cookies available for {3}.\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+                print("\n{0}[INFO]{1} cookie{4}|{2} No cookies available for {3}.\n".format(color.RD, 
+                color.END + color.O, color.END, victim, color.END+color.RD))
                 if gui:
                     gui.crawlerResultDisplay.append("\n[Info] cookie| No cookies available for {}".format(victim))
                     gui.show()
                 continue
-            print("\n{0}[INFO]{1} cookie{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+            print("\n{0}[INFO]{1} cookie{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O, 
+            color.END, victim, color.END+color.RD))
             if gui:
                 gui.crawlerResultDisplay.append("\n[Info] cookie| Attacking {}".format(victim))
                 gui.show()
@@ -239,14 +248,16 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie, gui=None):
             for key in cookie.keys():
                 payloads = []
                 nullbytes = []
-                print("\n{0}[INFO]{1} cookie{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, key, color.END+color.RD))
+                print("\n{0}[INFO]{1} cookie{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, 
+                color.END, key, color.END+color.RD))
                 if gui:
                     gui.crawlerResultDisplay.append("[Info] cookie| Using {}".format(key))
                     gui.show()
                 time.sleep(1.0)
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 resetCounter()
-                res = [pool.apply_async(phase1, args=(3,victim,victim2,"",cookie,key,verbose,depth,l,file,authcookie,"",gui,)) for l in paysplit]
+                res = [pool.apply_async(phase1, args=(3, victim, victim2, "", cookie, key, verbose, depth, 
+                l, file, authcookie, "", gui,)) for l in paysplit]
                 for i in res:
                     #fetch results
                     tuples = i.get()
@@ -277,7 +288,8 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None)
     with Pool(processes=processes) as pool:
         for victim, paramlist in siteparams.items():
             sub = {}
-            print("\n{0}[INFO]{1} post{4}|{2} Attacking {3}".format(color.RD, color.END + color.O, color.END, victim, color.END+color.RD))
+            print("\n{0}[INFO]{1} post{4}|{2} Attacking {3}".format(color.RD, color.END + color.O, 
+            color.END, victim, color.END+color.RD))
             if gui:
                 gui.crawlerResultDisplay.append("\n[Info] post| Attacking {}".format(victim))
                 gui.show()
@@ -285,14 +297,16 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None)
             for param in paramlist:
                 payloads = []
                 nullbytes = []
-                print("\n{0}[INFO]{1} post{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, color.END, param, color.END+color.RD))
+                print("\n{0}[INFO]{1} post{4}|{2} Using {3}\n".format(color.RD, color.END + color.O, 
+                color.END, param, color.END+color.RD))
                 if gui:
                     gui.crawlerResultDisplay.append("\n[Info] post| Using {}".format(param))
                     gui.show()
                 time.sleep(1.0)
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 resetCounter()
-                res = [pool.apply_async(phase1, args=(4,victim,victim2,"",None,"",verbose,depth,l,file,authcookie,param+"=INJECT",gui,)) for l in paysplit]
+                res = [pool.apply_async(phase1, args=(4, victim, victim2, "", None, "", verbose, depth, 
+                l, file, authcookie, param + "=INJECT", gui,)) for l in paysplit]
                 for i in res:
                     #fetch results
                     tuples = i.get()
@@ -311,3 +325,4 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None)
     with open(cachedir+subdir+"spider-phase6.json", "w+") as f:
         json.dump(result, f, sort_keys=True, indent=4)
     return result
+    

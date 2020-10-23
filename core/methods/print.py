@@ -188,7 +188,8 @@ def listprint(plist, nullbytes):
     tmplist = []
     for i in range(0, len(plist)):
         #tmpstr = "{0:4}  {1}".format(i, plist[i])
-        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(color.RB, i, color.END+color.RD, color.END, plist[i], len(str(len(payloadlist))))
+        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(color.RB, i, color.END+color.RD, color.END, 
+        plist[i], len(str(len(payloadlist))))
         tmplist.append(tmpstr)
     maxlen = len(max(tmplist, key=len))
     termwidth = shutil.get_terminal_size()[0]

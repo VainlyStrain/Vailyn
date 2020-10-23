@@ -90,7 +90,8 @@ def query(traverse, dir, file, nb, keyword, url, url2, s):
 @postdata: POST Data for --attack 4
 @gui: GUI frame to set the graphical progress bar
 """
-def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie, postdata, gui):
+def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie, 
+    postdata, gui):
     #variables for the progress counter
     global requestcount
     #totalrequests = len(paylist) * (len(nullchars) + 1) * depth
@@ -306,7 +307,8 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 @dirlen: total directory dictionary size (after permutations)
 @gui: GUI frame to set the graphical progress bar
 """
-def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth, verbose, dl, selected_payloads, selected_nullbytes, authcookie, postdata, dirlen, gui):
+def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth, verbose, dl, 
+    selected_payloads, selected_nullbytes, authcookie, postdata, dirlen, gui):
     #variables for the progress counter
     global requestcount
     timeout = vars.timeout
@@ -494,32 +496,49 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
 
                             vfound = False
                             if str(r.status_code).startswith("2"):
-                                if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
+                                if (filecheck(r, con2, con3, p) and attack != 4 
+                                  or filecheck(r, con2, con3, p, post=True) and attack == 4):
                                     vfound = True
                                     if attack == 1 or attack == 2:
-                                        print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"site"+color.END+"="+r.url)
+                                        print(color.RD+"[INFO]" + color.O + " leak" + color.END + "       "
+                                        + color.RD + "statvs-code" + color.END + "=" + color.O + str(r.status_code)
+                                        + color.END + " " + color.R + "site" + color.END + "=" + r.url)
+
                                         if dl and dir+file not in found:
-                                            download(r.url,dir+file, cookie=s.cookies)
+                                            download(r.url, dir+file, cookie=s.cookies)
                                         found.append(dir+file)
                                         if attack == 1:
-                                            urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + r.url.split(keyword+"=")[1].replace(url2, ""))
+                                            urls.append(color.RD + "[pl]" + color.END + color.O + " " 
+                                            +  str(r.status_code) + color.END + " " 
+                                            + r.url.split(keyword+"=")[1].replace(url2, ""))
                                         else:
                                             vlnlist = r.url.split("/")[1::]
                                             vlnpath = ("/".join(i for i in vlnlist)).replace(url2, "")
-                                            urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + vlnpath)
+                                            urls.append(color.RD + "[pl]" + color.END + color.O + " " 
+                                            +  str(r.status_code) + color.END + " " + vlnpath)
                                     elif attack == 3:
                                         s.cookies.set(selected, p)
-                                        print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"cookie"+color.END+"="+p)
+                                        print(color.RD + "[INFO]" + color.O + " leak" + color.END + 
+                                        "       " + color.RD + "statvs-code" + color.END + "=" + color.O 
+                                        + str(r.status_code) + color.END + " " + color.R + "cookie" + 
+                                        color.END + "=" + p)
+
                                         if dl and dir+file not in found:
-                                            download(r.url,dir+file,cookie=s.cookies)
+                                            download(r.url, dir+file, cookie=s.cookies)
                                         found.append(dir+file)
-                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
+                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " +  
+                                        str(r.status_code) + color.END + " " + p)
                                     elif attack == 4:
-                                        print(color.RD+"[INFO]"+color.O+" leak"+color.END+"       "+color.RD+"statvs-code"+color.END+"="+color.O+str(r.status_code)+color.END+" "+color.R+"postdata"+color.END+"="+p)
+                                        print(color.RD + "[INFO]" + color.O + " leak" + color.END + 
+                                        "       " + color.RD + "statvs-code" + color.END + "=" + color.O 
+                                        + str(r.status_code) + color.END + " " + color.R + "postdata" 
+                                        + color.END + "=" + p)
+
                                         if dl and dir+file not in found:
-                                            download(r.url,dir+file,cookie=s.cookies,post=data)
+                                            download(r.url, dir + file, cookie=s.cookies, post=data)
                                         found.append(dir+file)
-                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " +  str(r.status_code) + color.END + " " + p)
+                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " 
+                                        +  str(r.status_code) + color.END + " " + p)
                             
                             if verbose and not vfound:
                                 if attack == 1 or attack == 2:
@@ -540,7 +559,8 @@ second exploitation module: try to gain a reverse shell over the system
 4) Poisoned mail to web user
 @others: see phase1()
 """
-def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
+def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, 
+    authcookie, postdata):
     #resolve issues with inpath attack
     if attack == 2:
         #only root directory, else false positives
@@ -808,4 +828,5 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
 """invoke sheller() for each technique"""
 def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
     for technique in range(1, 5):
-        sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata)
+        sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, 
+        authcookie, postdata)

@@ -27,7 +27,8 @@ def randomword(length):
 
 """removes Vailyn's colors from string"""
 def replaceColors(ntag):
-    return ntag.replace(color.RD, "").replace(color.END, "").replace(color.O, "").replace(color.CURSIVE, "").replace(color.BOLD, "")
+    tag = ntag.replace(color.RD, "").replace(color.END, "").replace(color.O, "")
+    return tag.replace(color.CURSIVE, "").replace(color.BOLD, "")
     
 """append file to found files tree"""
 def tree_append(tree, path, parentnode):

@@ -18,7 +18,7 @@ _____, ___
 """
 
 
-import sys, re
+import sys, re, random
 import requests
 import subprocess
 from urllib.request import urlopen
@@ -32,7 +32,7 @@ def presession():
     if vars.tor:
         presess.proxies['http'] = 'socks5h://localhost:9050'
         presess.proxies['https'] = 'socks5h://localhost:9050'
-        presess.headers['User-agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393'
+        presess.headers['User-agent'] = vars.user_agents[random.randrange(0, len(vars.user_agents))]
     return presess
 
 """Detect if the Tor service is active and running"""
@@ -51,10 +51,10 @@ def torpipe(controller):
         elif re.match(".*tor\s+started.*", str(status), flags=re.DOTALL) and macOS:
             return True
         else:
-            print(color.R + " [-] " + "\033[0m" + color.UNDERLINE + "\033[1m" + "Tor service not running. Aborting..."+color.END)
+            print(color.R + " [-] " + color.END + "Tor service not running. Aborting..."+color.END)
             return False
     except subprocess.CalledProcessError:
-        print(color.R + " [-] " + "\033[0m" + color.UNDERLINE + "\033[1m" + "Tor service not installed or running. Aborting..."+color.END)
+        print(color.R + " [-] " + color.END + "Tor service not installed or running. Aborting..."+color.END)
         return False
 
 """grab real attacker IP to verify if Tor works"""
@@ -74,7 +74,7 @@ def torcheck():
     if vars.initip.strip() != ipaddr:
         vars.torip = ipaddr
     else:
-        print(color.R + " [-] " + "\033[0m" + color.UNDERLINE + "\033[1m" + "Not connected to Tor: Attacker IP used: {}. Aborting.{}".format(ipaddr, color.END))
+        print(color.R + " [-] " + color.END + "Tor Check failed: Real IP used. Aborting.")
         sys.exit()
     #except:
     #    print(R + " [-] " + "\033[0m" + color.UNDERLINE + "\033[1m" + "IPcheck socket failure.")
