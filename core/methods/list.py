@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 """
 _____, ___
-   '+ .;    
-    , ;   
-     .   
-           
-       .    
-     .;.    
-     .;  
-      :  
-      ,   
-       
+   '+ .;
+    , ;
+     .
+
+       .
+     .;.
+     .;
+      :
+      ,
+
 
 ┌─[Vailyn]─[~]
 └──╼ VainlyStrain
@@ -20,47 +20,54 @@ _____, ___
 
 from itertools import permutations, islice
 
-"""equally split list for threads"""
+
 def listsplit(l, n):
+    """
+    equally split list for threads
+    """
     if n == 0:
         n += 1
     for i in range(0, len(l), n):
-        yield l[i:i + n]  
+        yield l[i:i + n]
 
-"""
-create directory dictionary permutations
-generator to be more memory-friendly
-"""
+
 def listperm(sdirs, depth):
+    """
+    create directory dictionary permutations
+    generator to be more memory-friendly
+    """
     for idir in filegen(sdirs, dirs=True):
         yield idir
-        #print(idir)
-    iter=1
 
-    #remove empty string causing duplicates
-    mdirs=[]
-    while (iter<=(depth)):
+    iter = 1
+
+    # remove empty string causing duplicates
+    mdirs = []
+    while (iter <= depth):
         ndirs = filegen(sdirs)
-        for mdirs in permutations(ndirs,(iter+1)):
+        for mdirs in permutations(ndirs, (iter + 1)):
             diri = ""
             for elem in mdirs:
                 diri += str(elem)
             yield diri
-            #print(diri)
-        iter+=1
+        iter += 1
 
-"""
-equally split generator elements for threads
-"""
+
 def gensplit(g, n):
+    """
+    equally split generator elements for threads
+    """
     i = iter(g)
     piece = list(islice(i, n))
     while piece:
         yield piece
         piece = list(islice(i, n))
 
-"""read dictionary file into generator"""
+
 def filegen(path, dirs=False):
+    """
+    read dictionary file into generator
+    """
     if dirs:
         yield ""
     with open(path, "r") as dfile:

@@ -2,23 +2,25 @@
 # -*- coding: utf-8 -*-
 """
 _____, ___
-   '+ .;    
-    , ;   
-     .   
-           
-       .    
-     .;.    
-     .;  
-      :  
-      ,   
-       
+   '+ .;
+    , ;
+     .
+
+       .
+     .;.
+     .;
+      :
+      ,
+
 
 ┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
 
 
-import sys, re, random
+import sys
+import re
+import random
 import requests
 import subprocess
 from urllib.request import urlopen
@@ -26,8 +28,10 @@ import core.variables as vars
 from core.colors import color
 
 
-"""Returns session for IP change verification"""
 def presession():
+    """
+    Returns session for IP change verification
+    """
     presess = requests.session()
     if vars.tor:
         presess.proxies['http'] = 'socks5h://localhost:9050'
@@ -35,17 +39,20 @@ def presession():
         presess.headers['User-agent'] = vars.user_agents[random.randrange(0, len(vars.user_agents))]
     return presess
 
-"""Detect if the Tor service is active and running"""
+
 def torpipe(controller):
+    """
+    Detect if the Tor service is active and running
+    """
     try:
         macOS = False
         try:
-            status = subprocess.run(['systemctl','status','tor'], check=True, stdout=subprocess.PIPE).stdout
-        except OSError: #non-systemd distro
-            status = subprocess.run(['service','tor','status'], check=True, stdout=subprocess.PIPE).stdout
-        except OSError: #macOS
+            status = subprocess.run(['systemctl', 'status', 'tor'], check=True, stdout=subprocess.PIPE).stdout
+        except OSError:  # non-systemd distro
+            status = subprocess.run(['service', 'tor', 'status'], check=True, stdout=subprocess.PIPE).stdout
+        except OSError:  # macOS
             macOS = True
-            status = subprocess.run(['brew','services','list'], check=True, stdout=subprocess.PIPE).stdout
+            status = subprocess.run(['brew', 'services', 'list'], check=True, stdout=subprocess.PIPE).stdout
         if "active (running)" in str(status) and not macOS:
             return True
         elif re.match(".*tor\s+started.*", str(status), flags=re.DOTALL) and macOS:
@@ -57,35 +64,40 @@ def torpipe(controller):
         print(color.R + " [-] " + color.END + "Tor service not installed or running. Aborting..."+color.END)
         return False
 
-"""grab real attacker IP to verify if Tor works"""
+
 def initcheck():
+    """
+    grab real attacker IP to verify if Tor works
+    """
     ipaddr = urlopen('http://ip.42.pl/raw').read()
     vars.initip = str(ipaddr).split("'")[1]
 
-"""verify if Tor works by comparing current IP with IP from initcheck()"""
+
 def torcheck():
-    #try:
+    """
+    verify if Tor works by comparing current IP with IP from initcheck()
+    """
     s = presession()
     try:
         ipaddr = s.get('http://ip.42.pl/raw', timeout=vars.timeout).text
     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
         sys.exit("Timeout at IP check.")
-    #ip = str(ipaddr).split("'")[1].strip()
     if vars.initip.strip() != ipaddr:
         vars.torip = ipaddr
     else:
         print(color.R + " [-] " + color.END + "Tor Check failed: Real IP used. Aborting.")
         sys.exit()
-    #except:
-    #    print(R + " [-] " + "\033[0m" + color.UNDERLINE + "\033[1m" + "IPcheck socket failure.")
-    #    torcheck() 
+
 
 def enableTor(shell=True, sigWin=False, sigLin=False):
+    """
+    enable the Tor service and exit program if failed
+    """
     vars.tor = True
     try:
         initcheck()
         acc = True
-    except:
+    except Exception:
         acc = False
 
     if acc or not vars.initip == "":
@@ -111,10 +123,10 @@ def enableTor(shell=True, sigWin=False, sigLin=False):
                     try:
                         subprocess.run(["systemctl", "start", "tor"])
                         p = torpipe(True)
-                    except OSError: #non-systemd distro
+                    except OSError:  # non-systemd distro
                         subprocess.run(["service", "tor", "start"])
                         p = torpipe(True)
-                    except OSError: #macOS - requires brew
+                    except OSError:  # macOS - requires brew
                         subprocess.run(["brew", "services", "start", "tor"])
                         p = torpipe(True)
                     except Exception as e:

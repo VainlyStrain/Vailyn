@@ -2,28 +2,28 @@
 # -*- coding: utf-8 -*-
 """
 _____, ___
-   '+ .;    
-    , ;   
-     .   
-           
-       .    
-     .;.    
-     .;  
-      :  
-      ,   
-       
+   '+ .;
+    , ;
+     .
+
+       .
+     .;.
+     .;
+      :
+      ,
+
 
 ┌─[Vailyn]─[~]
 └──╼ VainlyStrain
 """
 
-import sys, shutil
+import sys
+import shutil
 
 from core.colors import color
 
 
-"""prints progress in percentage"""
-def progress (iteration, total, prefix = '', suffix = '', decimals = 1):
+def progress(iteration, total, prefix='', suffix='', decimals=1):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -32,9 +32,6 @@ def progress (iteration, total, prefix = '', suffix = '', decimals = 1):
         prefix      - Optional  : prefix string (Str)
         suffix      - Optional  : suffix string (Str)
         decimals    - Optional  : positive number of decimals in percent complete (Int)
-        length      - Optional  : character length of bar (Int)
-        fill        - Optional  : bar fill character (Str)
-        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
     """
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     if float(percent) > 100.0:
@@ -44,31 +41,34 @@ def progress (iteration, total, prefix = '', suffix = '', decimals = 1):
     sys.stdout.flush()
 
 
-"""
-ATTENTION: ONLY CALL ME LOCKED !!!
-handle progressbar in GUI
-"""
 def progressgui(iteration, total, dialog):
+    """
+    ATTENTION: ONLY CALL ME LOCKED !!!
+    handle progressbar in GUI
+    """
     percent = int(100 * (iteration / float(total)))
     if percent <= 100:
         dialog.progressBar.setValue(iteration)
         dialog.show()
 
 
-"""progress() alternative compatible with Windows"""
-def progresswin(iteration, total, prefix = '', suffix = '', decimals = 1):
+def progresswin(iteration, total, prefix='', suffix='', decimals=1):
+    """
+    progress() alternative compatible with Windows
+    """
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     if float(percent) > 100.0:
         percent = "100.0"
     print("{}[VAILYN]{} {}{}%{} done.".format(color.RD, color.END, color.BOLD, percent, color.END))
-    
 
-"""prevent progress() from flooding the terminal output"""
+
 def erase():
+    """
+    prevent progress() from flooding the terminal output
+    """
     sys.stdout.write('\033[1K')
     if sys.platform.lower().startswith('win'):
         termwidth = shutil.get_terminal_size()[0]
         sys.stdout.write('\033[{}D'.format(termwidth))
     else:
         sys.stdout.write('\033[0G')
-        

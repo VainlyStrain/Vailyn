@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 """
 _____, ___
-   '+ .;    
-    , ;   
-     .   
-           
-       .    
-     .;.    
-     .;  
-      :  
-      ,   
-       
+   '+ .;
+    , ;
+     .
+
+       .
+     .;.
+     .;
+      :
+      ,
+
 
 ┌─[Vailyn]─[~]
 └──╼ VainlyStrain
@@ -21,12 +21,15 @@ _____, ___
 from core.methods.session import session
 from core.variables import e_version
 
-"""compare local version with online version"""
+
 def checkUpdate():
+    """
+    compare local version with online version
+    """
     try:
         s = session()
-        onver = s.get("https://raw.githubusercontent.com/VainlyStrain/Vailyn/master/core/doc/VERSION", 
-        timeout=2).text.strip()
+        onver = s.get("https://raw.githubusercontent.com/VainlyStrain/Vailyn/master/core/doc/VERSION",
+                       timeout=2).text.strip()
         localmain = e_version.split("-")[0]
         localrev = e_version.split("-")[1]
         locallist = localmain.split(".")
@@ -45,5 +48,5 @@ def checkUpdate():
             if int(localrev) < int(onrev):
                 uptodate = False
         return uptodate
-    except:
+    except Exception:
         return True
