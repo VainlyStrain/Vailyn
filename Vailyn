@@ -629,7 +629,10 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             else:
                 setDate()
                 # equally split dictionary entries to all threads
-                sdirlen = sum(1 for dummy in filegen(self.dirdict, dirs=True))
+                sdirlen = 0
+                with open(self.dirdict, "r") as f:
+                    sdirlen = sum(1 for line in f if line.rstrip()) + 1
+
                 if opt["lists"] and sdirlen > 100:
                     self.showInfo("Preparing dictionaries...")
 
@@ -1069,7 +1072,10 @@ def main(parser, opt, args, shell=True) -> int:
                      selectedpayloads, selectednullbytes, cookiefile, postdata)
         else:
             setDate()
-            sdirlen = sum(1 for dummy in filegen(args.lists[1], dirs=True))
+            sdirlen = 0
+            with open(args.lists[1], "r") as f:
+                sdirlen = sum(1 for line in f if line.rstrip()) + 1
+
             if opt["lists"] and sdirlen > 100:
                 print("{}  Preparing dictionaries...{}".format(color.RC, color.END))
 
