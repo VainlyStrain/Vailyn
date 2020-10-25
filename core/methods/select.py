@@ -32,11 +32,13 @@ def select(payloadlist, nullbytes=False, nosploit=False):
     # filter duplicates
     payloadlist = list(set(payloadlist))
     if nullbytes:
-        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative nullbytes:".format(color.RD, color.END,
-               color.O, len(payloadlist), len(str(len(totalpayloadlist)))))
+        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative nullbytes:".format(
+                color.RD, color.END, color.O, len(payloadlist), len(str(len(totalpayloadlist)))
+            ))
     else:
-        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative payloads:".format(color.RD, color.END,
-               color.O, len(payloadlist), len(str(len(totalpayloadlist)))))
+        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative payloads:".format(
+                color.RD, color.END, color.O, len(payloadlist), len(str(len(totalpayloadlist)))
+            ))
 
     listprint(payloadlist, nullbytes)
     invalid = True

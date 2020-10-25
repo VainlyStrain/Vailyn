@@ -30,6 +30,7 @@ from core.colors import color
 
 date = ""
 
+
 def setDate():
     global date
     # append date to folder to be unique

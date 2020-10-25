@@ -73,7 +73,7 @@ class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
         if prefix is None:
             prefix = color.RC + 'Vsynta ' + color.END
-            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n".format(color.RB,color.END)
+            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n".format(color.RB, color.END)
                                                         + "        [-p P] [-s D] [-j A P] [-n] \n      [-c C] [-i F] [-t] "
                                                         + "[-m] \n       [-k T] [-d I J K] \n"
                                                         + "   [-q V] [--app] ", actions, groups, prefix)

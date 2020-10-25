@@ -120,7 +120,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
         ulist = splitted[1].split("/")
         last = ulist[-1]
         # delete file, but not hidden directory
-        if "." in last and not last.startswith("."):
+        if "." in last and not last.startswith(".") and last != ulist[0]:
             del ulist[-1]
         url = splitted[0] + "://" + "/".join(ulist)
     if not url.endswith("/"):
@@ -158,7 +158,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     for i in paylist:
         d = 1
         while d <= depth:
-            traverse=''
+            traverse = ''
             j = 1
             # chain traversal payloads
             while j <= d:
@@ -287,7 +287,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                         print(color.END + "{}|: ".format(r.status_code)+r.url)
                     elif attack == 3 or attack == 4:
                         print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
-            d+=1
+            d += 1
             if found:
                 break
 
@@ -342,14 +342,14 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         ulist = splitted[1].split("/")
         last = ulist[-1]
         # delete file, but not hidden directory
-        if "." in last and not last.startswith("."):
+        if "." in last and not last.startswith(".") and last != ulist[0]:
             del ulist[-1]
         url = splitted[0] + "://" + "/".join(ulist)
     if not url.endswith("/"):
         url += "/"
 
     # initialize lists & session
-    found=[]
+    found = []
     urls = []
     s = session()
 
@@ -384,7 +384,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                 d = 1
                 while d <= depth:
                     for i in selected_payloads:
-                        traverse=''
+                        traverse = ''
                         j = 1
                         # chain traversal payloads
                         while j <= d:
@@ -504,7 +504,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                             vfound = False
                             if str(r.status_code).startswith("2"):
                                 if (filecheck(r, con2, con3, p) and attack != 4
-                                    or filecheck(r, con2, con3, p, post=True) and attack == 4):
+                                        or filecheck(r, con2, con3, p, post=True) and attack == 4):
                                     vfound = True
                                     if attack == 1 or attack == 2:
                                         print(color.RD+"[INFO]" + color.O + " leak" + color.END + "       "
@@ -516,13 +516,13 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                                         found.append(dir + file)
                                         if attack == 1:
                                             urls.append(color.RD + "[pl]" + color.END + color.O + " "
-                                                        +  str(r.status_code) + color.END + " "
+                                                        + str(r.status_code) + color.END + " "
                                                         + r.url.split(keyword+"=")[1].replace(url2, ""))
                                         else:
                                             vlnlist = r.url.split("/")[1::]
                                             vlnpath = ("/".join(i for i in vlnlist)).replace(url2, "")
                                             urls.append(color.RD + "[pl]" + color.END + color.O + " "
-                                                        +  str(r.status_code) + color.END + " " + vlnpath)
+                                                        + str(r.status_code) + color.END + " " + vlnpath)
                                     elif attack == 3:
                                         s.cookies.set(selected, p)
                                         print(color.RD + "[INFO]" + color.O + " leak" + color.END +
@@ -545,7 +545,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                                             download(r.url, dir + file, cookie=s.cookies, post=data)
                                         found.append(dir + file)
                                         urls.append(color.RD + "[pl]" + color.END + color.O + " "
-                                                    +  str(r.status_code) + color.END + " " + p)
+                                                    + str(r.status_code) + color.END + " " + p)
 
                             if verbose and not vfound:
                                 if attack == 1 or attack == 2:
@@ -577,7 +577,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         ulist = splitted[1].split("/")
         last = ulist[-1]
         # delete file, but not hidden directory
-        if "." in last and not last.startswith("."):
+        if "." in last and not last.startswith(".") and last != ulist[0]:
             del ulist[-1]
         url = splitted[0] + "://" + "/".join(ulist)
     if not url.endswith("/"):
