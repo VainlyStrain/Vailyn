@@ -24,6 +24,8 @@ import requests
 
 import core.variables as variables
 
+from urllib.parse import unquote
+
 from core.methods.session import session
 from core.colors import color
 
@@ -92,7 +94,12 @@ def download(url, file, cookie=None, post=None):
                 return
         else:
             try:
-                response = s.post(url, data=post, timeout=variables.timeout)
+                req = requests.Request(method='POST', url=url, data=post)
+                prep = s.prepare_request(req)
+                newBody = unquote(prep.body)
+                prep.body = newBody
+                prep.headers["content-length"] = len(newBody)
+                response = s.send(prep, timeout=variables.timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                 print("Timeout reached looting " + url)
                 return

