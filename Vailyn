@@ -17,6 +17,7 @@ _____, ___
 └──╼ VainlyStrain
 """
 
+import setproctitle
 import subprocess
 import treelib
 import argparse
@@ -1133,6 +1134,7 @@ def main(parser, opt, args, shell=True) -> int:
 
 if __name__ == "__main__":
     try:
+        setproctitle.setproctitle("Vailyn")
         banner()
         parser = build_parser()
         opt = vars(parser.parse_args())

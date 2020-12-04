@@ -6,3 +6,4 @@ PyQt5
 scrapy
 twisted
 PyDispatcher
+setproctitle
