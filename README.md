@@ -139,9 +139,10 @@ To gain a reverse shell, you can use the `-j A P` argument, where A is your list
 The techniques (only work for LFI inclusions):
 
 * `/proc/self/environ inclusion` only works on outdated servers
-* `Apache Log Poisoning & inclusion`
+* `Apache + Nginx Log Poisoning & inclusion`
 * `SSH Log Poisoning` 
 * `poisoned mail inclusion`
+* `wrappers (expect, data)`
 
 ### False Positive prevention
 
