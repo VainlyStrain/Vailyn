@@ -50,6 +50,15 @@ payloadlist = generatePayloads()
 
 nullchars = ['%00', '%2500', '%25%30%30', '%u0000', '%c0%80', '%e0%80']
 
+rce = {
+    1: "/proc/self/environ User-Agent Poisoning",
+    2: "Apache Access Log Poisoning",
+    3: "SSH Log Poisoning",
+    4: "Poisoned Mail to Web User",
+    5: "Nginx Access Log Poisoning",
+    6: "Wrapper RCE (expect & data)"
+}
+
 # Tor variables
 tor = False
 initip = ""

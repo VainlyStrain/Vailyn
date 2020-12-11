@@ -19,7 +19,8 @@ _____, ___
 
 
 from core.colors import color
-from core.methods.print import listprint
+from core.methods.print import listprint, printTechniques
+from core.variables import rce
 from core.variables import payloadlist as totalpayloadlist
 
 
@@ -60,3 +61,36 @@ def select(payloadlist, nullbytes=False, nosploit=False):
             selected = []
             invalid = False
     return selected
+
+
+def selectTechniques():
+    """
+    select techniques to use in RCE module
+    @return:
+        selected techniques, as a list
+    """
+    techniques = []
+    invalid = True
+    printTechniques()
+    while invalid:
+        selected = input("{0}[?]{1}{3} Techniques{1}{0}|{1} Select indices\n{0} └──{1} {2}comma-separated{1} :> ".format(
+                            color.RD, color.END, color.CURSIVE, color.O
+                        ))
+        try:
+            error = False
+            if selected.strip().lower() == "a":
+                return list(range(1, len(rce.items()) + 1))
+            for i in selected.split(","):
+                technique = int(i.strip())
+                if technique not in range(1, len(rce.items()) + 1):
+                    error = True
+                elif technique not in techniques:
+                    techniques.append(technique)
+            if techniques and not error:
+                invalid = False
+            else:
+                techniques = []
+        except Exception:
+            pass
+
+    return techniques

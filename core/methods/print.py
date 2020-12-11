@@ -24,7 +24,7 @@ import math
 import random
 
 from core.colors import color
-from core.variables import CLEAR_CMD, payloadlist
+from core.variables import CLEAR_CMD, payloadlist, rce
 from core.methods.list import listsplit
 
 
@@ -211,3 +211,26 @@ def listdisplay(gen, maxlen, nb):
     if nb:
         print("{0}{1}|{2}  {3}".format(color.RB, space + "N" + color.END + color.RD, color.END, "NONE"))
     print()
+
+
+def printTechniquesGui():
+    tstr = ""
+    items = rce.keys()
+    for i in items:
+        tstr = tstr + "{0}{1:{5}}{2}|{3}  {4}\n".format("", i, "", "", rce[i], len(str(len(items))))
+    tstr = tstr + "{0}{1}|{2}  {3}\n".format("", "  A", "", "ALL")
+    return tstr
+
+
+def printTechniques():
+    tmplist = []
+    items = rce.keys()
+    for i in items:
+        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(color.RB, i, color.END + color.RD, color.END,
+                                                 rce[i], len(str(len(items))))
+        tmplist.append(tmpstr)
+    maxlen = len(max(tmplist, key=len))
+    termwidth = shutil.get_terminal_size()[0]
+    column_number = math.floor(len(items) / (termwidth / ((maxlen + 4))))
+    columns = listsplit(tmplist, column_number)
+    listdisplay(columns, maxlen, False)

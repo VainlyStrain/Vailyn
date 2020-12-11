@@ -489,12 +489,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
     """
     second exploitation module: try to gain a reverse shell over the system
     @params:
-        technique:
-        1) /proc/self/environ User-agent poisoning
-        2) Apache log poisoning
-        3) SSH log poisoning
-        4) Poisoned mail to web user
-        others - see phase1()
+        technique: technique index (see variables.rce)
     """
     # TODO clean me up
     url = fixURL(url, attack)
@@ -718,12 +713,14 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         print("Timeout reached @technique {}".format(technique))
 
 
-def lfishell(attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, authcookie, postdata):
+def lfishell(techniques, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
+             authcookie, postdata):
     """
     invoke sheller() for each technique
     @params:
+        techniques: list of attack techniques to use
         (see other methods)
     """
-    for technique in range(1, 7):
+    for technique in techniques:
         sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
                 authcookie, postdata)

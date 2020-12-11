@@ -1715,7 +1715,7 @@ image: none;
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Try to obtain a reverse shell by LFI exploitation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>LFI Shell</string>
+                 <string>CE</string>
                 </property>
                </widget>
               </item>
@@ -1735,7 +1735,17 @@ image: none;
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not exploit found vulnerabilities.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>NoSploit</string>
+                 <string>NoSpl</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="preciseFlag">
+                <property name="toolTip">
+                 <string>Use exact depth in Phase 1, not a range</string>
+                </property>
+                <property name="text">
+                 <string>Precise</string>
                 </property>
                </widget>
               </item>
