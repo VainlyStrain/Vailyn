@@ -54,12 +54,13 @@ additional:
   -n, --loot            {0}Download found files into the loot folder{1}
   -c C, --cookie C      {0}File containing authentication cookie (if needed){1}
   -h, --help            {0}show this help menu and exit{1}
+  -P, --precise         {0}Use exact depth in Phase 1 (not a range){1}
   -i F, --check F       {0}File to check for in Phase 1 (df: /etc/passwd){1}
   -q V, --vic2 V        {0}Attack Target, part 2 [post-payload]{1}
   -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}
   -k T, --timeout T     {0}Request Timeout; stable switch for Arjun{1}
   -m, --nosploit        {0}skip Phase 2 (does not need -l FIL PATH){1}
-  --app                 {0}Start Vailyn's Qt5 interface{1}
+  -A, --app                 {0}Start Vailyn's Qt5 interface{1}
 
 develop:
   --debug               {0}Display every path tried, even 404s.{1}
@@ -76,7 +77,7 @@ class VainFormatter(argparse.RawDescriptionHelpFormatter):
             return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n".format(color.RB, color.END)
                                                         + "        [-p P] [-s D] [-j A P] [-n] \n      [-c C] [-i F] [-t] "
                                                         + "[-m] \n       [-k T] [-d I J K] \n"
-                                                        + "   [-q V] [--app] ", actions, groups, prefix)
+                                                        + "  [-q V] [-P] [-A] ", actions, groups, prefix)
 
 
 def build_parser():
@@ -139,7 +140,10 @@ def build_parser():
     p.add_argument('-m', '--nosploit',
                    help="skip Phase 2 (does not need -l FIL PATH)",
                    action="store_true",)
-    p.add_argument('-g', '--app',
+    p.add_argument('-P', '--precise',
+                   help="Use absolute Phase 1 Depth (not range)",
+                   action="store_true",)
+    p.add_argument('-A', '--app',
                    help="Start Vailyn's Qt5 interface",
                    action="store_true",)
     p.add_argument('--version',

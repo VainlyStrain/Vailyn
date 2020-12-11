@@ -1150,6 +1150,9 @@ if __name__ == "__main__":
             variables.timeout = args.timeout
             variables.stable = True
             assert variables.timeout is not None
+        if opt["precise"]:
+            variables.precise = True
+            assert variables.precise
         if opt["debug"]:
             variables.verbose = True
         if opt["listen"]:

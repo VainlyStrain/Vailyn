@@ -68,6 +68,9 @@ viclist = []
 # arjun stable switch
 stable = False
 
+# precise depth flag
+precise = False
+
 # clear the terminal, supports both Windows and Unix-like
 CLEAR_CMD = ["cmd", "/c", "cls"] if sys.platform.lower().startswith("win") else ["clear"]
 

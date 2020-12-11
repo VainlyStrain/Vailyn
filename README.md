@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/VainlyStrain/Vailyn/blob/master/Vailyn">
-    <img src="https://img.shields.io/static/v1.svg?label=Version&message=2.7&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
+    <img src="https://img.shields.io/static/v1.svg?label=Version&message=2.10&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7%2B&color=lightgrey&style=flat-square&logo=python&logoColor=white">
@@ -66,24 +66,30 @@ Vailyn has 3 mandatory arguments: `-v VIC, -a INT and -l FIL PATH`. However, dep
 mandatory:
   -v VIC, --victim VIC  Target to attack, part 1 [pre-payload]
   -a INT, --attack INT  Attack type (int, 1-5)
-  -l FIL PATH, --lists FIL PATH      
+
+    1|;  Query Parameter   4|:  POST Data
+    2|:  Path              5|;  Crawler (automatic)
+    3|;  Cookie
+
+  -l FIL PATH, --lists FIL PATH
                         Dictionaries (files and dirs)
 additional:
   -p P, --param P       query parameter to use for --attack 1
   -s D, --post D        POST Data (set injection point with INJECT)
   -j A P, --listen A P  Try a reverse shell in Phase 2 (A:IP, P:port)
-  -d I J K, --depths I J K  
+  -d I J K, --depths I J K
                         depths (I: phase 1, J: phase 2, K: permutation level)
   -n, --loot            Download found files into the loot folder
   -c C, --cookie C      File containing authentication cookie (if needed)
   -h, --help            show this help menu and exit
+  -P, --precise         Use exact depth in Phase 1 (not a range)
   -i F, --check F       File to check for in Phase 1 (df: /etc/passwd)
   -q V, --vic2 V        Attack Target, part 2 [post-payload]
   -t, --tor             Pipe attacks through the Tor anonymity network
   -k T, --timeout T     Request Timeout; stable switch for Arjun
   -m, --nosploit        skip Phase 2 (does not need -l FIL PATH)
-  --app                 Start Vailyn's Qt5 interface
-  
+  -A, --app                 Start Vailyn's Qt5 interface
+
 develop:
   --debug               Display every path tried, even 404s.
   --version             Print program version and exit.
@@ -160,8 +166,8 @@ To distinguish real results from false positives, Vailyn does the following chec
 * Simple Query attack:
 `$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file` --> `http://site.com/download.php?file=../INJECT`
 
-* Query attack, but I know a file `index.php` exists on same level:
-`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file -i index.php -d 1 X X`
+* Query attack, but I know a file `file.php` exists on exactly 2 levels above the inclusion point:
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file -i file.php -d 2 X X -P`
 This will shorten the duration of Phase 1 very much, since its a targeted attack.
 
 * Simple Path attack:
