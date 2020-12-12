@@ -1327,51 +1327,6 @@ image: none;
                       <property name="rightMargin">
                        <number>0</number>
                       </property>
-                      <item row="1" column="0">
-                       <widget class="QLabel" name="attackTypeTitle">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>Attack: </string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="0" column="2">
-                       <spacer name="horizontalSpacer_8">
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>40</width>
-                          <height>20</height>
-                         </size>
-                        </property>
-                       </spacer>
-                      </item>
-                      <item row="0" column="1">
-                       <widget class="QLabel" name="victimDisplayLabel">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="text">
-                         <string>none</string>
-                        </property>
-                       </widget>
-                      </item>
                       <item row="0" column="3">
                        <widget class="QPushButton" name="newTargetButton">
                         <property name="toolTip">
@@ -1383,6 +1338,20 @@ image: none;
                         <property name="icon">
                          <iconset>
                           <normaloff>icons/add.svg</normaloff>icons/add.svg</iconset>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="3">
+                       <widget class="QPushButton" name="infoButton">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show description of the currenly selected attack.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="text">
+                         <string>Info</string>
+                        </property>
+                        <property name="icon">
+                         <iconset>
+                          <normaloff>icons/info.svg</normaloff>icons/info.svg</iconset>
                         </property>
                        </widget>
                       </item>
@@ -1405,22 +1374,43 @@ image: none;
                         </property>
                        </widget>
                       </item>
-                      <item row="1" column="3">
-                       <widget class="QPushButton" name="infoButton">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show description of the currenly selected attack.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <item row="1" column="1" colspan="2">
+                       <widget class="QComboBox" name="attackOption"/>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="attackTypeTitle">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
                         </property>
                         <property name="text">
-                         <string>Info</string>
-                        </property>
-                        <property name="icon">
-                         <iconset>
-                          <normaloff>icons/info.svg</normaloff>icons/info.svg</iconset>
+                         <string>Attack: </string>
                         </property>
                        </widget>
                       </item>
-                      <item row="1" column="1" colspan="2">
-                       <widget class="QComboBox" name="attackOption"/>
+                      <item row="0" column="1" colspan="2">
+                       <widget class="QLabel" name="victimDisplayLabel">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>none</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
                       </item>
                      </layout>
                     </widget>
@@ -1510,7 +1500,7 @@ image: none;
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Try to obtain a reverse shell by Log Poisoning &amp; wrappers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>PHP Code Insertion</string>
+                 <string>PHP Code Injection</string>
                 </property>
                </widget>
               </item>

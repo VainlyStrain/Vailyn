@@ -770,15 +770,20 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 if self.attack == 1:
                     if "?" not in vic:
                         self.victimDisplayLabel.setText(vic + "?" + pam + "=INJECT" + vic2)
+                        self.victimDisplayLabel.setToolTip(vic + "?" + pam + "=INJECT" + vic2)
                     else:
                         self.victimDisplayLabel.setText(vic + "&" + pam + "=INJECT" + vic2)
+                        self.victimDisplayLabel.setToolTip(vic + "&" + pam + "=INJECT" + vic2)
                 elif self.attack == 3 or self.attack == 4 or self.attack == 5:
                     self.victimDisplayLabel.setText(vic + vic2)
+                    self.victimDisplayLabel.setToolTip(vic + vic2)
                 elif self.attack == 2:
                     if vic.endswith("/"):
                         self.victimDisplayLabel.setText(vic + "INJECT" + vic2)
+                        self.victimDisplayLabel.setToolTip(vic + "INJECT" + vic2)
                     else:
                         self.victimDisplayLabel.setText(vic + "/" +  "INJECT" + vic2)
+                        self.victimDisplayLabel.setToolTip(vic + "/" +  "INJECT" + vic2)
                 self.show()
 
         self.targetDialog = QtWidgets.QDialog()
