@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
+    <width>461</width>
     <height>600</height>
    </rect>
   </property>
@@ -1505,12 +1505,22 @@ image: none;
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
+               <widget class="QCheckBox" name="shellBox">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Try to obtain a reverse shell by Log Poisoning &amp; wrappers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>PHP Code Insertion</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QLabel" name="shellLabel">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
                 <property name="text">
-                 <string>NC Listener</string>
+                 <string/>
                 </property>
                </widget>
               </item>
@@ -1523,7 +1533,7 @@ image: none;
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IP listening for a reverse shell.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="placeholderText">
-                 <string>127.0.0.1</string>
+                 <string>Listening IP</string>
                 </property>
                </widget>
               </item>
@@ -1539,7 +1549,7 @@ image: none;
                  <string/>
                 </property>
                 <property name="placeholderText">
-                 <string>1337</string>
+                 <string>Port</string>
                 </property>
                </widget>
               </item>
@@ -1710,16 +1720,6 @@ image: none;
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="shellBox">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Try to obtain a reverse shell by LFI exploitation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>CE</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="torBox">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pipe attacks through the Tor anonymity network.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1735,14 +1735,14 @@ image: none;
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not exploit found vulnerabilities.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>NoSpl</string>
+                 <string>NoSploit</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QCheckBox" name="preciseFlag">
                 <property name="toolTip">
-                 <string>Use exact depth in Phase 1, not a range</string>
+                 <string>Use exact depth in Phase 1, not a range.</string>
                 </property>
                 <property name="text">
                  <string>Precise</string>
