@@ -158,6 +158,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.attack = self.attackOption.currentIndex() + 1
         if self.attack == 5:
             self.stackedWidget.setCurrentWidget(self.crawlerOutput)
+        elif self.shellBox.isChecked():
+            self.stackedWidget.setCurrentWidget(self.crawlerOutput)
         else:
             self.stackedWidget.setCurrentWidget(self.fileTree)
         self.show()
@@ -350,6 +352,15 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.shellLabel.setEnabled(False)
             self.portEdit.setEnabled(False)
             self.ipEdit.setEnabled(False)
+
+        self.attack = self.attackOption.currentIndex() + 1
+        if self.shellBox.isChecked():
+            self.stackedWidget.setCurrentWidget(self.crawlerOutput)
+        elif self.attack == 5:
+            self.stackedWidget.setCurrentWidget(self.crawlerOutput)
+        else:
+            self.stackedWidget.setCurrentWidget(self.fileTree)
+        self.show()
 
     def handlePhase2(self):
         if self.nosploitBox.isChecked():
@@ -686,7 +697,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 starting_time = time.time()
                 lfishell(self.techniques, self.attack, self.victim, self.victim2, self.param, self.cookie,
                          self.selected, variables.verbose, self.selectedpayloads, self.selectednullbytes,
-                         self.authcookie, self.post, self.depth2, gui=self)
+                         self.authcookie, self.post, self.depth2, gui=self, app=app)
             else:
                 setDate()
                 # equally split dictionary entries to all threads

