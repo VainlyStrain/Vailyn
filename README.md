@@ -138,9 +138,7 @@ To gain a reverse shell, you can use the `-j A P` argument, where A is your list
 
 > **WARNING**
 >
-> The reverse shell module is NOT production-ready yet! The techniques still need polishing & testing.
->
-> Also, beware that YOUR IP WILL BE VISIBLE IN THE SERVER LOGS.
+> Vailyn mainly employs Log Poisoning techniques. Therefore, YOUR IP WILL BE VISIBLE IN THE SERVER LOGS.
 
 The techniques (only work for LFI inclusions):
 
