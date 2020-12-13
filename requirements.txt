@@ -7,3 +7,4 @@ scrapy
 twisted
 PyDispatcher
 setproctitle
+psutil
