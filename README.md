@@ -88,7 +88,7 @@ additional:
   -t, --tor             Pipe attacks through the Tor anonymity network
   -k T, --timeout T     Request Timeout; stable switch for Arjun
   -m, --nosploit        skip Phase 2 (does not need -l FIL PATH)
-  -A, --app                 Start Vailyn's Qt5 interface
+  -A, --app             Start Vailyn's Qt5 interface
 
 develop:
   --debug               Display every path tried, even 404s.

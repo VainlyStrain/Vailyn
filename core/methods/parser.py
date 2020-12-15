@@ -60,7 +60,7 @@ additional:
   -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}
   -k T, --timeout T     {0}Request Timeout; stable switch for Arjun{1}
   -m, --nosploit        {0}skip Phase 2 (does not need -l FIL PATH){1}
-  -A, --app                 {0}Start Vailyn's Qt5 interface{1}
+  -A, --app             {0}Start Vailyn's Qt5 interface{1}
 
 develop:
   --debug               {0}Display every path tried, even 404s.{1}
