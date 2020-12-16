@@ -30,7 +30,7 @@ import core.variables as vars
 
 from core.methods.session import session, random_ua
 from core.colors import color
-from core.variables import payloadlist, nullchars, LISTENIP, LISTENPORT, rce
+from core.variables import payloadlist, nullchars, rce
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 from core.methods.progress import progress, progresswin, progressgui
@@ -567,7 +567,8 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     if attack == 3:
                         s.cookies.set(selected, p)
                     if str(r.status_code).startswith("2"):
-                        if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
+                        if (filecheck(r, con2, con3, p) and attack != 4
+                                or filecheck(r, con2, con3, p, post=True) and attack == 4):
                             success = (r, p, nb, data, traverse)
                             found = True
                             break
@@ -838,7 +839,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     prep = s.prepare_request(req)
                 else:
                     prep = None
-                
+
                 if prep:
                     try:
                         s.send(prep, timeout=timeout)
