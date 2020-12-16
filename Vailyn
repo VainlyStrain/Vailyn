@@ -382,7 +382,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         variables.precise = self.preciseFlag.isChecked()
 
         if (self.victim == "" or (self.attack == 1 and self.param == "") or ((self.filedict == ""
-                or self.dirdict == "") and self.attack != 5 and not self.nosploit)):
+                or self.dirdict == "") and self.attack != 5 and not self.nosploit
+                and not self.shellBox.isChecked())):
             self.showError("Mandatory argument(s) not specified.")
             return
 
@@ -888,7 +889,8 @@ def main(parser, opt, args, shell=True) -> int:
     """
     Vailyn's main - parse args, start attacks & print results
     """
-    if not (opt["victim"] and opt["attack"]) or (args.attack != 5 and not opt["lists"] and not opt["nosploit"]):
+    if (not (opt["victim"] and opt["attack"]) or (args.attack != 5 and not opt["lists"]
+            and not opt["nosploit"] and not opt["listen"])):
         parser.print_help()
         sys.exit("\n" + color.R + '[-]' + color.END + color.BOLD + ' Invalid/missing '
                  'params' + color.END + '\n' + color.RD + '[HINT]' + color.END + ' -v, -a and -l mandatory')
