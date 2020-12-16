@@ -138,7 +138,7 @@ To gain a reverse shell, you can use the `-j A P` argument, where A is your list
 
 > **WARNING**
 >
-> Vailyn mainly employs Log Poisoning techniques. Therefore, YOUR IP WILL BE VISIBLE IN THE SERVER LOGS.
+> Vailyn employs Log Poisoning techniques. Therefore, YOUR IP WILL BE VISIBLE IN THE SERVER LOGS.
 
 The techniques (only work for LFI inclusions):
 
@@ -146,7 +146,10 @@ The techniques (only work for LFI inclusions):
 * `Apache + Nginx Log Poisoning & inclusion`
 * `SSH Log Poisoning` 
 * `poisoned mail inclusion`
-* `wrappers (expect, data)`
+* wrappers
+    * `expect://`
+    * `data:// (plain & b64)`
+    * `php://input`
 
 ### False Positive prevention
 
