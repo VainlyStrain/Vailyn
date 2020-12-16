@@ -1666,7 +1666,11 @@ image: none;
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="cookieDisplay"/>
+               <widget class="QLineEdit" name="cookieDisplay">
+                <property name="placeholderText">
+                 <string>Cookie File</string>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="addCookieButton">
