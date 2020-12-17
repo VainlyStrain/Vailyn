@@ -344,12 +344,10 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
     def handleShell(self):
         if self.shellBox.isChecked():
             variables.revshell = True
-            self.shellLabel.setEnabled(True)
             self.portEdit.setEnabled(True)
             self.ipEdit.setEnabled(True)
         else:
             variables.revshell = False
-            self.shellLabel.setEnabled(False)
             self.portEdit.setEnabled(False)
             self.ipEdit.setEnabled(False)
 
