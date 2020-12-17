@@ -8,3 +8,4 @@ twisted
 PyDispatcher
 setproctitle
 psutil
+terminaltables

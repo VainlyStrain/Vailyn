@@ -41,6 +41,7 @@ from PyQt5.QtWidgets import QTreeWidgetItem, QTableWidgetItem, QFileDialog
 from scrapy.crawler import CrawlerRunner, CrawlerProcess
 from twisted.internet import reactor
 from multiprocessing import Process, Queue
+from terminaltables import SingleTable
 
 from core.colors import color
 from core.variables import payloadlist, nullchars, version, processes, cachedir, rce
@@ -1022,49 +1023,41 @@ def main(parser, opt, args, shell=True) -> int:
         postattack = analyzePost(postparams, victim2, verbose, checkdepth, vlnfile, cookiefile)
         time.sleep(2.5)
         print("\n\n{}FINAL RESULTS{}\n".format(color.BOLD+color.UNDERLINE, color.END))
-        print("Query Attack\n")
+
+        DATA = [("URL", "Parameter", "Payloads", "Nullbytes")]
         for victim, sub in queryattack.items():
-            print(victim)
             for param, pair in sub.items():
-                paystring = ""
-                nullstring = ""
-                for payload in pair[0]:
-                    paystring = paystring + "            " + str(payload) + "\n"
-                for nullbyte in pair[1]:
-                    nullstring = nullstring + "            " + str(nullbyte) + "\n"
-                print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
-        print("Path Attack\n")
+                payloads = ",\n".join(i for i in pair[0])
+                nullbytes = ",\n".join(i for i in pair[1])
+                DATA.append((victim, param, payloads, nullbytes))
+        queryTable = SingleTable(DATA, "[ Query Attack ]")
+        print("{}\n".format(queryTable.table))
+
+        DATA = [("URL", "Payloads", "Nullbytes")]
         for victim, pair in pathattack.items():
-            print(victim)
-            paystring = ""
-            nullstring = ""
-            for payload in pair[0]:
-                paystring = paystring + "        " + str(payload) + "\n"
-            for nullbyte in pair[1]:
-                nullstring = nullstring + "        " + str(nullbyte) + "\n"
-            print("    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring)
-        print("Cookie Attack\n")
+            payloads = ",\n".join(i for i in pair[0])
+            nullbytes = ",\n".join(i for i in pair[1])
+            DATA.append((victim, payloads, nullbytes))
+        pathTable = SingleTable(DATA, "[ Path Attack ]")
+        print("{}\n".format(pathTable.table))
+
+        DATA = [("URL", "Cookie", "Payloads", "Nullbytes")]
         for victim, sub in cookieattack.items():
-            print(victim)
             for cname, pair in sub.items():
-                paystring = ""
-                nullstring = ""
-                for payload in pair[0]:
-                    paystring = paystring + "            " + str(payload) + "\n"
-                for nullbyte in pair[1]:
-                    nullstring = nullstring + "            " + str(nullbyte) + "\n"
-                print("    " + cname + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
-        print("POST Attack\n")
+                payloads = ",\n".join(i for i in pair[0])
+                nullbytes = ",\n".join(i for i in pair[1])
+                DATA.append((victim, cname, payloads, nullbytes))
+        cookieTable = SingleTable(DATA, "[ Cookie Attack ]")
+        print("{}\n".format(cookieTable.table))
+
+        DATA = [("URL", "Parameter", "Payloads", "Nullbytes")]
         for victim, sub in postattack.items():
-            print(victim)
             for param, pair in sub.items():
-                paystring = ""
-                nullstring = ""
-                for payload in pair[0]:
-                    paystring = paystring + "            " + str(payload) + "\n"
-                for nullbyte in pair[1]:
-                    nullstring = nullstring + "            " + str(nullbyte) + "\n"
-                print("    " + param + ":\n" + "        Payloads:\n" + paystring + "        Nullbytes:\n" + nullstring)
+                payloads = ",\n".join(i for i in pair[0])
+                nullbytes = ",\n".join(i for i in pair[1])
+                DATA.append((victim, param, payloads, nullbytes))
+        postTable = SingleTable(DATA, "[ POST Attack ]")
+        print("{}\n".format(postTable.table))
         return
 
     # fetch and select cookie for cookie mode
