@@ -213,6 +213,20 @@ def listdisplay(gen, maxlen, nb):
     print()
 
 
+def tablePrint(oldTuple):
+    newTuple = []
+    for elem in oldTuple:
+        newTuple.append("{}{}{}".format(color.END, elem, color.RD))
+    return tuple(newTuple)
+
+
+def tableEntryPrint(entry):
+    formatted = []
+    for payload in entry:
+        formatted.append("{}{}{}".format(color.END, payload, color.RD))
+    return ",\n".join(elem for elem in formatted)
+
+
 def printTechniquesGui():
     tstr = ""
     items = rce.keys()

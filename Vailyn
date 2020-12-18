@@ -47,7 +47,6 @@ from core.colors import color
 from core.variables import payloadlist, nullchars, version, processes, cachedir, rce
 
 from core.methods.parser import build_parser
-from core.methods.print import banner, listprint2, printTechniquesGui
 from core.methods.list import listsplit, listperm, gensplit, filegen
 from core.methods.select import select, selectTechniques
 from core.methods.tree import create_tree
@@ -57,6 +56,7 @@ from core.methods.cache import load, save, parseUrl
 from core.methods.tor import initcheck, enableTor
 from core.methods.version import checkUpdate
 from core.methods.loot import setDate
+from core.methods.print import banner, listprint2, printTechniquesGui, tablePrint, tableEntryPrint
 from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
 
 
@@ -1024,40 +1024,40 @@ def main(parser, opt, args, shell=True) -> int:
         time.sleep(2.5)
         print("\n\n{}FINAL RESULTS{}\n".format(color.BOLD+color.UNDERLINE, color.END))
 
-        DATA = [("URL", "Parameter", "Payloads", "Nullbytes")]
+        DATA = [tablePrint(("URL", "Parameter", "Payloads", "Nullbytes"))]
         for victim, sub in queryattack.items():
             for param, pair in sub.items():
-                payloads = ",\n".join(i for i in pair[0])
-                nullbytes = ",\n".join(i for i in pair[1])
-                DATA.append((victim, param, payloads, nullbytes))
-        queryTable = SingleTable(DATA, "[ Query Attack ]")
-        print("{}\n".format(queryTable.table))
+                payloads = tableEntryPrint(pair[0])
+                nullbytes = tableEntryPrint(pair[1])
+                DATA.append(tablePrint((victim, param, payloads, nullbytes)))
+        queryTable = SingleTable(DATA, "[ {}Query Attack{} ]".format(color.END, color.RD))
+        print("{}{}{}\n".format(color.RD, queryTable.table, color.END))
 
-        DATA = [("URL", "Payloads", "Nullbytes")]
+        DATA = [tablePrint(("URL", "Payloads", "Nullbytes"))]
         for victim, pair in pathattack.items():
-            payloads = ",\n".join(i for i in pair[0])
-            nullbytes = ",\n".join(i for i in pair[1])
-            DATA.append((victim, payloads, nullbytes))
-        pathTable = SingleTable(DATA, "[ Path Attack ]")
-        print("{}\n".format(pathTable.table))
+            payloads = tableEntryPrint(pair[0])
+            nullbytes = tableEntryPrint(pair[1])
+            DATA.append(tablePrint((victim, payloads, nullbytes)))
+        pathTable = SingleTable(DATA, "[ {}Path Attack{} ]".format(color.END, color.RD))
+        print("{}{}{}\n".format(color.RD, pathTable.table, color.END))
 
-        DATA = [("URL", "Cookie", "Payloads", "Nullbytes")]
+        DATA = [tablePrint(("URL", "Cookie", "Payloads", "Nullbytes"))]
         for victim, sub in cookieattack.items():
             for cname, pair in sub.items():
-                payloads = ",\n".join(i for i in pair[0])
-                nullbytes = ",\n".join(i for i in pair[1])
-                DATA.append((victim, cname, payloads, nullbytes))
-        cookieTable = SingleTable(DATA, "[ Cookie Attack ]")
-        print("{}\n".format(cookieTable.table))
+                payloads = tableEntryPrint(pair[0])
+                nullbytes = tableEntryPrint(pair[1])
+                DATA.append(tablePrint((victim, cname, payloads, nullbytes)))
+        cookieTable = SingleTable(DATA, "[ {}Cookie Attack{} ]".format(color.END, color.RD))
+        print("{}{}{}\n".format(color.RD, cookieTable.table, color.END))
 
-        DATA = [("URL", "Parameter", "Payloads", "Nullbytes")]
+        DATA = [tablePrint(("URL", "Parameter", "Payloads", "Nullbytes"))]
         for victim, sub in postattack.items():
             for param, pair in sub.items():
-                payloads = ",\n".join(i for i in pair[0])
-                nullbytes = ",\n".join(i for i in pair[1])
-                DATA.append((victim, param, payloads, nullbytes))
-        postTable = SingleTable(DATA, "[ POST Attack ]")
-        print("{}\n".format(postTable.table))
+                payloads = tableEntryPrint(pair[0])
+                nullbytes = tableEntryPrint(pair[1])
+                DATA.append(tablePrint((victim, param, payloads, nullbytes)))
+        postTable = SingleTable(DATA, "[ {}POST Attack{} ]".format(color.END, color.RD))
+        print("{}{}{}\n".format(color.RD, postTable.table, color.END))
         return
 
     # fetch and select cookie for cookie mode
