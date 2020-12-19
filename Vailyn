@@ -153,6 +153,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.versionLabel.setText("Vailyn {} : {}".format(variables.e_version, self.status))
         self.stackedWidget.setCurrentWidget(self.fileTree)
         self.exitButton.clicked.connect(self.close)
+        self.smallQuitBtn.clicked.connect(self.close)
         self.show()
 
     def updateAttack(self):
