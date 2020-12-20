@@ -83,15 +83,14 @@ precise = False
 # clear the terminal, supports both Windows and Unix-like
 CLEAR_CMD = ["cmd", "/c", "cls"] if sys.platform.lower().startswith("win") else ["clear"]
 
+# directory separator
+SEPARATOR = "\\" if sys.platform.lower().startswith("win") else "/"
+
 # set maximal amount of processes
 processes = multiprocessing.cpu_count()
 
-if sys.platform.lower().startswith('win'):
-    lootdir = os.path.dirname(os.path.realpath(__file__)) + "\\..\\loot\\"
-    cachedir = os.path.dirname(os.path.realpath(__file__)) + "\\payload-cache\\"
-else:
-    lootdir = os.path.dirname(os.path.realpath(__file__)) + "/../loot/"
-    cachedir = os.path.dirname(os.path.realpath(__file__)) + "/payload-cache/"
+lootdir = SEPARATOR.join([os.path.dirname(os.path.realpath("__main__")), "loot", ""])
+cachedir = SEPARATOR.join([os.path.dirname(os.path.realpath("__main__")), "core", "payload-cache", ""])
 
 verbose = False
 

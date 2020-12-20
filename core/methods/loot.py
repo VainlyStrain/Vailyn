@@ -28,6 +28,7 @@ from urllib.parse import unquote
 
 from core.methods.session import session
 from core.colors import color
+from core.variables import SEPARATOR
 
 
 date = ""
@@ -54,35 +55,21 @@ def download(url, file, cookie=None, post=None):
     s = session()
     if cookie:
         s.cookies = cookie
-    if sys.platform.lower().startswith('win'):
-        if "\\" in file:
-            path = '\\'.join(file.split('\\')[0:-1])
-            baseurl = url.split("://")[1]
-            name = baseurl.split("\\")[0]
-        else:
-            path = '\\'.join(file.split('/')[0:-1])
-            baseurl = url.split("://")[1]
-            name = baseurl.split("/")[0]
 
-        # fixes directory issues on Windows, because it doesn't allow the character :, which is used in URIs
-        if "@" in name:
-            name = name.split("@")[1]
-        name = name.split(":")[0]
-        subdir = name + "-" + str(date) + "\\"
-    else:
-        if "\\" in file:
-            path = '/'.join(file.split('\\')[0:-1])
-            baseurl = url.split("://")[1]
-            name = baseurl.split("\\")[0]
-        else:
-            path = '/'.join(file.split('/')[0:-1])
-            baseurl = url.split("://")[1]
-            name = baseurl.split("/")[0]
+    urlSeparator = "/"
+    if "\\" in file:
+        urlSeparator = "\\"
 
-        if "@" in name:
-            name = name.split("@")[1]
-        name = name.split(":")[0]
-        subdir = name + "-" + str(date) + "/"
+    path = SEPARATOR.join(file.split(urlSeparator)[0:-1])
+    baseurl = url.split("://")[1]
+    name = baseurl.split(urlSeparator)[0]
+
+    # fixes directory issues on Windows, because it doesn't allow the character :, which is used in URIs
+    if "@" in name:
+        name = name.split("@")[1]
+    name = name.split(":")[0]
+    subdir = name + "-" + str(date) + SEPARATOR
+
     if not os.path.exists(variables.lootdir + subdir + path):
         os.makedirs(variables.lootdir + subdir + path)
     with open((variables.lootdir + subdir + file), "wb") as loot:

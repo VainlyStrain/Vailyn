@@ -1,11 +1,21 @@
+# core requirements
 treelib
 requests
 argparse
 colorama
+
+# GUI requirements
 PyQt5
+
+# Crawler Requirements
 scrapy
 twisted
 PyDispatcher
-setproctitle
-psutil
 terminaltables
+
+# RCE Requirements
+psutil
+
+# Other
+setproctitle
+notify2

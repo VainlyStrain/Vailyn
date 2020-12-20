@@ -161,9 +161,8 @@ _____.  '   ‚ /¯¯¯/|__„   ____   |\\¯¯¯¯\\ °               ____ ‘ 
 
 
 """
-the following methods nicely output lists for the payload selection
-
-currently in use: listprint
+the following methods nicely output lists for payload selection
+and result output
 """
 
 

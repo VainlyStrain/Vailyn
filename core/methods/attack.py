@@ -36,6 +36,7 @@ from core.methods.loot import download
 from core.methods.progress import progress, progresswin, progressgui
 from core.methods.cookie import cookieFromFile
 from core.methods.list import filegen
+from core.methods.notify import notify
 from urllib.parse import unquote
 
 global maxlen
@@ -901,6 +902,7 @@ def showStatus(gui, timeout=False, exception=None):
         return
     if checkConn():
         sys.stdout.write("{0} PWN {2}|{1}\n".format(color.O, color.END, color.END + color.RD))
+        notify("Reverse Shell arrived on Port {}.".format(vars.LISTENPORT))
         if gui:
             gui.crawlerResultDisplay.append(" PWN\n")
             gui.show()

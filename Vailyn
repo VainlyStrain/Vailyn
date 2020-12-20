@@ -29,6 +29,7 @@ import colorama
 import datetime
 import time
 import os
+import notify2
 
 import core.variables as variables
 
@@ -44,6 +45,7 @@ from multiprocessing import Process, Queue
 from terminaltables import SingleTable
 
 from core.colors import color
+from core.config import DESKTOP_NOTIFY
 from core.variables import payloadlist, nullchars, version, processes, cachedir, rce
 
 from core.methods.parser import build_parser
@@ -56,12 +58,17 @@ from core.methods.cache import load, save, parseUrl
 from core.methods.tor import initcheck, enableTor
 from core.methods.version import checkUpdate
 from core.methods.loot import setDate
+from core.methods.notify import notify
 from core.methods.print import banner, listprint2, printTechniquesGui, tablePrint, tableEntryPrint
 from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
 
 
 # initialize colorama
 colorama.init()
+
+# initialize notifications
+if DESKTOP_NOTIFY:
+    notify2.init("Vailyn")
 
 # initialize file tree
 filetree = treelib.Tree()
@@ -1059,6 +1066,7 @@ def main(parser, opt, args, shell=True) -> int:
                 DATA.append(tablePrint((victim, param, payloads, nullbytes)))
         postTable = SingleTable(DATA, "[ {}POST Attack{} ]".format(color.END, color.RD))
         print("{}{}{}\n".format(color.RD, postTable.table, color.END))
+        notify("Crawler finished scanning {} URLs.".format(len(variables.viclist)))
         return
 
     # fetch and select cookie for cookie mode
@@ -1106,6 +1114,11 @@ def main(parser, opt, args, shell=True) -> int:
     attack = False
     if foundpayloads:
         attack = True
+        message = "Path Traversal detected!"
+        if not args.nosploit:
+            message += " Select Payloads for Phase 2"
+        if vlnysis:
+            notify(message)
         selectedpayloads = select(foundpayloads, nosploit=args.nosploit)
         if foundnullbytes:
             selectednullbytes = select(foundnullbytes, nullbytes=True, nosploit=args.nosploit)
@@ -1113,6 +1126,7 @@ def main(parser, opt, args, shell=True) -> int:
             selectednullbytes = []
     else:
         if not opt["nosploit"]:
+            notify("No payload succeeded. Attack anyways?")
             cont = input("\n{0}[✗]{1} No payload succeeded. Attack anyways?\n{0} └──{1} {2}enter if not{1} :> ".format(
                             color.RD, color.END, color.CURSIVE
                         ))
@@ -1126,6 +1140,7 @@ def main(parser, opt, args, shell=True) -> int:
         attack = False
 
     # start the exploitation phase
+    starting_time = time.time()
     if attack:
         resetCounter()
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Sploit Phase\n'.format(color.RD, color.END))
@@ -1182,6 +1197,8 @@ def main(parser, opt, args, shell=True) -> int:
     total_time = vuln_time + attack_time
 
     readable_time = datetime.timedelta(seconds=total_time)
+    if not args.nosploit:
+        notify("Attack done in {}. Found {} files.".format(readable_time, len(foundfiles)-1))
 
     # display found files in a file tree
     print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Directory Tree\n'.format(color.RD, color.END))
