@@ -1141,6 +1141,9 @@ def main(parser, opt, args, shell=True) -> int:
 
     # start the exploitation phase
     starting_time = time.time()
+
+    techniques = []
+
     if attack:
         resetCounter()
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Sploit Phase\n'.format(color.RD, color.END))
@@ -1198,7 +1201,17 @@ def main(parser, opt, args, shell=True) -> int:
 
     readable_time = datetime.timedelta(seconds=total_time)
     if not args.nosploit:
-        notify("Attack done in {}. Found {} files.".format(readable_time, len(foundfiles)-1))
+        notification = "Attack done in {}.".format(readable_time)
+        if variables.revshell:
+            techniquesTried = len(techniques)
+            if 6 in techniques:
+                techniquesTried = techniquesTried + variables.wrapperCount -1
+            mult = "" if techniquesTried == 1 else "s"
+            notification += " {} technique{} tried.".format(techniquesTried, mult)
+        else:
+            mult = "" if (len(foundfiles) - 1) == 1 else "s"
+            notification += " Found {} file{}.".format(len(foundfiles) - 1, mult)
+        notify(notification)
 
     # display found files in a file tree
     print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Directory Tree\n'.format(color.RD, color.END))

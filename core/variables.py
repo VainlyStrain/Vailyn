@@ -50,13 +50,15 @@ payloadlist = generatePayloads()
 
 nullchars = ['%00', '%2500', '%25%30%30', '%u0000', '%c0%80', '%e0%80']
 
+wrapperCount = 4
+
 rce = {
     1: "/proc/self/environ Poisoning",
     2: "Apache Access Log Poisoning",
     3: "SSH Log Poisoning",
     4: "Poisoned Mail to Web User",
     5: "Nginx Access Log Poisoning",
-    6: "Wrapper RCE (4 submodules)"
+    6: "Wrapper RCE ({} submodules)".format(wrapperCount)
 }
 
 # Tor variables
