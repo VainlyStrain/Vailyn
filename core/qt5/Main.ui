@@ -784,6 +784,11 @@ background-color: #221922;
 image: none;
 }
 
+QToolTip {
+border: 1px solid #4a3e4a;
+background: #1d161d;
+}
+
 </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -1766,6 +1771,9 @@ image: none;
                   <width>25</width>
                   <height>16777215</height>
                  </size>
+                </property>
+                <property name="toolTip">
+                 <string>Quit Vailyn</string>
                 </property>
                 <property name="styleSheet">
                  <string notr="true">QPushButton {

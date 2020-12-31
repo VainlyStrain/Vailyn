@@ -782,6 +782,11 @@ border-radius: 2px;
 background-color: #1d161d;
 selection-background-color: #271d27;
 }
+
+QToolTip {
+border: 1px solid #4a3e4a;
+background: #1d161d;
+}
 </string>
   </property>
   <property name="sizeGripEnabled">
