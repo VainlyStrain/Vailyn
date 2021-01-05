@@ -62,6 +62,7 @@ If you use Windows, use `pip` to install the requirements listed in `Vailyn\Â·â€
 
 If twisted fails to install, there is an unofficial version available [here](https://www.lfd.uci.edu/~gohlke/pythonlibs/#twisted), which should build under Windows. Just bear in mind that this is a 3rd party download, and the integrity isn't necessarily guaranteed. After this installed successfully, running pip again on `requirements-windows.txt` should work.
 
+#### Final Steps
 
 If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by Linux distribution. On Windows, you'll need to start the listener manually beforehand.
 
