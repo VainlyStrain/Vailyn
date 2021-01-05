@@ -42,7 +42,7 @@ from PyQt5 import QtWidgets, uic, QtCore, QtGui
 from PyQt5.QtWidgets import (
     QTreeWidgetItem,
     QTableWidgetItem,
-    QFileDialog
+    QFileDialog,
 )
 from scrapy.crawler import CrawlerRunner, CrawlerProcess
 
