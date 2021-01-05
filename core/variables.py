@@ -21,6 +21,7 @@ import multiprocessing
 import sys
 import os
 
+isWindows = sys.platform.lower().startswith("win")
 
 def generatePayloads():
     """
@@ -83,10 +84,10 @@ stable = False
 precise = False
 
 # clear the terminal, supports both Windows and Unix-like
-CLEAR_CMD = ["cmd", "/c", "cls"] if sys.platform.lower().startswith("win") else ["clear"]
+CLEAR_CMD = ["cmd", "/c", "cls"] if isWindows else ["clear"]
 
 # directory separator
-SEPARATOR = "\\" if sys.platform.lower().startswith("win") else "/"
+SEPARATOR = "\\" if isWindows else "/"
 
 # set maximal amount of processes
 processes = multiprocessing.cpu_count()

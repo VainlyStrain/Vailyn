@@ -22,7 +22,7 @@ import notify2
 import os
 
 from core.config import DESKTOP_NOTIFY
-from core.variables import SEPARATOR
+from core.variables import SEPARATOR, isWindows
 
 
 def notify(message):
@@ -34,7 +34,7 @@ def notify(message):
         message - message to show in the notification box
     """
 
-    if DESKTOP_NOTIFY:
+    if DESKTOP_NOTIFY and not isWindows:
         icon = SEPARATOR.join([
             os.path.dirname(os.path.realpath("__main__")), "core", "qt5", "icons", "tid.png"
         ])

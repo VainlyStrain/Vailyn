@@ -44,13 +44,26 @@ Recommended & tested Python versions are 3.7+, but it should work fine with Pyth
 $ git clone https://github.com/VainlyStrain/Vailyn
 ```
 
-Once on your system, you'll need to install the dependencies.
+Once on your system, you'll need to install the Python dependencies.
+
+#### Unix Systems
+
+On Unix systems, it is sufficient to run
 
 ```
 $ pip install -r requirements.txt   # --user
 ```
 
-If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by distribution. On Windows, you'll need to start the listener manually beforehand.
+#### Windows
+
+Some libraries Vailyn uses do not work well with Windows, or will fail to install.
+
+If you use Windows, use `pip` to install the requirements listed in `Vailyn\·›\requirements-windows.txt`.
+
+If twisted fails to install, there is an unofficial version available [here](https://www.lfd.uci.edu/~gohlke/pythonlibs/#twisted), which should build under Windows. Just bear in mind that this is a 3rd party download, and the integrity isn't necessarily guaranteed. After this installed successfully, running pip again on `requirements-windows.txt` should work.
+
+
+If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by Linux distribution. On Windows, you'll need to start the listener manually beforehand.
 
 That's it! Fire Vailyn up by moving to its installation directory and performing
 

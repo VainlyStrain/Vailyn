@@ -1,0 +1,17 @@
+# core requirements
+treelib
+requests
+argparse
+colorama
+
+# GUI requirements
+PyQt5
+
+# Crawler Requirements
+scrapy
+twisted
+PyDispatcher
+terminaltables
+
+# RCE Requirements
+psutil

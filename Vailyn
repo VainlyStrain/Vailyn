@@ -17,7 +17,6 @@ _____, ___
 └──╼ VainlyStrain
 """
 
-import setproctitle
 import subprocess
 import treelib
 import argparse
@@ -29,45 +28,88 @@ import colorama
 import datetime
 import time
 import os
-import notify2
 
 import core.variables as variables
 
 from itertools import permutations
+
 from math import factorial
+
 from multiprocessing.pool import ThreadPool as Pool
+
 from PyQt5.QtCore import Qt
 from PyQt5 import QtWidgets, uic, QtCore, QtGui
-from PyQt5.QtWidgets import QTreeWidgetItem, QTableWidgetItem, QFileDialog
+from PyQt5.QtWidgets import (
+    QTreeWidgetItem,
+    QTableWidgetItem,
+    QFileDialog
+)
 from scrapy.crawler import CrawlerRunner, CrawlerProcess
+
 from twisted.internet import reactor
+
 from multiprocessing import Process, Queue
+
 from terminaltables import SingleTable
 
 from core.colors import color
 from core.config import DESKTOP_NOTIFY
-from core.variables import payloadlist, nullchars, version, processes, cachedir, rce
+from core.variables import (
+    payloadlist,
+    nullchars,
+    version,
+    processes,
+    cachedir,
+    rce,
+    isWindows,
+)
 
 from core.methods.parser import build_parser
-from core.methods.list import listsplit, listperm, gensplit, filegen
+from core.methods.list import (
+    listsplit,
+    listperm,
+    gensplit,
+    filegen,
+)
 from core.methods.select import select, selectTechniques
 from core.methods.tree import create_tree
-from core.methods.attack import phase1, phase2, lfishell, resetCounter
-from core.methods.cookie import readCookie, getCookie, cookieFromFile
+from core.methods.attack import (
+    phase1, phase2, lfishell, resetCounter
+)
+from core.methods.cookie import (
+    readCookie, getCookie, cookieFromFile
+)
 from core.methods.cache import load, save, parseUrl
 from core.methods.tor import initcheck, enableTor
 from core.methods.version import checkUpdate
 from core.methods.loot import setDate
 from core.methods.notify import notify
-from core.methods.print import banner, listprint2, printTechniquesGui, tablePrint, tableEntryPrint
-from core.methods.crawler import UrlSpider, arjunEnum, analyzeParam, analyzePath, analyzeCookie, analyzePost
+from core.methods.print import (
+    banner,
+    listprint2,
+    printTechniquesGui,
+    tablePrint,
+    tableEntryPrint,
+)
+from core.methods.crawler import (
+    UrlSpider,
+    arjunEnum,
+    analyzeParam,
+    analyzePath,
+    analyzeCookie,
+    analyzePost,
+)
+
+if not isWindows:
+    import setproctitle
+    import notify2
 
 
 # initialize colorama
 colorama.init()
 
 # initialize notifications
-if DESKTOP_NOTIFY:
+if DESKTOP_NOTIFY and not isWindows:
     notify2.init("Vailyn")
 
 # initialize file tree
@@ -687,7 +729,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             resetCounter()
             self.timeLabel.setText("Active Phase: 2")
             if variables.revshell:
-                if sys.platform.lower().startswith("win"):
+                if isWindows:
                     question = "Are you listening on {}, port {}?".format(variables.LISTENIP, variables.LISTENPORT)
                     lis = self.showQuestion(question)
                     if not lis:
@@ -1148,7 +1190,7 @@ def main(parser, opt, args, shell=True) -> int:
         resetCounter()
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Sploit Phase\n'.format(color.RD, color.END))
         if variables.revshell:
-            if sys.platform.lower().startswith("win"):
+            if isWindows:
                 lis = input("[?] Are you listening on {}, port {}? (enter if not) :> ".format(
                                 variables.LISTENIP, variables.LISTENPORT
                             ))
@@ -1222,7 +1264,7 @@ def main(parser, opt, args, shell=True) -> int:
         print("nothing found")
 
     print("{}Scan completed in {}.{}".format(color.RC, readable_time, color.END))
-    if variables.tor and not sys.platform.lower().startswith("win"):
+    if variables.tor and not isWindows:
         stop = input(color.END + " [?] Do you want to terminate the Tor service? (enter if not) :> ")
         if stop != "":
             try:
@@ -1237,7 +1279,8 @@ def main(parser, opt, args, shell=True) -> int:
 
 if __name__ == "__main__":
     try:
-        setproctitle.setproctitle("Vailyn")
+        if not isWindows:
+            setproctitle.setproctitle("Vailyn")
         banner()
         parser = build_parser()
         opt = vars(parser.parse_args())

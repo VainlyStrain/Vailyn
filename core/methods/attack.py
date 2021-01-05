@@ -30,7 +30,7 @@ import core.variables as vars
 
 from core.methods.session import session, random_ua
 from core.colors import color
-from core.variables import payloadlist, nullchars, rce
+from core.variables import payloadlist, nullchars, rce, isWindows
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 from core.methods.progress import progress, progresswin, progressgui
@@ -714,7 +714,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     gui.show()
                     app.processEvents()
                 try:
-                    if sys.platform.lower().startswith("win"):
+                    if isWindows:
                         subprocess.run(["putty.exe", "-ssh", sshs[i]])
                     else:
                         subprocess.run(["ssh", sshs[i]])
