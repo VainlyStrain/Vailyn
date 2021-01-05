@@ -18,11 +18,13 @@ _____, ___
 """
 
 
-import notify2
 import os
 
 from core.config import DESKTOP_NOTIFY
 from core.variables import SEPARATOR, isWindows
+
+if not isWindows:
+    import notify2
 
 
 def notify(message):
