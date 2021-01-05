@@ -23,6 +23,7 @@ import os
 
 isWindows = sys.platform.lower().startswith("win")
 
+
 def generatePayloads():
     """
     generate payload list from a variety of dots and slashes
