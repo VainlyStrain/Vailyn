@@ -789,6 +789,16 @@ border: 1px solid #4a3e4a;
 background: #1d161d;
 }
 
+QProgressBar {
+    border: 0px solid #4a3e4a;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #1d161d;
+}
+
+QProgressBar::chunk {
+    background-color: #271d27;
+}
 </string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
@@ -1912,6 +1922,12 @@ background-color: #1d161d;
                <widget class="QProgressBar" name="progressBar">
                 <property name="enabled">
                  <bool>false</bool>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>11</height>
+                 </size>
                 </property>
                 <property name="value">
                  <number>0</number>
