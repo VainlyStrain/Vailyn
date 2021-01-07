@@ -23,7 +23,7 @@ import os
 from core.config import DESKTOP_NOTIFY
 from core.variables import SEPARATOR, isWindows
 
-if not isWindows:
+if not isWindows and DESKTOP_NOTIFY:
     import notify2
 
 
