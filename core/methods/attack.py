@@ -42,7 +42,7 @@ from urllib.parse import unquote
 global maxlen
 maxlen = len(max(payloadlist, key=len))
 
-global mullen
+global nullen
 nullen = len(max(nullchars, key=len))
 
 requestcount = 0
