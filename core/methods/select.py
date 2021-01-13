@@ -24,7 +24,7 @@ from core.variables import rce
 from core.variables import payloadlist as totalpayloadlist
 
 
-def select(payloadlist, nullbytes=False, nosploit=False):
+def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
     """
     select specific payloads or nullbytes for phase 2
     @params:
@@ -36,12 +36,16 @@ def select(payloadlist, nullbytes=False, nosploit=False):
         print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative nullbytes:".format(
                 color.RD, color.END, color.O, len(payloadlist), len(str(len(totalpayloadlist)))
             ))
+    elif wrappers:
+        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative PHP wrappers:".format(
+                color.RD, color.END, color.O, len(payloadlist), len(str(len(totalpayloadlist)))
+            ))
     else:
         print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative payloads:".format(
                 color.RD, color.END, color.O, len(payloadlist), len(str(len(totalpayloadlist)))
             ))
 
-    listprint(payloadlist, nullbytes)
+    listprint(payloadlist, nullbytes, wrappers)
     invalid = True
     while invalid:
         if not nosploit:
@@ -51,7 +55,7 @@ def select(payloadlist, nullbytes=False, nosploit=False):
             try:
                 if payloads.strip().lower() == "a":
                     return payloadlist
-                elif nullbytes and payloads.strip().lower() == "n":
+                elif (nullbytes or wrappers) and payloads.strip().lower() == "n":
                     return []
                 selected = [payloadlist[int(i.strip())] for i in payloads.split(",")]
                 invalid = False

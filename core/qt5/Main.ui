@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
-    <height>600</height>
+    <width>453</width>
+    <height>605</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1715,6 +1715,13 @@ QProgressBar::chunk {
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_10">
               <item>
+               <widget class="QCheckBox" name="lfiBox">
+                <property name="text">
+                 <string>LFI</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QCheckBox" name="lootBox">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Download files found during the Exploitation Phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1740,7 +1747,7 @@ QProgressBar::chunk {
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not exploit found vulnerabilities.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
-                 <string>NoSpl</string>
+                 <string>NSp.</string>
                 </property>
                </widget>
               </item>
@@ -1750,7 +1757,7 @@ QProgressBar::chunk {
                  <string>Use exact depth in Phase 1, not a range.</string>
                 </property>
                 <property name="text">
-                 <string>Precise</string>
+                 <string>Prcs.</string>
                 </property>
                </widget>
               </item>
@@ -1758,6 +1765,23 @@ QProgressBar::chunk {
                <widget class="QPushButton" name="attackButton">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Launch the attack.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+padding-top: 2;
+padding-bottom: 2;
+padding-left: 0;
+padding-right: 0;
+background-color: #2e252e;
+border: 1px solid #4a3e4a;
+min-width: 65px;
+max-width: 65px;
+border-radius: 2px;
+}
+
+QPushButton:pressed {
+background-color: #1d161d;
+}</string>
                 </property>
                 <property name="text">
                  <string>Attack</string>
@@ -1772,13 +1796,13 @@ QProgressBar::chunk {
                <widget class="QPushButton" name="smallQuitBtn">
                 <property name="minimumSize">
                  <size>
-                  <width>25</width>
+                  <width>23</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>25</width>
+                  <width>23</width>
                   <height>16777215</height>
                  </size>
                 </property>
@@ -1793,8 +1817,8 @@ padding-left: 0;
 padding-right: 0;
 background-color: #2e252e;
 border: 1px solid #4a3e4a;
-min-width: 23px;
-max-width: 23px;
+min-width: 21px;
+max-width: 21px;
 border-radius: 2px;
 }
 

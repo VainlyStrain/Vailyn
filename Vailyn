@@ -144,6 +144,7 @@ class VailynApp(QtWidgets.QDialog):
     foundurls = [""]
     foundpayloads = []
     foundnullbytes = []
+    foundwrappers = []
 
     techniques = []
 
@@ -246,12 +247,12 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.infoDialog.okButton.clicked.connect(self.infoDialog.close)
         self.infoDialog.exec_()
 
-    def guiSelect(self, payloadlist, nullbytes=False):
+    def guiSelect(self, payloadlist, nullbytes=False, wrappers=False):
         def intern():
             self.selectedp = self.payloadDialog.payloadSelectInput.text()
             if self.selectedp.strip().lower() == "a":
                 self.selection = payloadlist
-            elif nullbytes and self.selectedp.strip().lower() == "n":
+            elif (nullbytes or wrappers) and self.selectedp.strip().lower() == "n":
                 self.selection = []
             else:
                 try:
@@ -269,7 +270,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         # filter duplicates
         payloadlist = list(set(payloadlist))
         pstr = ""
-        pstr = pstr + listprint2(payloadlist, nullbytes)
+        pstr = pstr + listprint2(payloadlist, nullbytes, wrappers)
 
         self.selectedp = ""
         self.payloadDialog = QtWidgets.QDialog()
@@ -277,6 +278,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.payloadDialog.payloadBrowser.setText(pstr)
         if nullbytes:
             self.payloadDialog.selectLabel.setText("Select Nullbytes")
+        elif wrappers:
+            self.payloadDialog.selectLabel.setText("Select PHP Wrappers")
         else:
             self.payloadDialog.selectLabel.setText("Select Payloads")
         self.payloadDialog.selectPayloadButton.clicked.connect(intern)
@@ -338,10 +341,11 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             return None
         return self.selection
 
-    def showPayloads(self, payloadlist, nullbytelist):
+    def showPayloads(self, payloadlist, nullbytelist, wrapperlist):
         # filter duplicates
         payloadlist = list(set(payloadlist))
         nullbytelist = list(set(nullbytelist))
+        wrapperlist = list(set(wrapperlist))
         pstr = ""
         pstr = pstr + "Payloads:\n"
         for i in range(0, len(payloadlist)):
@@ -349,6 +353,10 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         pstr = pstr + "\nNullbytes:\n"
         for i in range(0, len(nullbytelist)):
             pstr = pstr + "  " + nullbytelist[i] + "\n"
+        if variables.lfi:
+            pstr = pstr + "\nPHP Wrappers:\n"
+            for i in range(0, len(wrapperlist)):
+                pstr = pstr + "  " + wrapperlist[i] + "\n"
 
         self.payloadShowDialog = QtWidgets.QDialog()
         uic.loadUi("core/qt5/PayloadShow.ui", self.payloadShowDialog)
@@ -429,6 +437,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.timeLabel.setText("")
 
         variables.precise = self.preciseFlag.isChecked()
+        variables.lfi = self.lfiBox.isChecked()
 
         if (self.victim == "" or (self.attack == 1 and self.param == "") or ((self.filedict == ""
                 or self.dirdict == "") and self.attack != 5 and not self.nosploit
@@ -605,23 +614,33 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 for param, pair in sub.items():
                     paystring = ""
                     nullstring = ""
+                    wrapstring = ""
                     for payload in pair[0]:
                         paystring = paystring + "            " + str(payload) + "\n"
                     for nullbyte in pair[1]:
                         nullstring = nullstring + "            " + str(nullbyte) + "\n"
+                    for wrapper in pair[2]:
+                        wrapstring = wrapstring + "            " + str(wrapper) + "\n"
                     FINAL += "\n    " + param + ":\n" + "        Payloads:\n" + paystring
                     FINAL += "        Nullbytes:\n" + nullstring
+                    if variables.lfi:
+                        FINAL += "        PHP Wrappers:\n" + wrapstring
 
             FINAL += "\nPath Attack\n"
             for victim, pair in pathattack.items():
                 FINAL += "\n" + victim
                 paystring = ""
                 nullstring = ""
+                wrapstring = ""
                 for payload in pair[0]:
                     paystring = paystring + "        " + str(payload) + "\n"
                 for nullbyte in pair[1]:
                     nullstring = nullstring + "        " + str(nullbyte) + "\n"
+                for wrapper in pair[2]:
+                    wrapstring = wrapstring + "            " + str(wrapper) + "\n"
                 FINAL += "\n    Payloads:\n" + paystring + "    Nullbytes:\n" + nullstring
+                if variables.lfi:
+                    FINAL += "        PHP Wrappers:\n" + wrapstring
 
             FINAL += "\nCookie Attack\n"
             for victim, sub in cookieattack.items():
@@ -629,12 +648,17 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 for cname, pair in sub.items():
                     paystring = ""
                     nullstring = ""
+                    wrapstring = ""
                     for payload in pair[0]:
                         paystring = paystring + "            " + str(payload) + "\n"
                     for nullbyte in pair[1]:
                         nullstring = nullstring + "            " + str(nullbyte) + "\n"
+                    for wrapper in pair[2]:
+                        wrapstring = wrapstring + "            " + str(wrapper) + "\n"
                     FINAL += "\n    " + cname + ":\n" + "        Payloads:\n" + paystring
                     FINAL += "        Nullbytes:\n" + nullstring
+                    if variables.lfi:
+                        FINAL += "        PHP Wrappers:\n" + wrapstring
 
             FINAL += "\nPOST Attack\n"
             for victim, sub in postattack.items():
@@ -642,12 +666,17 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 for param, pair in sub.items():
                     paystring = ""
                     nullstring = ""
+                    wrapstring = ""
                     for payload in pair[0]:
                         paystring = paystring + "            " + str(payload) + "\n"
                     for nullbyte in pair[1]:
                         nullstring = nullstring + "            " + str(nullbyte) + "\n"
+                    for wrapper in pair[2]:
+                        wrapstring = wrapstring + "            " + str(wrapper) + "\n"
                     FINAL += "\n    " + param + ":\n" + "        Payloads:\n" + paystring
                     FINAL += "        Nullbytes:\n" + nullstring
+                    if variables.lfi:
+                        FINAL += "        PHP Wrappers:\n" + wrapstring
 
             self.crawlerResultDisplay.append("\n\n—————————————————\nFINAL RESULTS\n\n" + FINAL)
             self.show()
@@ -669,11 +698,12 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         # present option to skip phase 1 if cache from previous attack present
         targetcache = parseUrl(self.victim)
         if (os.path.exists(cachedir + targetcache + "payloads.cache")
-                and os.path.exists(cachedir + targetcache + "nullbytes.cache")):
+                and os.path.exists(cachedir + targetcache + "nullbytes.cache")
+                and os.path.exists(cachedir + targetcache + "wrappers.cache")):
             choice = self.showQuestion("Detected payload cache. Do you want to load the cache and skip Phase 1?")
             if choice:
                 vlnysis = False
-                self.foundpayloads, self.foundnullbytes = load(targetcache)
+                self.foundpayloads, self.foundnullbytes, self.foundwrappers = load(targetcache)
 
         if vlnysis:
             starting_time = time.time()
@@ -689,11 +719,12 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     tuples = i.get()
                     self.foundpayloads += tuples[0]
                     self.foundnullbytes += tuples[1]
+                    self.foundwrappers += tuples[2]
 
             ending_time = time.time()
             vuln_time = ending_time - starting_time
             # save working payloads to cache
-            save(targetcache, self.foundpayloads, self.foundnullbytes)
+            save(targetcache, self.foundpayloads, self.foundnullbytes, self.foundwrappers)
         else:
             vuln_time = 0.0
 
@@ -707,8 +738,12 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     self.selectednullbytes = self.guiSelect(self.foundnullbytes, nullbytes=True)
                 else:
                     self.selectednullbytes = []
+                if self.foundwrappers:
+                    self.selectedwrappers = self.guiSelect(self.foundwrappers, wrappers=True)
+                else:
+                    self.selectedwrappers = []
             else:
-                self.showPayloads(self.foundpayloads, self.foundnullbytes)
+                self.showPayloads(self.foundpayloads, self.foundnullbytes, self.foundwrappers)
                 return
         else:
             if not self.nosploit:
@@ -718,12 +753,18 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     # attack with everything if phase 1 was unsuccessful
                     self.selectedpayloads = payloadlist
                     self.selectednullbytes = nullchars
+                    self.selectedwrappers = [""]
+                    if variables.lfi:
+                        self.selectedwrappers += variables.phase1_wrappers
             else:
                 self.showInfo("No payload succeeded.")
                 return
 
         if self.nosploit:
             attackphase = False
+
+        if not self.selectedwrappers:
+            self.selectedwrappers = [""]
 
         if attackphase:
             resetCounter()
@@ -747,7 +788,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 starting_time = time.time()
                 lfishell(self.techniques, self.attack, self.victim, self.victim2, self.param, self.cookie,
                          self.selected, variables.verbose, self.selectedpayloads, self.selectednullbytes,
-                         self.authcookie, self.post, self.depth2, gui=self, app=app)
+                         self.selectedwrappers, self.authcookie, self.post, self.depth2, gui=self, app=app,)
             else:
                 setDate()
                 # equally split dictionary entries to all threads
@@ -755,7 +796,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 with open(self.dirdict, "r") as f:
                     sdirlen = sum(1 for line in f if line.rstrip()) + 1
 
-                if opt["lists"] and sdirlen > 100:
+                if sdirlen > 100:
                     self.showInfo("Preparing dictionaries...")
 
                 dirlen2 = sdirlen
@@ -775,8 +816,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 with Pool(processes=processes) as pool:
                     res = [pool.apply_async(phase2, args=(self.attack, self.victim, self.victim2, self.param,
                            self.cookie, self.selected, self.filedict, l, self.depth2, variables.verbose, self.loot,
-                           self.selectedpayloads, self.selectednullbytes, self.authcookie, self.post, dirlen,
-                           self,)) for l in splitted]
+                           self.selectedpayloads, self.selectednullbytes, self.selectedwrappers, self.authcookie,
+                           self.post, dirlen, self,)) for l in splitted]
                     for i in res:
                         # fetch results
                         restuple = i.get()
@@ -938,8 +979,8 @@ def main(parser, opt, args, shell=True) -> int:
     """
     Vailyn's main - parse args, start attacks & print results
     """
-    if (not (opt["victim"] and opt["attack"]) or (args.attack != 5 and not opt["lists"]
-            and not opt["nosploit"] and not opt["listen"])):
+    if (not (opt["victim"] and opt["attack"]) or (args.attack != 5 and not opt["phase2"]
+            and not opt["nosploit"])):
         parser.print_help()
         sys.exit("\n" + color.R + '[-]' + color.END + color.BOLD + ' Invalid/missing '
                  'params' + color.END + '\n' + color.RD + '[HINT]' + color.END + ' -v, -a and -l mandatory')
@@ -952,6 +993,7 @@ def main(parser, opt, args, shell=True) -> int:
     foundurls = [""]
     foundpayloads = []
     foundnullbytes = []
+    foundwrappers = []
     vlnfile = "/etc/passwd"
     checkdepth = 8
     permutationLevel = 2
@@ -1074,38 +1116,42 @@ def main(parser, opt, args, shell=True) -> int:
         time.sleep(2.5)
         print("\n\n{}FINAL RESULTS{}\n".format(color.BOLD+color.UNDERLINE, color.END))
 
-        DATA = [tablePrint(("URL", "Parameter", "Payloads", "Nullbytes"))]
+        DATA = [tablePrint(("URL", "Parameter", "Payloads", "Nullbytes", "Wrappers"))]
         for victim, sub in queryattack.items():
             for param, pair in sub.items():
                 payloads = tableEntryPrint(pair[0])
                 nullbytes = tableEntryPrint(pair[1])
-                DATA.append(tablePrint((victim, param, payloads, nullbytes)))
+                wrappers = tableEntryPrint(pair[2])
+                DATA.append(tablePrint((victim, param, payloads, nullbytes, wrappers)))
         queryTable = SingleTable(DATA, "[ {}Query Attack{} ]".format(color.END, color.RD))
         print("{}{}{}\n".format(color.RD, queryTable.table, color.END))
 
-        DATA = [tablePrint(("URL", "Payloads", "Nullbytes"))]
+        DATA = [tablePrint(("URL", "Payloads", "Nullbytes", "Wrappers"))]
         for victim, pair in pathattack.items():
             payloads = tableEntryPrint(pair[0])
             nullbytes = tableEntryPrint(pair[1])
-            DATA.append(tablePrint((victim, payloads, nullbytes)))
+            wrappers = tableEntryPrint(pair[2])
+            DATA.append(tablePrint((victim, payloads, nullbytes, wrappers)))
         pathTable = SingleTable(DATA, "[ {}Path Attack{} ]".format(color.END, color.RD))
         print("{}{}{}\n".format(color.RD, pathTable.table, color.END))
 
-        DATA = [tablePrint(("URL", "Cookie", "Payloads", "Nullbytes"))]
+        DATA = [tablePrint(("URL", "Cookie", "Payloads", "Nullbytes", "Wrappers"))]
         for victim, sub in cookieattack.items():
             for cname, pair in sub.items():
                 payloads = tableEntryPrint(pair[0])
                 nullbytes = tableEntryPrint(pair[1])
-                DATA.append(tablePrint((victim, cname, payloads, nullbytes)))
+                wrappers = tableEntryPrint(pair[2])
+                DATA.append(tablePrint((victim, cname, payloads, nullbytes, wrappers)))
         cookieTable = SingleTable(DATA, "[ {}Cookie Attack{} ]".format(color.END, color.RD))
         print("{}{}{}\n".format(color.RD, cookieTable.table, color.END))
 
-        DATA = [tablePrint(("URL", "Parameter", "Payloads", "Nullbytes"))]
+        DATA = [tablePrint(("URL", "Parameter", "Payloads", "Nullbytes", "Wrappers"))]
         for victim, sub in postattack.items():
             for param, pair in sub.items():
                 payloads = tableEntryPrint(pair[0])
                 nullbytes = tableEntryPrint(pair[1])
-                DATA.append(tablePrint((victim, param, payloads, nullbytes)))
+                wrappers = tableEntryPrint(pair[2])
+                DATA.append(tablePrint((victim, param, payloads, nullbytes, wrappers)))
         postTable = SingleTable(DATA, "[ {}POST Attack{} ]".format(color.END, color.RD))
         print("{}{}{}\n".format(color.RD, postTable.table, color.END))
         notify("Crawler finished scanning {} URLs.".format(len(variables.viclist)))
@@ -1122,13 +1168,14 @@ def main(parser, opt, args, shell=True) -> int:
     # present option to skip phase 1 if cache from previous attack present
     targetcache = parseUrl(args.victim)
     if (os.path.exists(cachedir + targetcache + "payloads.cache")
-            and os.path.exists(cachedir + targetcache + "nullbytes.cache")):
+            and os.path.exists(cachedir + targetcache + "nullbytes.cache")
+            and os.path.exists(cachedir + targetcache + "wrappers.cache")):
         choice = input("{0}[?]{1}{3} Cache{1}{0}|{1} Load from previous attack?\n{0} └──{1} {2}enter if not{1} :> ".format(
                         color.RD, color.END, color.CURSIVE, color.O
                     ))
         if choice != "":
             vlnysis = False
-            foundpayloads, foundnullbytes = load(targetcache)
+            foundpayloads, foundnullbytes, foundwrappers = load(targetcache)
         else:
             print()
 
@@ -1144,11 +1191,12 @@ def main(parser, opt, args, shell=True) -> int:
                 tuples = i.get()
                 foundpayloads += tuples[0]
                 foundnullbytes += tuples[1]
+                foundwrappers += tuples[2]
 
         ending_time = time.time()
         vuln_time = ending_time - starting_time
         # save working payloads to cache
-        save(targetcache, foundpayloads, foundnullbytes)
+        save(targetcache, foundpayloads, foundnullbytes, foundwrappers)
     else:
         vuln_time = 0.0
 
@@ -1166,6 +1214,10 @@ def main(parser, opt, args, shell=True) -> int:
             selectednullbytes = select(foundnullbytes, nullbytes=True, nosploit=args.nosploit)
         else:
             selectednullbytes = []
+        if foundwrappers:
+            selectedwrappers = select(foundwrappers, wrappers=True, nosploit=args.nosploit)
+        else:
+            selectedwrappers = []
     else:
         if not opt["nosploit"]:
             notify("No payload succeeded. Attack anyways?")
@@ -1177,9 +1229,15 @@ def main(parser, opt, args, shell=True) -> int:
                 # attack with everything if phase 1 was unsuccessful
                 selectedpayloads = payloadlist
                 selectednullbytes = nullchars
+                selectedwrappers = [""]
+                if variables.lfi:
+                    selectedwrappers += variables.phase1_wrappers
 
     if opt["nosploit"]:
         attack = False
+
+    if not selectedwrappers:
+        selectedwrappers = [""]
 
     # start the exploitation phase
     starting_time = time.time()
@@ -1203,14 +1261,14 @@ def main(parser, opt, args, shell=True) -> int:
             techniques = selectTechniques()
             starting_time = time.time()
             lfishell(techniques, args.attack, args.victim, victim2, param, cookie, selected, verbose,
-                     selectedpayloads, selectednullbytes, cookiefile, postdata, depth)
+                     selectedpayloads, selectednullbytes, selectedwrappers, cookiefile, postdata, depth)
         else:
             setDate()
             sdirlen = 0
-            with open(args.lists[1], "r") as f:
+            with open(args.phase2[2], "r") as f:
                 sdirlen = sum(1 for line in f if line.rstrip()) + 1
 
-            if opt["lists"] and sdirlen > 100:
+            if opt["phase2"] and sdirlen > 100:
                 print("{}  Preparing dictionaries...{}".format(color.RC, color.END))
 
             dirlen2 = sdirlen
@@ -1224,13 +1282,14 @@ def main(parser, opt, args, shell=True) -> int:
                 dirlen2 += cur
                 i += 1
             dirlen = int(dirlen2)
-            splitted = gensplit(listperm(args.lists[1], permutationLevel), round(dirlen / processes))
+            splitted = gensplit(listperm(args.phase2[2], permutationLevel), round(dirlen / processes))
 
             starting_time = time.time()
             with Pool(processes=processes) as pool:
                 res = [pool.apply_async(phase2, args=(args.attack, args.victim, victim2, param, cookie,
-                       selected, args.lists[0], l, depth, verbose, loot, selectedpayloads,
-                       selectednullbytes, cookiefile, postdata, dirlen, None,)) for l in splitted]
+                       selected, args.phase2[1], slist, depth, verbose, loot, selectedpayloads,
+                       selectednullbytes, selectedwrappers, cookiefile, postdata, dirlen,
+                       None,)) for slist in splitted]
                 for i in res:
                     # fetch results
                     restuple = i.get()
@@ -1299,14 +1358,18 @@ if __name__ == "__main__":
         if opt["precise"]:
             variables.precise = True
             assert variables.precise
+        if opt["lfi"]:
+            variables.lfi = True
+            assert variables.lfi
         if opt["debug"]:
             variables.verbose = True
-        if opt["listen"]:
-            ip, port = args.listen
-            variables.revshell = True
-            variables.LISTENIP = ip
-            variables.LISTENPORT = port
-            assert variables.revshell and variables.LISTENIP is not None and variables.LISTENPORT is not None
+        if opt["phase2"]:
+            typ, ip, port = args.phase2
+            if typ == "rce":
+                variables.revshell = True
+                variables.LISTENIP = ip
+                variables.LISTENPORT = port
+                assert variables.revshell and variables.LISTENIP is not None and variables.LISTENPORT is not None
         if opt["app"]:
             app = QtWidgets.QApplication(sys.argv)
             window = VailynApp()

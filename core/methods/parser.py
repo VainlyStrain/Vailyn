@@ -20,7 +20,11 @@ _____, ___
 
 import sys
 import argparse
+import terminaltables
+
 from core.colors import color
+
+from core.methods.print import tablePrint
 
 
 class ArgumentParser(argparse.ArgumentParser):
@@ -33,6 +37,10 @@ class ArgumentParser(argparse.ArgumentParser):
                   + color.END + '\n' + color.RD + '[HINT]' + color.END + ' %s\n' % (message))
 
     def print_help(self):
+        DATA = [tablePrint(("TP", "P1", "P2"))]
+        DATA.append(tablePrint(("leak", "File Dict", "Directory Dict")))
+        DATA.append(tablePrint(("rce", "IP Addr", "Listening Port")))
+        table = terminaltables.SingleTable(DATA, "[ {}Values{} ]".format(color.END, color.RD)).table
         self.print_usage(sys.stderr)
         print('''
 mandatory:
@@ -43,15 +51,18 @@ mandatory:
   {2}  2{1}{3}|:{1}  Path            {2}  5{1}{3}|;{1}  Crawler (automatic)
   {2}  3{1}{3}|;{1}  Cookie
 
-  -l FIL PATH, --lists FIL PATH
-                        {0}Dictionaries (files and dirs){1}
+  -l TP P1 P2, --phase2 TP P1 P2
+                        {0}Attack in Phase 2, and needed parameters{1}
+
+{3}{4}{1}
+
 additional:
   -p P, --param P       {0}query parameter to use for --attack 1{1}
   -s D, --post D        {0}POST Data (set injection point with INJECT){1}
-  -j A P, --listen A P  {0}Try a reverse shell in Phase 2 (A:IP, P:port){1}
   -d I J K, --depths I J K
                         {0}depths (I: phase 1, J: phase 2, K: permutation level){1}
   -n, --loot            {0}Download found files into the loot folder{1}
+  --lfi                 {0}Additionally use PHP wrappers to leak files{1}
   -c C, --cookie C      {0}File containing authentication cookie (if needed){1}
   -h, --help            {0}show this help menu and exit{1}
   -P, --precise         {0}Use exact depth in Phase 1 (not a range){1}
@@ -64,7 +75,7 @@ additional:
 
 develop:
   --debug               {0}Display every path tried, even 404s.{1}
-  --version             {0}Print program version and exit.{1}'''.format(color.RC, color.END, color.BOLD, color.RD))
+  --version             {0}Print program version and exit.{1}'''.format(color.RC, color.END, color.BOLD, color.RD, table))
 
 
 class VainFormatter(argparse.RawDescriptionHelpFormatter):
@@ -74,8 +85,8 @@ class VainFormatter(argparse.RawDescriptionHelpFormatter):
     def add_usage(self, usage, actions, groups, prefix=None):
         if prefix is None:
             prefix = color.RC + 'Vsynta ' + color.END
-            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l FIL PATH \n".format(color.RB, color.END)
-                                                        + "        [-p P] [-s D] [-j A P] [-n] \n      [-c C] [-i F] [-t] "
+            return super(VainFormatter, self).add_usage("{}Vailyn{} -v VIC -a INT -l TP P1 P2 \n".format(color.RB, color.END)
+                                                        + "        [-p P] [-s D] [-n] [--lfi]\n      [-c C] [-i F] [-t] "
                                                         + "[-m] \n       [-k T] [-d I J K] \n"
                                                         + "  [-q V] [-P] [-A] ", actions, groups, prefix)
 
@@ -111,14 +122,10 @@ def build_parser():
     p.add_argument('-p', '--param',
                    help="query parameter to use for --attack 1",
                    metavar="P")
-    p.add_argument('-l', '--lists',
-                   help="Dictionaries to use (see templates for syntax)",
-                   nargs=2,
-                   metavar=("FIL", "PATH"))
-    p.add_argument('-j', '--listen',
-                   help="IP and port listening for shells (-a 5)",
-                   nargs=2,
-                   metavar=("A", "P"))
+    p.add_argument('-l', '--phase2',
+                   help="Phase 2 and needed parameters",
+                   nargs=3,
+                   metavar=("TP", "P1", "P2"))
     p.add_argument('-n', '--loot',
                    help="Download found files into the loot folder",
                    action="store_true")
@@ -148,6 +155,9 @@ def build_parser():
                    action="store_true",)
     p.add_argument('--version',
                    help="Print program version and exit.",
+                   action="store_true",)
+    p.add_argument('--lfi',
+                   help="Use LFI wrappers to leak files",
                    action="store_true",)
 
     return p

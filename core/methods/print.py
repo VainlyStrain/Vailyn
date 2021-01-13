@@ -166,17 +166,17 @@ and result output
 """
 
 
-def listprint2(plist, nullbytes):
+def listprint2(plist, nullbytes, wrappers):
     pstr = ""
     for i in range(0, len(plist)):
         pstr = pstr + "{0}{1:{5}}{2}|{3}  {4}\n".format("", i, "", "", plist[i], len(str(len(payloadlist))))
     pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "  A", "", "ALL")
-    if nullbytes:
+    if nullbytes or wrappers:
         pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "  N", "", "NONE")
     return pstr
 
 
-def listprint(plist, nullbytes):
+def listprint(plist, nullbytes, wrappers):
     tmplist = []
     for i in range(0, len(plist)):
         tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(color.RB, i, color.END + color.RD, color.END,
@@ -186,10 +186,10 @@ def listprint(plist, nullbytes):
     termwidth = shutil.get_terminal_size()[0]
     column_number = math.floor(len(plist) / (termwidth / ((maxlen + 4))))
     columns = listsplit(tmplist, column_number)
-    listdisplay(columns, maxlen, nullbytes)
+    listdisplay(columns, maxlen, nullbytes, wrappers)
 
 
-def listdisplay(gen, maxlen, nb):
+def listdisplay(gen, maxlen, nb, wrappers):
     listlist = []
     for l in gen:
         listlist.append(l)
@@ -207,7 +207,7 @@ def listdisplay(gen, maxlen, nb):
     for i in range(0, len(str(len(payloadlist))) - 1):
         space += " "
     print("{0}{1}|{2}  {3}".format(color.RB, space + "A" + color.END + color.RD, color.END, "ALL"))
-    if nb:
+    if nb or wrappers:
         print("{0}{1}|{2}  {3}".format(color.RB, space + "N" + color.END + color.RD, color.END, "NONE"))
     print()
 
@@ -246,4 +246,4 @@ def printTechniques():
     termwidth = shutil.get_terminal_size()[0]
     column_number = math.floor(len(items) / (termwidth / ((maxlen + 4))))
     columns = listsplit(tmplist, column_number)
-    listdisplay(columns, maxlen, False)
+    listdisplay(columns, maxlen, False, False)

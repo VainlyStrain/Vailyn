@@ -140,6 +140,7 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie, gui=None
             for param in paramlist:
                 payloads = []
                 nullbytes = []
+                wrappers = []
                 paysplit = listsplit(payloadlist, round(len(payloadlist)/processes))
                 print("\n{0}[INFO]{1} param{4}|{2} Using {3}\n".format(color.RD, color.END + color.O,
                                                                        color.END, param, color.END+color.RD))
@@ -155,12 +156,16 @@ def analyzeParam(siteparams, victim2, verbose, depth, file, authcookie, gui=None
                     tuples = i.get()
                     payloads += tuples[0]
                     nullbytes += tuples[1]
+                    wrappers += tuples[2]
                 payloads = list(set(payloads))
                 nullbytes = list(set(nullbytes))
-                sub[param] = (payloads, nullbytes)
+                wrappers = list(set(wrappers))
+                sub[param] = (payloads, nullbytes, wrappers)
                 if payloads and gui:
                     gui.crawlerResultDisplay.append("[+] Vulnerable!")
-                    gui.crawlerResultDisplay.append("Payloads: {}\nNullbytes: {}".format(payloads, nullbytes))
+                    gui.crawlerResultDisplay.append(
+                        "Payloads: {}\nNullbytes: {}\nPHP Wrappers: {}".format(payloads, nullbytes, wrappers)
+                    )
                     gui.show()
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
@@ -192,6 +197,7 @@ def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
         for victim in pathviclist:
             payloads = []
             nullbytes = []
+            wrappers = []
             print("\n{0}[INFO]{1} path{4}|{2} Attacking {3}\n".format(color.RD, color.END + color.O,
                                                                       color.END, victim, color.END+color.RD))
             if gui:
@@ -207,12 +213,16 @@ def analyzePath(victim2, verbose, depth, file, authcookie, gui=None):
                 tuples = i.get()
                 payloads += tuples[0]
                 nullbytes += tuples[1]
+                wrappers += tuples[2]
             payloads = list(set(payloads))
             nullbytes = list(set(nullbytes))
-            result[victim] = (payloads, nullbytes)
+            wrappers = list(set(wrappers))
+            result[victim] = (payloads, nullbytes, wrappers)
             if payloads and gui:
                 gui.crawlerResultDisplay.append("[+] Vulnerable!")
-                gui.crawlerResultDisplay.append("Payloads: {}\nNullbytes: {}".format(payloads, nullbytes))
+                gui.crawlerResultDisplay.append(
+                    "Payloads: {}\nNullbytes: {}\nPHP Wrappers: {}".format(payloads, nullbytes, wrappers)
+                )
                 gui.show()
     if not os.path.exists(cachedir + subdir):
         os.makedirs(cachedir + subdir)
@@ -249,6 +259,7 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie, gui=None):
             for key in cookie.keys():
                 payloads = []
                 nullbytes = []
+                wrappers = []
                 print("\n{0}[INFO]{1} cookie{4}|{2} Using {3}\n".format(color.RD, color.END + color.O,
                                                                         color.END, key, color.END+color.RD))
                 if gui:
@@ -264,12 +275,16 @@ def analyzeCookie(victim2, verbose, depth, file, authcookie, gui=None):
                     tuples = i.get()
                     payloads += tuples[0]
                     nullbytes += tuples[1]
+                    wrappers += tuples[2]
                 payloads = list(set(payloads))
                 nullbytes = list(set(nullbytes))
-                sub[key] = (payloads, nullbytes)
+                wrappers = list(set(wrappers))
+                sub[key] = (payloads, nullbytes, wrappers)
                 if payloads and gui:
                     gui.crawlerResultDisplay.append("[+] Vulnerable!")
-                    gui.crawlerResultDisplay.append("Payloads: {}\nNullbytes: {}".format(payloads, nullbytes))
+                    gui.crawlerResultDisplay.append(
+                        "Payloads: {}\nNullbytes: {}\nPHP Wrappers: {}".format(payloads, nullbytes, wrappers)
+                    )
                     gui.show()
             result[victim] = sub
     if not os.path.exists(cachedir+subdir):
@@ -297,6 +312,7 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None)
             for param in paramlist:
                 payloads = []
                 nullbytes = []
+                wrappers = []
                 print("\n{0}[INFO]{1} post{4}|{2} Using {3}\n".format(color.RD, color.END + color.O,
                                                                       color.END, param, color.END+color.RD))
                 if gui:
@@ -312,12 +328,16 @@ def analyzePost(siteparams, victim2, verbose, depth, file, authcookie, gui=None)
                     tuples = i.get()
                     payloads += tuples[0]
                     nullbytes += tuples[1]
+                    wrappers += tuples[2]
                 payloads = list(set(payloads))
                 nullbytes = list(set(nullbytes))
-                sub[param] = (payloads, nullbytes)
+                wrappers = list(set(wrappers))
+                sub[param] = (payloads, nullbytes, wrappers)
                 if payloads and gui:
                     gui.crawlerResultDisplay.append("[+] Vulnerable!")
-                    gui.crawlerResultDisplay.append("Payloads: {}\nNullbytes: {}".format(payloads, nullbytes))
+                    gui.crawlerResultDisplay.append(
+                        "Payloads: {}\nNullbytes: {}\nPHP Wrappers: {}".format(payloads, nullbytes, wrappers)
+                    )
                     gui.show()
             result[victim] = sub
     if not os.path.exists(cachedir + subdir):

@@ -17,6 +17,9 @@ _____, ___
 └──╼ VainlyStrain
 """
 
+
+import core.variables as variables
+
 from urllib.parse import unquote
 
 
@@ -30,6 +33,10 @@ def filecheck(r, con2, con3, payload, post=False):
     """
     con = r.content
     conn = str(con).lower()
+
+    if variables.lfi:
+        for wrapper in variables.phase1_wrappers:
+            payload = payload.replace(wrapper, "")
 
     try:
         # false positive prevention in case server has default include which disappears in case of file

