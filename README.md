@@ -155,8 +155,8 @@ By specifying `-n`, Vailyn will not only display files on the terminal, but also
 If you want a verbose output (display every output, not only found files), you can use `--debug`. Note that output gets really messy, this is basically just a debug help.
 
 To perform the bruteforce attack, you need to specify `-l leak FIL PATH`, where
-* FIL is a dictionary containing **filenames only** (e.g. index.php)
-* PATH, is a dictionary containing **directory names only**. Vailyn will handle directory permutation for you, so you'll need only one directory per line.
+* FIL is a dictionary file containing **filenames only** (e.g. index.php)
+* PATH, is a dictionary file containing **directory names only**. Vailyn will handle directory permutation for you, so you'll need only one directory per line.
 
 To gain a reverse shell, you can use `-l rce IP PORT`, where
 * IP is your listening IP
