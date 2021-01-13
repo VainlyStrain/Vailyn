@@ -25,6 +25,7 @@ import http.cookiejar
 import core.config
 from core.prompt import prompt
 from core.requester import requester
+from core.cookies import cookieFromFile
 from core.utils import e, d, stabilize, randomString, slicer, joiner, unityExtracter, getParams, removeTags, extractHeaders
 
 parser = argparse.ArgumentParser() # defines the parser
@@ -41,7 +42,7 @@ parser.add_argument('--headers', help='add headers', dest='headers', nargs='?', 
 parser.add_argument('--json', help='treat post data as json', dest='jsonData', action='store_true')
 parser.add_argument('--stable', help='prefer stability over speed', dest='stable', action='store_true')
 parser.add_argument('--include', help='include this data in every request', dest='include', default={})
-parser.add_argument('--cookies', help='include this cookiejar in every request', dest='cookies', default=None, type=http.cookiejar.FileCookieJar)
+parser.add_argument('--cookies', help='include this cookiejar in every request', dest='cookies', default='')
 args = parser.parse_args() # arguments to be parsed
 
 url = args.url
@@ -53,7 +54,11 @@ jsonData = args.jsonData
 url_file = args.url_file
 wordlist = args.wordlist
 threadCount = args.threads
-cookiejar = args.cookies
+cookiefile = args.cookies
+if cookiefile:
+    cookiejar = cookieFromFile(cookiefile)
+else:
+    cookiejar = None
 
 if stable or delay:
     threadCount = 1

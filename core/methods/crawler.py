@@ -88,7 +88,7 @@ class UrlSpider(scrapy.Spider):
                 vicfile.write(link + "\n")
 
 
-def arjunEnum(post=False, cookiejar=None):
+def arjunEnum(post=False, cookiefile=None):
     """
     enumerate GET and POST parameters using Arjun by s0md3v to attack in respective phase
     """
@@ -106,8 +106,8 @@ def arjunEnum(post=False, cookiejar=None):
     else:
         command += ["-t", str(processes)]
 
-    if cookiejar:
-        command += ["--cookies", cookiejar]
+    if cookiefile:
+        command += ["--cookies", cookiefile]
 
     subprocess.run(command)
 

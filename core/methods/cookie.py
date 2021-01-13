@@ -22,7 +22,7 @@ import requests
 import sys
 import time
 
-from http.cookiejar import FileCookieJar
+from http.cookiejar import MozillaCookieJar
 
 from core.colors import color
 from core.variables import timeout
@@ -67,7 +67,7 @@ def cookieFromFile(cookiefile):
     @params:
         cookiefile - File containing the cookies.
     """
-    jar = FileCookieJar('cookiefile')
+    jar = MozillaCookieJar(cookiefile)
     jar.load(ignore_expires=True)
     # set expiration time to avoid errors
     for cookie in jar:

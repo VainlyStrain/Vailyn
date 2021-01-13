@@ -570,7 +570,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 1")
             self.show()
             app.processEvents()
-            siteparams = arjunEnum(cookiejar=arjunjar)
+            siteparams = arjunEnum(cookiefile=self.authcookie)
 
             self.timeLabel.setText("Active Phase: 2")
             self.show()
@@ -597,7 +597,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 5")
             self.show()
             app.processEvents()
-            postparams = arjunEnum(post=True, cookiejar=arjunjar)
+            postparams = arjunEnum(post=True, cookiefile=self.authcookie)
 
             self.timeLabel.setText("Active Phase: 6")
             self.show()
@@ -1087,7 +1087,7 @@ def main(parser, opt, args, shell=True) -> int:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (GET)\n'.format(color.RD, color.END))
 
         time.sleep(0.5)
-        siteparams = arjunEnum(cookiejar=arjunjar)
+        siteparams = arjunEnum(cookiefile=cookiefile)
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Query Analysis\n'.format(color.RD, color.END))
 
@@ -1107,7 +1107,7 @@ def main(parser, opt, args, shell=True) -> int:
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (POST)\n'.format(color.RD, color.END))
 
         time.sleep(0.5)
-        postparams = arjunEnum(post=True, cookiejar=arjunjar)
+        postparams = arjunEnum(post=True, cookiefile=cookiefile)
         time.sleep(1)
         print('\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} POST Analysis\n'.format(color.RD, color.END))
 
