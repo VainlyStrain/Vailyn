@@ -227,7 +227,9 @@ will infect DATA2 with the payload
 
 ### Demo
 
-[![asciicast](https://asciinema.org/a/377385.svg)](https://asciinema.org/a/377385)
+[![asciicast](https://asciinema.org/a/384813.svg)](https://asciinema.org/a/384813)
+Vailyn's Crawler analyzing a damn vulnerable web application. LFI Wrappers are not enabled.
+
 [GUI Demonstration (v2.2.1-5)](https://www.youtube.com/watch?v=rFlR_SHk9fc)
 
 ### Possible Issues
