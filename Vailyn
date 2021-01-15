@@ -746,6 +746,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 self.showPayloads(self.foundpayloads, self.foundnullbytes, self.foundwrappers)
                 return
         else:
+            self.selectedwrappers = []
             if not self.nosploit:
                 cont = self.showQuestion("No payload succeeded. Attack anyways?")
                 if cont:
@@ -1219,6 +1220,7 @@ def main(parser, opt, args, shell=True) -> int:
         else:
             selectedwrappers = []
     else:
+        selectedwrappers = []
         if not opt["nosploit"]:
             notify("No payload succeeded. Attack anyways?")
             cont = input("\n{0}[✗]{1} No payload succeeded. Attack anyways?\n{0} └──{1} {2}enter if not{1} :> ".format(

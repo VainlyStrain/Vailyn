@@ -147,6 +147,13 @@ def initialPing(s, attack, url, url2, keyword, timeout):
             con3 = s.get(url + "?" + keyword + "=vailyn" + url2, timeout=timeout).content
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
             sys.exit("Timeout on initial check.")
+    elif attack == 2:
+        try:
+            protocol = url.split("://")[0]
+            root = protocol + "://" + url.split("://")[1].split("/")[0] + "/"
+            con3 = s.get(root, timeout=timeout).content
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            sys.exit("Timeout on initial check.")
 
     return (con2, con3)
 
