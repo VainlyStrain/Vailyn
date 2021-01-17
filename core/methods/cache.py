@@ -17,7 +17,7 @@ _____, ___
 └──╼ VainlyStrain
 """
 
-import sys
+
 import os
 
 import core.variables as variables

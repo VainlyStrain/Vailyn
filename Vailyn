@@ -24,7 +24,7 @@ import colorama
 import sys
 
 from core.methods.parser import build_parser
-from core.methods.version import checkUpdate
+from core.methods.version import check_update
 from core.methods.print import banner
 
 from core.Cli import cli
@@ -55,7 +55,7 @@ if __name__ == "__main__":
         args = parser.parse_args()
         if opt["version"]:
             print("\n\n{}".format(variables.e_version))
-            if checkUpdate():
+            if check_update():
                 print("latest available version.")
             else:
                 print("an update is available.")

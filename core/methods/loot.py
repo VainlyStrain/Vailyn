@@ -17,7 +17,6 @@ _____, ___
 └──╼ VainlyStrain
 """
 
-import sys
 import os
 import time
 import requests

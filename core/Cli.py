@@ -19,50 +19,36 @@ _____, ___
 
 import subprocess
 import treelib
-import argparse
 import requests
 import sys
 import random
-import string
-import colorama
 import datetime
 import time
 import os
 
 import core.variables as variables
 
-from itertools import permutations
-
 from math import factorial
 
 from multiprocessing.pool import ThreadPool as Pool
 
-from scrapy.crawler import CrawlerRunner, CrawlerProcess
-
-from twisted.internet import reactor
-
-from multiprocessing import Process, Queue
+from scrapy.crawler import CrawlerProcess
 
 from terminaltables import SingleTable
 
 from core.colors import color
-from core.config import DESKTOP_NOTIFY
 from core.variables import (
     payloadlist,
     nullchars,
-    version,
     processes,
     cachedir,
-    rce,
     is_windows,
 )
 
-from core.methods.parser import build_parser
 from core.methods.list import (
     listsplit,
     listperm,
     gensplit,
-    filegen,
 )
 from core.methods.select import select, select_techniques
 from core.methods.tree import create_tree
@@ -70,17 +56,13 @@ from core.methods.attack import (
     phase1, phase2, lfi_rce, reset_counter
 )
 from core.methods.cookie import (
-    read_cookie, fetch_cookie, cookie_from_file
+    read_cookie, cookie_from_file
 )
 from core.methods.cache import load, save, parse_url
-from core.methods.tor import init_check, enable_tor
-from core.methods.version import checkUpdate
+from core.methods.tor import enable_tor
 from core.methods.loot import set_date
 from core.methods.notify import notify
 from core.methods.print import (
-    banner,
-    listprint2,
-    print_techniques_gui,
     table_print,
     table_entry_print,
 )
@@ -92,10 +74,6 @@ from core.methods.crawler import (
     crawler_cookie,
     crawler_post,
 )
-
-if not is_windows:
-    import setproctitle
-    import notify2
 
 
 # initialize file tree
@@ -128,7 +106,7 @@ def cli(parser, opt, args, shell=True) -> int:
     foundwrappers = []
     vlnfile = "/etc/passwd"
     checkdepth = 8
-    permutationLevel = 2
+    permutation_level = 2
     cookiefile = ""
 
     # handle optional arguments
@@ -141,7 +119,7 @@ def cli(parser, opt, args, shell=True) -> int:
     if opt["depths"]:
         checkdepth = args.depths[0]
         depth = args.depths[1]
-        permutationLevel = args.depths[2]
+        permutation_level = args.depths[2]
 
     if opt["check"]:
         vlnfile = args.check
@@ -560,7 +538,7 @@ def cli(parser, opt, args, shell=True) -> int:
             else:
                 with open(os.devnull, "w") as DEVNULL:
                     subprocess.Popen(
-                        ["konsole", "--hold","-e", "nc -lvp {}".format(
+                        ["konsole", "--hold", "-e", "nc -lvp {}".format(
                             variables.LISTENPORT,
                         )],
                         close_fds=True,
@@ -588,7 +566,7 @@ def cli(parser, opt, args, shell=True) -> int:
             dirlen2 = sdirlen
             felems = dirlen2 - 1
             i = 1
-            while (i <= permutationLevel):
+            while (i <= permutation_level):
                 if 0 <= i + 1 and i + 1 <= felems:
                     cur = factorial(felems) / factorial(felems - i - 1)
                 else:
@@ -597,7 +575,7 @@ def cli(parser, opt, args, shell=True) -> int:
                 i += 1
             dirlen = int(dirlen2)
             splitted = gensplit(
-                listperm(args.phase2[2], permutationLevel),
+                listperm(args.phase2[2], permutation_level),
                 round(dirlen / processes),
             )
 

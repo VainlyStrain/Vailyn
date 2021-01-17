@@ -18,58 +18,43 @@ _____, ___
 """
 
 import subprocess
-import treelib
-import argparse
 import requests
 import sys
 import random
-import string
-import colorama
 import datetime
 import time
 import os
 
 import core.variables as variables
 
-from itertools import permutations
-
 from math import factorial
 
 from multiprocessing.pool import ThreadPool as Pool
 
-from PyQt5.QtCore import Qt
-from PyQt5 import QtWidgets, uic, QtCore, QtGui
+from PyQt5 import QtWidgets, uic, QtGui
 from PyQt5.QtWidgets import (
     QTreeWidgetItem,
-    QTableWidgetItem,
     QFileDialog,
 )
-from scrapy.crawler import CrawlerRunner, CrawlerProcess
+from scrapy.crawler import CrawlerRunner
 
 from twisted.internet import reactor
 
 from multiprocessing import Process, Queue
 
-from terminaltables import SingleTable
-
-from core.colors import color
-from core.config import DESKTOP_NOTIFY
 from core.variables import (
     payloadlist,
     nullchars,
-    version,
     processes,
     cachedir,
     rce,
     is_windows,
 )
 
-from core.methods.parser import build_parser
 from core.methods.list import (
     listsplit,
     listperm,
     gensplit,
-    filegen,
 )
 from core.methods.select import select, select_techniques
 from core.methods.tree import create_tree
@@ -81,15 +66,11 @@ from core.methods.cookie import (
 )
 from core.methods.cache import load, save, parse_url
 from core.methods.tor import init_check, enable_tor
-from core.methods.version import checkUpdate
+from core.methods.version import check_update
 from core.methods.loot import set_date
-from core.methods.notify import notify
 from core.methods.print import (
-    banner,
     listprint2,
     print_techniques_gui,
-    table_print,
-    table_entry_print,
 )
 from core.methods.crawler import (
     UrlSpider,
@@ -99,10 +80,6 @@ from core.methods.crawler import (
     crawler_cookie,
     crawler_post,
 )
-
-if not is_windows:
-    import setproctitle
-    import notify2
 
 
 class VailynApp(QtWidgets.QDialog):
@@ -116,7 +93,7 @@ class VailynApp(QtWidgets.QDialog):
     dirdict = ""
     depth1 = 8
     depth2 = 2
-    permutationLevel = 2
+    permutation_level = 2
     param = ""
     post = ""
     authcookie = ""
@@ -141,7 +118,7 @@ class VailynApp(QtWidgets.QDialog):
 
     unix = False
 
-    attackIndex = 2
+    attack_index = 2
     status = ""
 
     firstiter = True
@@ -154,15 +131,15 @@ class VailynApp(QtWidgets.QDialog):
         self.attackOption.addItem("cookie")
         self.attackOption.addItem("post")
         self.attackOption.addItem("scraper")
-        self.newTargetButton.clicked.connect(self.getVictim)
+        self.newTargetButton.clicked.connect(self.get_victim)
         self.attackButton.clicked.connect(self.attackGui)
-        self.infoButton.clicked.connect(self.showAttackInfo)
-        self.fileDictButton.clicked.connect(self.getFileDictionary)
-        self.dirDictButton.clicked.connect(self.getDirDictionary)
-        self.addCookieButton.clicked.connect(self.getAuthCookie)
+        self.infoButton.clicked.connect(self.show_attack_info)
+        self.fileDictButton.clicked.connect(self.get_file_dictionary)
+        self.dirDictButton.clicked.connect(self.get_dir_dictionary)
+        self.addCookieButton.clicked.connect(self.get_auth_cookie)
         self.shellBox.stateChanged.connect(self.handleShell)
         self.nosploitBox.stateChanged.connect(self.handlePhase2)
-        self.attackOption.currentIndexChanged.connect(self.updateAttack)
+        self.attackOption.currentIndexChanged.connect(self.update_attack)
         self.attack = self.attackOption.currentIndex() + 1
         self.treeView.setHeaderHidden(True)
         self.textBrowser.setMarkdown("""
@@ -184,7 +161,7 @@ Arjun was slightly modified to fix false negatives with HTTP Basic Auth Sites.
 
 Found some false positives/negatives (or want to point out other bugs/improvements): please leave an issue!
         """)
-        if checkUpdate():
+        if check_update():
             self.status = "latest version"
         else:
             self.status = "update available"
@@ -196,7 +173,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.smallQuitBtn.clicked.connect(self.close)
         self.show()
 
-    def updateAttack(self):
+    def update_attack(self):
         self.attack = self.attackOption.currentIndex() + 1
         if self.attack == 5:
             self.stackedWidget.setCurrentWidget(self.crawlerOutput)
@@ -206,38 +183,38 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.stackedWidget.setCurrentWidget(self.fileTree)
         self.show()
 
-    def getFileName(self):
+    def get_filename(self):
         return QFileDialog.getOpenFileName()
 
-    def getAuthCookie(self):
-        self.cookieDisplay.setText(self.getFileName()[0])
+    def get_auth_cookie(self):
+        self.cookieDisplay.setText(self.get_filename()[0])
 
-    def getFileDictionary(self):
-        self.fileDictDisplay.setText(self.getFileName()[0])
+    def get_file_dictionary(self):
+        self.fileDictDisplay.setText(self.get_filename()[0])
 
-    def getDirDictionary(self):
-        self.dirDictDisplay.setText(self.getFileName()[0])
+    def get_dir_dictionary(self):
+        self.dirDictDisplay.setText(self.get_filename()[0])
 
-    def showAttackInfo(self):
+    def show_attack_info(self):
         if self.attack == 1:
-            self.showInfo("[GET] http://example.com?file=../../../")
+            self.show_info("[GET] http://example.com?file=../../../")
         elif self.attack == 2:
-            self.showInfo("[GET] http://example.com/../../../")
+            self.show_info("[GET] http://example.com/../../../")
         elif self.attack == 3:
-            self.showInfo("[GET] http://example.com COOKIE=../../../")
+            self.show_info("[GET] http://example.com COOKIE=../../../")
         elif self.attack == 4:
-            self.showInfo("[POST] http://example.com POST=../../../")
+            self.show_info("[POST] http://example.com POST=../../../")
         elif self.attack == 5:
-            self.showInfo("Automatically retreive all links & perform all tests")
+            self.show_info("Automatically retreive all links & perform all tests")
 
-    def showInfo(self, message):
+    def show_info(self, message):
         self.infoDialog = QtWidgets.QDialog()
         uic.loadUi("core/qt5/Info.ui", self.infoDialog)
         self.infoDialog.infoMessage.setText(message)
         self.infoDialog.okButton.clicked.connect(self.infoDialog.close)
         self.infoDialog.exec_()
 
-    def guiSelect(self, payloadlist, nullbytes=False, wrappers=False):
+    def gui_select(self, payloadlist, nullbytes=False, wrappers=False):
         def intern():
             self.selectedp = self.payloadDialog.payloadSelectInput.text()
             if self.selectedp.strip().lower() == "a":
@@ -251,8 +228,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         for i in self.selectedp.split(",")
                     ]
                     self.payloadDialog.close()
-                except:
-                    self.showError("Invalid Selection string.")
+                except Exception:
+                    self.show_error("Invalid Selection string.")
 
         self.pacancel = False
 
@@ -287,7 +264,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             return None
         return self.selection
 
-    def guiSelectTechniques(self):
+    def gui_select_techniques(self):
         def intern():
             self.techniqueStr = self.techniqueDialog.payloadSelectInput.text()
             error = False
@@ -303,12 +280,12 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         elif technique not in self.selection:
                             self.selection.append(technique)
                     if error:
-                        self.showError("Invalid Selection string.")
+                        self.show_error("Invalid Selection string.")
                         self.selection = []
                     else:
                         self.techniqueDialog.close()
                 except Exception:
-                    self.showError("Invalid Selection string.")
+                    self.show_error("Invalid Selection string.")
 
         self.pacancel = False
 
@@ -336,7 +313,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             return None
         return self.selection
 
-    def showPayloads(self, payloadlist, nullbytelist, wrapperlist):
+    def show_payloads(self, payloadlist, nullbytelist, wrapperlist):
         # filter duplicates
         payloadlist = list(set(payloadlist))
         nullbytelist = list(set(nullbytelist))
@@ -361,11 +338,11 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         )
         self.payloadShowDialog.exec_()
 
-    def read_cookieGui(self, target):
+    def read_cookie_gui(self, target):
         def intern():
             self.selected = self.cookieDialog.cookieSelectInput.text().strip()
             if self.selected == "" or self.selected not in self.cstr:
-                self.showError("Invalid Cookie Name.")
+                self.show_error("Invalid Cookie Name.")
             else:
                 self.cookieDialog.close()
 
@@ -373,7 +350,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.cocancel = False
         i = 0
         if len(cookie.keys()) < 1:
-            self.showError("Server did not send any cookies.")
+            self.show_error("Server did not send any cookies.")
             return (None, None)
         self.cstr = ""
         for key in cookie.keys():
@@ -442,14 +419,14 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 or ((self.filedict == "" or self.dirdict == "")
                 and self.attack != 5 and not self.nosploit
                 and not self.shellBox.isChecked())):
-            self.showError("Mandatory argument(s) not specified.")
+            self.show_error("Mandatory argument(s) not specified.")
             return
 
         try:
             self.depth1 = int(self.phase1Depth.text().strip())
         except ValueError:
             if self.phase1Depth.text().strip() != "":
-                self.showError(
+                self.show_error(
                     "Depths must be valid positive integers!",
                 )
                 return
@@ -457,15 +434,15 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.depth2 = int(self.phase2Depth.text().strip())
         except ValueError:
             if self.phase2Depth.text().strip() != "":
-                self.showError(
+                self.show_error(
                     "Depths must be valid positive integers!",
                 )
                 return
         try:
-            self.permutationLevel = int(self.phase2PLevel.text().strip())
+            self.permutation_level = int(self.phase2PLevel.text().strip())
         except ValueError:
             if self.phase2PLevel.text().strip() != "":
-                self.showError(
+                self.show_error(
                     "Depths must be valid positive integers!",
                 )
                 return
@@ -479,7 +456,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     and variables.LISTENIP != ""
                 )
             except AssertionError:
-                self.showError(
+                self.show_error(
                     "Listening IP and Port needed for attack.",
                 )
                 return
@@ -490,7 +467,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 variables.timeout = int(timeout)
                 assert(variables.timeout > 0)
             except (ValueError, AssertionError):
-                self.showError(
+                self.show_error(
                     "Timeout must be a valid positive integer!",
                 )
                 return
@@ -503,14 +480,14 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         if self.tor:
             sig = enable_tor(shell=False)
             if sig == 420:
-                ans = self.showQuestion(
+                ans = self.show_question(
                     "Do you have the Tor service up and running?",
                 )
                 if not ans:
                     return
                 enable_tor(shell=False, sig_win=True)
             elif sig == 1337:
-                ans = self.showQuestion(
+                ans = self.show_question(
                     "Do you want to start the Tor service?",
                 )
                 if not ans:
@@ -524,23 +501,23 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         )
 
         if self.attack == 1 and self.param == "":
-            self.showError(
+            self.show_error(
                 "An attack parameter is required for this attack.",
             )
             return
         elif self.attack == 4 and self.post == "":
-            self.showError(
+            self.show_error(
                 "A post data string is required for this attack.",
             )
             return
 
         if self.attack == 4 and "INJECT" not in self.post:
-            self.showError(
+            self.show_error(
                 "POST Data needs to contain INJECT at injection point",
             )
             return
         if self.attack == 4 and "=" not in self.post:
-            self.showError(
+            self.show_error(
                 "POST Data needs to be of form P1=V1&P2=V2",
             )
             return
@@ -582,13 +559,13 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 p.start()
                 result = q.get()
                 p.join()
-                if result != None:
+                if result is not None:
                     print("Crawler error: {}".format(result))
-                    self.showError(
+                    self.show_error(
                         "A crawler error has occurred.",
                     )
 
-            self.tabWidget.setCurrentIndex(self.attackIndex)
+            self.tabWidget.setCurrentIndex(self.attack_index)
             self.timeLabel.setText("Active Phase: 0")
             self.crawlerResultDisplay.append(
                 "; /_ '/\n|/(//((//)\n'     /\n"
@@ -624,7 +601,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 2")
             self.show()
             app.processEvents()
-            queryattack = crawler_query(
+            crawler_query(
                 siteparams, self.victim2, variables.verbose,
                 self.depth1, self.vlnfile, self.authcookie, gui=self,
             )
@@ -633,7 +610,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 3")
             self.show()
             app.processEvents()
-            pathattack = crawler_path(
+            crawler_path(
                 self.victim2, variables.verbose, self.depth1,
                 self.vlnfile, self.authcookie, gui=self,
             )
@@ -642,7 +619,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 4")
             self.show()
             app.processEvents()
-            cookieattack = crawler_cookie(
+            crawler_cookie(
                 self.victim2, variables.verbose, self.depth1,
                 self.vlnfile, self.authcookie, gui=self,
             )
@@ -662,7 +639,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 6")
             self.show()
             app.processEvents()
-            postattack = crawler_post(
+            crawler_post(
                 postparams, self.victim2, variables.verbose,
                 self.depth1, self.vlnfile, self.authcookie,
                 gui=self,
@@ -677,18 +654,17 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
             return
 
-
         if self.attack == 3:
             (
                 self.cookie,
                 self.selected,
-            ) = self.read_cookieGui(self.victim)
-            if self.cookie == None or self.selected == None:
+            ) = self.read_cookie_gui(self.victim)
+            if self.cookie is None or self.selected is None:
                 return
 
         vlnysis = True
 
-        self.tabWidget.setCurrentIndex(self.attackIndex)
+        self.tabWidget.setCurrentIndex(self.attack_index)
         self.show()
         app.processEvents()
 
@@ -697,7 +673,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         if (os.path.exists(cachedir + targetcache + "payloads.cache")
                 and os.path.exists(cachedir + targetcache + "nullbytes.cache")
                 and os.path.exists(cachedir + targetcache + "wrappers.cache")):
-            choice = self.showQuestion(
+            choice = self.show_question(
                 "Detected payload cache. Do you want"
                 " to load the cache and skip Phase 1?"
             )
@@ -746,25 +722,25 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         if self.foundpayloads:
             attackphase = True
             if not self.nosploit:
-                self.selectedpayloads = self.guiSelect(
+                self.selectedpayloads = self.gui_select(
                     self.foundpayloads,
                 )
                 if self.foundnullbytes:
-                    self.selectednullbytes = self.guiSelect(
+                    self.selectednullbytes = self.gui_select(
                         self.foundnullbytes,
                         nullbytes=True,
                     )
                 else:
                     self.selectednullbytes = []
                 if self.foundwrappers:
-                    self.selectedwrappers = self.guiSelect(
+                    self.selectedwrappers = self.gui_select(
                         self.foundwrappers,
                         wrappers=True,
                     )
                 else:
                     self.selectedwrappers = []
             else:
-                self.showPayloads(
+                self.show_payloads(
                     self.foundpayloads,
                     self.foundnullbytes,
                     self.foundwrappers,
@@ -773,7 +749,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         else:
             self.selectedwrappers = []
             if not self.nosploit:
-                cont = self.showQuestion(
+                cont = self.show_question(
                     "No payload succeeded. Attack anyways?",
                 )
                 if cont:
@@ -785,7 +761,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     if variables.lfi:
                         self.selectedwrappers += variables.phase1_wrappers
             else:
-                self.showInfo("No payload succeeded.")
+                self.show_info("No payload succeeded.")
                 return
 
         if self.nosploit:
@@ -802,9 +778,9 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     question = "Are you listening on {}, port {}?".format(
                         variables.LISTENIP, variables.LISTENPORT,
                     )
-                    lis = self.showQuestion(question)
+                    lis = self.show_question(question)
                     if not lis:
-                        self.showError(
+                        self.show_error(
                             "Please start a listener manually"
                             " before starting the attack."
                         )
@@ -819,7 +795,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                             stdout=DEVNULL,
                             stderr=subprocess.STDOUT,
                         )
-                self.techniques = self.guiSelectTechniques()
+                self.techniques = self.gui_select_techniques()
                 if not self.techniques:
                     return
                 starting_time = time.time()
@@ -839,12 +815,12 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     sdirlen = sum(1 for line in f if line.rstrip()) + 1
 
                 if sdirlen > 100:
-                    self.showInfo("Preparing dictionaries...")
+                    self.show_info("Preparing dictionaries...")
 
                 dirlen2 = sdirlen
                 felems = dirlen2 - 1
                 i = 1
-                while (i <= self.permutationLevel):
+                while (i <= self.permutation_level):
                     if 0 <= i + 1 and i + 1 <= felems:
                         cur = factorial(felems) / factorial(felems - i - 1)
                     else:
@@ -853,7 +829,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     i += 1
                 dirlen = int(dirlen2)
                 splitted = gensplit(
-                    listperm(self.dirdict, self.permutationLevel),
+                    listperm(self.dirdict, self.permutation_level),
                     round(dirlen / processes),
                 )
 
@@ -880,16 +856,16 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         readable_time = datetime.timedelta(seconds=total_time)
 
         if self.foundfiles:
-            self.guiTree(readable_time)
+            self.gui_tree(readable_time)
 
-        self.showInfo(
+        self.show_info(
             "Attack done. Found {} files in {}.".format(
                 len(self.foundfiles) - 1, readable_time,
             )
         )
 
         if self.tor and self.unix:
-            stop = self.showQuestion(
+            stop = self.show_question(
                 "Do you want to terminate the Tor service?",
             )
             if stop:
@@ -902,24 +878,24 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 except Exception as e:
                     sys.exit(e)
 
-    def getVictim(self):
+    def get_victim(self):
         def intern():
             vic = self.targetDialog.vicField.text().strip()
             pam = self.targetDialog.paramField.text().strip()
             vic2 = self.targetDialog.vic2Field.text().strip()
             post = self.targetDialog.postInput.text().strip()
             if vic == "":
-                self.showError("-v VIC must be specified.")
+                self.show_error("-v VIC must be specified.")
             elif self.attack == 1 and pam == "":
-                self.showError(
+                self.show_error(
                     "-p PAM must be specified for query attack.",
                 )
             elif self.attack == 4 and post == "":
-                self.showError(
+                self.show_error(
                     "-s DAT must be specified for POST attack.",
                 )
             elif "://" not in vic:
-                self.showError(
+                self.show_error(
                     "scheme:// must be sepecified in -v VIC.",
                 )
             else:
@@ -958,10 +934,10 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         )
                     else:
                         self.victimDisplayLabel.setText(
-                            vic + "/" +  "INJECT" + vic2,
+                            vic + "/" + "INJECT" + vic2,
                         )
                         self.victimDisplayLabel.setToolTip(
-                            vic + "/" +  "INJECT" + vic2,
+                            vic + "/" + "INJECT" + vic2,
                         )
                 self.show()
 
@@ -1006,7 +982,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         )
         self.targetDialog.exec_()
 
-    def guiTree(self, atime):
+    def gui_tree(self, atime):
         self.timeLabel.setText("Done after " + str(atime) + ".")
         root = QTreeWidgetItem(self.treeView)
         root.setText(0, "/")
@@ -1040,7 +1016,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.treeView.expandAll()
         self.show()
 
-    def showError(self, message):
+    def show_error(self, message):
         self.errorDialog = QtWidgets.QDialog()
         uic.loadUi("core/qt5/Error.ui", self.errorDialog)
         self.errorDialog.errorMessage.setText(message)
@@ -1049,7 +1025,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         )
         self.errorDialog.exec_()
 
-    def showQuestion(self, message):
+    def show_question(self, message):
         def intern():
             self.answer = True
             self.questionDialog.close()
@@ -1068,9 +1044,10 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
 app = None
 
+
 def app_qt5():
     global app
     app = QtWidgets.QApplication(sys.argv)
     window = VailynApp()
     app.setWindowIcon(QtGui.QIcon("core/qt5/icons/Vailyn.png"))
-    rcode = app.exec_()
+    app.exec_()

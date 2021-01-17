@@ -174,10 +174,10 @@ def initial_ping(s, attack, url, url2, keyword, timeout):
 
 
 def attack_request(
-        s, attack, url, url2, keyword, selected, traverse,
-        file, directory, nullbyte, post_data, timeout,
-        phase2=False, sheller=False, w=""
-    ):
+    s, attack, url, url2, keyword, selected, traverse,
+    file, directory, nullbyte, post_data, timeout,
+    phase2=False, sheller=False, w=""
+):
     """
     This method executes the attack request and returns the result to the caller.
     @params:
@@ -240,9 +240,9 @@ def attack_request(
 
 
 def phase1(
-        attack, url, url2, keyword, cookie, selected, verbose,
-        depth, paylist, file, authcookie, post_data, gui
-    ):
+    attack, url, url2, keyword, cookie, selected, verbose,
+    depth, paylist, file, authcookie, post_data, gui
+):
     """
     [Phase 1]: Vulnerability Analysis
     @params:
@@ -395,11 +395,11 @@ def phase1(
 
 
 def phase2(
-        attack, url, url2, keyword, cookie, selected, filespath,
-        dirs, depth, verbose, dl, selected_payloads,
-        selected_nullbytes, selected_prefixes, authcookie,
-        post_data, dirlen, gui
-    ):
+    attack, url, url2, keyword, cookie, selected, filespath,
+    dirs, depth, verbose, dl, selected_payloads,
+    selected_nullbytes, selected_prefixes, authcookie,
+    post_data, dirlen, gui
+):
     """
     [Phase 2]: Exploitation
     @params:
@@ -588,10 +588,10 @@ def phase2(
 
 
 def sheller(
-        technique, attack, url, url2, keyword, cookie, selected,
-        verbose, paylist, nullist, wlist,
-        authcookie, post_data, depth, gui, app
-    ):
+    technique, attack, url, url2, keyword, cookie, selected,
+    verbose, paylist, nullist, wlist,
+    authcookie, post_data, depth, gui, app
+):
     """
     second exploitation module: try to gain a reverse shell over the system
     @params:
@@ -750,8 +750,8 @@ def sheller(
             ))
             if gui:
                 gui.crawlerResultDisplay.append(
-                    "  : Trying {}".format("system():      "
-                ))
+                    "  : Trying {}".format("system():      ")
+                )
                 gui.show()
                 app.processEvents()
             try:
@@ -772,8 +772,8 @@ def sheller(
             ))
             if gui:
                 gui.crawlerResultDisplay.append(
-                    "  : Trying {}".format("exec():        "
-                ))
+                    "  : Trying {}".format("exec():        ")
+                )
                 gui.show()
                 app.processEvents()
             try:
@@ -794,8 +794,8 @@ def sheller(
             ))
             if gui:
                 gui.crawlerResultDisplay.append(
-                    "  : Trying {}".format("passthru():    "
-                ))
+                    "  : Trying {}".format("passthru():    ")
+                )
                 gui.show()
                 app.processEvents()
             try:
@@ -1117,10 +1117,10 @@ def sheller(
 
 
 def lfi_rce(
-        techniques, attack, url, url2, keyword, cookie,
-        selected, verbose, paylist, nullist,
-        wlist, authcookie, post_data, depth, gui=None, app=None
-    ):
+    techniques, attack, url, url2, keyword, cookie,
+    selected, verbose, paylist, nullist,
+    wlist, authcookie, post_data, depth, gui=None, app=None
+):
     """
     invoke sheller() for each technique
     @params:

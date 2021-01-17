@@ -22,7 +22,7 @@ from core.methods.session import session
 from core.variables import e_version
 
 
-def checkUpdate():
+def check_update():
     """
     compare local version with online version
     """
