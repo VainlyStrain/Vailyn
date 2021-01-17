@@ -33,7 +33,7 @@ def banner():
     prints asciiart when starting the tool
     """
 
-    largedark = '''{0}                      |
+    large_dark = """{0}                      |
                       :
                       |
                       :
@@ -62,7 +62,15 @@ ____{4},{0} __              |
                     .|.
                      | '
                      '    {5}
-    '''.format(color.END + color.RD, color.BOLD, color.CURSIVE, color.END + color.O, color.RD, color.END, color.END + color.R)
+    """.format(
+        color.END + color.RD,
+        color.BOLD,
+        color.CURSIVE,
+        color.END + color.O,
+        color.RD,
+        color.END,
+        color.END + color.R,
+    )
 
     stealth = """{1}
    ,                \\                  /      {0}         , {1}
@@ -78,9 +86,15 @@ ____{4},{0} __              |
                                            {2}*{1}
                          |{3} Vailyn {1}|
                       [ VainlyStrain ]{4}
-    """.format(color.CURSIVE, color.END + color.RD, color.RD, color.END + color.O, color.END)
+    """.format(
+        color.CURSIVE,
+        color.END + color.RD,
+        color.RD,
+        color.END + color.O,
+        color.END,
+    )
 
-    banners = [stealth, largedark]
+    banners = [stealth, large_dark]
     subprocess.run(CLEAR_CMD)
     print(banners[random.randrange(0, len(banners))])
 
@@ -94,7 +108,9 @@ and result output
 def listprint2(plist, nullbytes, wrappers):
     pstr = ""
     for i in range(0, len(plist)):
-        pstr = pstr + "{0}{1:{5}}{2}|{3}  {4}\n".format("", i, "", "", plist[i], len(str(len(payloadlist))))
+        pstr = pstr + "{0}{1:{5}}{2}|{3}  {4}\n".format(
+            "", i, "", "", plist[i], len(str(len(payloadlist)))
+        )
     pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "  A", "", "ALL")
     if nullbytes or wrappers:
         pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "  N", "", "NONE")
@@ -104,8 +120,10 @@ def listprint2(plist, nullbytes, wrappers):
 def listprint(plist, nullbytes, wrappers):
     tmplist = []
     for i in range(0, len(plist)):
-        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(color.RB, i, color.END + color.RD, color.END,
-                                                 plist[i], len(str(len(payloadlist))))
+        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(
+            color.RB, i, color.END + color.RD, color.END,
+            plist[i], len(str(len(payloadlist)))
+        )
         tmplist.append(tmpstr)
     maxlen = len(max(tmplist, key=len))
     termwidth = shutil.get_terminal_size()[0]
@@ -116,12 +134,12 @@ def listprint(plist, nullbytes, wrappers):
 
 def listdisplay(gen, maxlen, nb, wrappers):
     listlist = []
-    for l in gen:
-        listlist.append(l)
+    for elem in gen:
+        listlist.append(elem)
     maxlen2 = len(max(listlist, key=len))
-    for l in listlist:
-        while len(l) < maxlen2:
-            l.append("")
+    for sublist in listlist:
+        while len(sublist) < maxlen2:
+            sublist.append("")
     print()
     for row in zip(*listlist):
         tstr = ""
@@ -131,41 +149,53 @@ def listdisplay(gen, maxlen, nb, wrappers):
     space = ""
     for i in range(0, len(str(len(payloadlist))) - 1):
         space += " "
-    print("{0}{1}|{2}  {3}".format(color.RB, space + "A" + color.END + color.RD, color.END, "ALL"))
+    print("{0}{1}|{2}  {3}".format(
+        color.RB,
+        space + "A" + color.END + color.RD,
+        color.END, "ALL"
+    ))
     if nb or wrappers:
-        print("{0}{1}|{2}  {3}".format(color.RB, space + "N" + color.END + color.RD, color.END, "NONE"))
+        print("{0}{1}|{2}  {3}".format(
+            color.RB,
+            space + "N" + color.END + color.RD,
+            color.END, "NONE"
+        ))
     print()
 
 
-def tablePrint(oldTuple):
+def table_print(oldTuple):
     newTuple = []
     for elem in oldTuple:
         newTuple.append("{}{}{}".format(color.END, elem, color.RD))
     return tuple(newTuple)
 
 
-def tableEntryPrint(entry):
+def table_entry_print(entry):
     formatted = []
     for payload in entry:
         formatted.append("{}{}{}".format(color.END, payload, color.RD))
     return ",\n".join(elem for elem in formatted)
 
 
-def printTechniquesGui():
+def print_techniques_gui():
     tstr = ""
     items = rce.keys()
     for i in items:
-        tstr = tstr + "{0}{1:{5}}{2}|{3}  {4}\n".format("", i, "", "", rce[i], len(str(len(items))))
+        tstr = tstr + "{0}{1:{5}}{2}|{3}  {4}\n".format(
+            "", i, "", "", rce[i], len(str(len(items))),
+        )
     tstr = tstr + "{0}{1}|{2}  {3}\n".format("", "  A", "", "ALL")
     return tstr
 
 
-def printTechniques():
+def print_techniques():
     tmplist = []
     items = rce.keys()
     for i in items:
-        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(color.RB, i, color.END + color.RD, color.END,
-                                                 rce[i], len(str(len(items))))
+        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(
+            color.RB, i, color.END + color.RD, color.END,
+            rce[i], len(str(len(items))),
+        )
         tmplist.append(tmpstr)
     maxlen = len(max(tmplist, key=len))
     termwidth = shutil.get_terminal_size()[0]

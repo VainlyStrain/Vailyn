@@ -19,7 +19,7 @@ _____, ___
 
 
 from core.colors import color
-from core.methods.print import listprint, printTechniques
+from core.methods.print import listprint, print_techniques
 from core.variables import rce
 from core.variables import payloadlist as totalpayloadlist
 
@@ -34,24 +34,38 @@ def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
     payloadlist = list(set(payloadlist))
     if nullbytes:
         print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative nullbytes:".format(
-                color.RD, color.END, color.O, len(payloadlist), len(str(len(totalpayloadlist)))
-            ))
+            color.RD,
+            color.END,
+            color.O,
+            len(payloadlist),
+            len(str(len(totalpayloadlist))),
+        ))
     elif wrappers:
         print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative PHP wrappers:".format(
-                color.RD, color.END, color.O, len(payloadlist), len(str(len(totalpayloadlist)))
-            ))
+            color.RD,
+            color.END,
+            color.O,
+            len(payloadlist),
+            len(str(len(totalpayloadlist))),
+        ))
     else:
         print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative payloads:".format(
-                color.RD, color.END, color.O, len(payloadlist), len(str(len(totalpayloadlist)))
-            ))
+            color.RD,
+            color.END,
+            color.O,
+            len(payloadlist),
+            len(str(len(totalpayloadlist))),
+        ))
 
     listprint(payloadlist, nullbytes, wrappers)
     invalid = True
     while invalid:
         if not nosploit:
-            payloads = input("{0}[?]{1}{3} Payloads{1}{0}|{1} Select indices\n{0} └──{1} {2}comma-separated{1} :> ".format(
-                                color.RD, color.END, color.CURSIVE, color.O
-                            ))
+            payloads = input(
+                "{0}[?]{1}{3} Payloads{1}{0}|{1} Select indices\n{0} └──{1} {2}comma-separated{1} :> ".format(
+                    color.RD, color.END, color.CURSIVE, color.O
+                )
+            )
             try:
                 if payloads.strip().lower() == "a":
                     return payloadlist
@@ -67,7 +81,7 @@ def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
     return selected
 
 
-def selectTechniques():
+def select_techniques():
     """
     select techniques to use in RCE module
     @return:
@@ -75,11 +89,13 @@ def selectTechniques():
     """
     techniques = []
     invalid = True
-    printTechniques()
+    print_techniques()
     while invalid:
-        selected = input("{0}[?]{1}{3} Techniques{1}{0}|{1} Select indices\n{0} └──{1} {2}comma-separated{1} :> ".format(
-                            color.RD, color.END, color.CURSIVE, color.O
-                        ))
+        selected = input(
+            "{0}[?]{1}{3} Techniques{1}{0}|{1} Select indices\n{0} └──{1} {2}comma-separated{1} :> ".format(
+                color.RD, color.END, color.CURSIVE, color.O
+            )
+        )
         try:
             error = False
             if selected.strip().lower() == "a":

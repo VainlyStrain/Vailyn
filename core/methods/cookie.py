@@ -29,7 +29,7 @@ from core.variables import timeout
 from core.methods.session import session
 
 
-def getCookie(url):
+def fetch_cookie(url):
     """
     fetches cookies from the website for the cookie attack
     @params:
@@ -43,13 +43,13 @@ def getCookie(url):
     return s.cookies
 
 
-def readCookie(url):
+def read_cookie(url):
     """
     parses cookies and lets the attacker choose the injedction point
     @params:
         url - URL to fetch cookies from.
     """
-    cookie = getCookie(url)
+    cookie = fetch_cookie(url)
     i = 0
     if len(cookie.keys()) < 1:
         sys.exit(color.R + "[-]" + color.END + " Server did not send any cookies.")
@@ -57,11 +57,11 @@ def readCookie(url):
         print(str(i) + ": " + key)
         i += 1
     selected = input("\n[!] Select key for attack (int) :> ")
-    selectedpart = list(cookie.keys())[int(selected)]
-    return (cookie, selectedpart)
+    selected_part = list(cookie.keys())[int(selected)]
+    return (cookie, selected_part)
 
 
-def cookieFromFile(cookiefile):
+def cookie_from_file(cookiefile):
     """
     reads authentication cookie from file
     @params:

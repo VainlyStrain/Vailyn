@@ -25,7 +25,7 @@ import http.cookiejar
 import core.config
 from core.prompt import prompt
 from core.requester import requester
-from core.cookies import cookieFromFile
+from core.cookies import cookie_from_file
 from core.utils import e, d, stabilize, randomString, slicer, joiner, unityExtracter, getParams, removeTags, extractHeaders
 
 parser = argparse.ArgumentParser() # defines the parser
@@ -56,7 +56,7 @@ wordlist = args.wordlist
 threadCount = args.threads
 cookiefile = args.cookies
 if cookiefile:
-    cookiejar = cookieFromFile(cookiefile)
+    cookiejar = cookie_from_file(cookiefile)
 else:
     cookiejar = None
 

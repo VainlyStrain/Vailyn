@@ -28,16 +28,16 @@ from urllib.parse import unquote
 
 from core.methods.session import session
 from core.colors import color
-from core.variables import SEPARATOR
+from core.variables import SEPARATOR, is_windows
 
 
 date = ""
 
 
-def setDate():
+def set_date():
     global date
     # append date to folder to be unique
-    if sys.platform.lower().startswith('win'):
+    if is_windows:
         date = time.strftime("%Y-%m-%d %H-%M-%S")
     else:
         date = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -56,15 +56,16 @@ def download(url, file, cookie=None, post=None):
     if cookie:
         s.cookies = cookie
 
-    urlSeparator = "/"
+    url_separator = "/"
     if "\\" in file:
-        urlSeparator = "\\"
+        url_separator = "\\"
 
-    path = SEPARATOR.join(file.split(urlSeparator)[0:-1])
-    baseurl = url.split("://")[1]
-    name = baseurl.split(urlSeparator)[0]
+    path = SEPARATOR.join(file.split(url_separator)[0:-1])
+    base_url = url.split("://")[1]
+    name = base_url.split(url_separator)[0]
 
-    # fixes directory issues on Windows, because it doesn't allow the character :, which is used in URIs
+    # fixes directory issues on Windows, because it doesn't
+    # allow the character :, which is used in URIs
     if "@" in name:
         name = name.split("@")[1]
     name = name.split(":")[0]
@@ -76,20 +77,30 @@ def download(url, file, cookie=None, post=None):
         if not post:
             try:
                 response = s.get(url, timeout=variables.timeout)
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            except (
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+            ):
                 print("Timeout reached looting " + url)
                 return
         else:
             try:
-                req = requests.Request(method='POST', url=url, data=post)
+                req = requests.Request(method="POST", url=url, data=post)
                 prep = s.prepare_request(req)
-                newBody = unquote(prep.body)
-                prep.body = newBody
-                prep.headers["content-length"] = len(newBody)
+                new_body = unquote(prep.body)
+                prep.body = new_body
+                prep.headers["content-length"] = len(new_body)
                 response = s.send(prep, timeout=variables.timeout)
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            except (
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+            ):
                 print("Timeout reached looting " + url)
                 return
         loot.write(response.content)
     loot.close()
-    print('{}[LOOT]{} {}'.format(color.RD, color.END + color.O + color.CURSIVE, file + color.END))
+    print("{}[LOOT]{} {}".format(
+        color.RD,
+        color.END + color.O + color.CURSIVE,
+        file + color.END
+    ))

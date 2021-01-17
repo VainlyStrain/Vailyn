@@ -22,17 +22,17 @@ import random
 from core.colors import color
 
 
-def randomword(length):
+def random_word(length):
     """
     generates a random string, used for unique tree ids when duplicate file names
     @params:
         length - length of the result string.
     """
     letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
+    return "".join(random.choice(letters) for i in range(length))
 
 
-def replaceColors(ntag):
+def replace_colors(ntag):
     """
     removes Vailyn's colors from string
     @params:
@@ -54,21 +54,37 @@ def tree_append(tree, path, parentnode):
     id = plist[0]
     if not tree.contains(id):
         if len(plist) > 1:
-            tree.create_node(color.END+color.CURSIVE+color.END+plist[0]+color.RD, id, parent=parentnode)
+            tree.create_node(
+                color.END + color.CURSIVE + color.END + plist[0] + color.RD,
+                id,
+                parent=parentnode,
+            )
         else:
-            tree.create_node(color.END+color.CURSIVE+plist[0]+color.END+color.RD, id, parent=parentnode)
+            tree.create_node(
+                color.END + color.CURSIVE + plist[0] + color.END + color.RD,
+                id,
+                parent=parentnode,
+            )
     else:
         if tree.parent(id).identifier != parentnode:
             new = True
             for i in tree.children(parentnode):
-                if replaceColors(i.tag) == id:
+                if replace_colors(i.tag) == id:
                     new = False
             if new:
-                id = id + randomword(128)
+                id = id + random_word(128)
                 if len(plist) > 1:
-                    tree.create_node(color.END+plist[0]+color.RD, id, parent=parentnode)
+                    tree.create_node(
+                        color.END + plist[0] + color.RD,
+                        id,
+                        parent=parentnode,
+                    )
                 else:
-                    tree.create_node(color.END+color.CURSIVE+plist[0]+color.END+color.RD, id, parent=parentnode)
+                    tree.create_node(
+                        color.END + color.CURSIVE + plist[0] + color.END + color.RD,
+                        id,
+                        parent=parentnode,
+                    )
     if len(plist) > 1:
         tree_append(tree, "/".join(plist[1::]), id)
 

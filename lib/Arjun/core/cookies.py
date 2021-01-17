@@ -5,7 +5,7 @@ import time
 
 from http.cookiejar import MozillaCookieJar
 
-def cookieFromFile(cookiefile):
+def cookie_from_file(cookiefile):
     """
     reads authentication cookie from file
     @params:
