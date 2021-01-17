@@ -223,7 +223,8 @@ def cli(parser, opt, args, shell=True) -> int:
         ))
     else:
         parser.print_help()
-        sys.exit("\n" + color.R + "[-]" + color.END + color.BOLD
+        sys.exit(
+            "\n" + color.R + "[-]" + color.END + color.BOLD
             + " Invalid/missing params" + color.END + "\n" + color.RD
             + "[HINT]" + color.END + " -a needs to be in [1..5]"
         )
