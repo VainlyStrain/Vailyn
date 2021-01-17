@@ -56,16 +56,15 @@ from core.methods.list import (
     listperm,
     gensplit,
 )
-from core.methods.select import select, select_techniques
-from core.methods.tree import create_tree
+
 from core.methods.attack import (
     phase1, phase2, lfi_rce, reset_counter
 )
 from core.methods.cookie import (
-    read_cookie, fetch_cookie, cookie_from_file
+    fetch_cookie, cookie_from_file
 )
 from core.methods.cache import load, save, parse_url
-from core.methods.tor import init_check, enable_tor
+from core.methods.tor import enable_tor
 from core.methods.version import check_update
 from core.methods.loot import set_date
 from core.methods.print import (
@@ -132,7 +131,7 @@ class VailynApp(QtWidgets.QDialog):
         self.attackOption.addItem("post")
         self.attackOption.addItem("scraper")
         self.newTargetButton.clicked.connect(self.get_victim)
-        self.attackButton.clicked.connect(self.attackGui)
+        self.attackButton.clicked.connect(self.attack_gui)
         self.infoButton.clicked.connect(self.show_attack_info)
         self.fileDictButton.clicked.connect(self.get_file_dictionary)
         self.dirDictButton.clicked.connect(self.get_dir_dictionary)
@@ -401,7 +400,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         else:
             self.nosploit = False
 
-    def attackGui(self):
+    def attack_gui(self):
         self.foundfiles = [""]
         self.foundurls = [""]
         self.foundpayloads = []
@@ -417,8 +416,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
         if (self.victim == "" or (self.attack == 1 and self.param == "")
                 or ((self.filedict == "" or self.dirdict == "")
-                and self.attack != 5 and not self.nosploit
-                and not self.shellBox.isChecked())):
+                    and self.attack != 5 and not self.nosploit
+                    and not self.shellBox.isChecked())):
             self.show_error("Mandatory argument(s) not specified.")
             return
 

@@ -87,7 +87,7 @@ def cli(parser, opt, args, shell=True) -> int:
     """
     if (not (opt["victim"] and opt["attack"]) or
             (args.attack != 5 and not opt["phase2"]
-            and not opt["nosploit"])):
+                and not opt["nosploit"])):
         parser.print_help()
         sys.exit(
             "\n" + color.R + "[-]" + color.END + color.BOLD
@@ -224,9 +224,9 @@ def cli(parser, opt, args, shell=True) -> int:
     else:
         parser.print_help()
         sys.exit("\n" + color.R + "[-]" + color.END + color.BOLD
-        + " Invalid/missing params" + color.END + "\n" + color.RD
-        + "[HINT]" + color.END + " -a needs to be in [1..5]"
-    )
+            + " Invalid/missing params" + color.END + "\n" + color.RD
+            + "[HINT]" + color.END + " -a needs to be in [1..5]"
+        )
 
     print("{0} └──{1} {2}{3}vainly{1}".format(
         color.RD,
