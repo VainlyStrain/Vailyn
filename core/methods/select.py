@@ -33,45 +33,51 @@ def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
     # filter duplicates
     payloadlist = list(set(payloadlist))
     if nullbytes:
-        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative nullbytes:".format(
+        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1}".format(
             color.RD,
             color.END,
             color.O,
             len(payloadlist),
             len(str(len(totalpayloadlist))),
-        ))
+        ) + " Operative nullbytes:")
     elif wrappers:
-        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative PHP wrappers:".format(
+        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1}".format(
             color.RD,
             color.END,
             color.O,
             len(payloadlist),
             len(str(len(totalpayloadlist))),
-        ))
+        ) + " Operative PHP wrappers:")
     else:
-        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1} Operative payloads:".format(
+        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1}".format(
             color.RD,
             color.END,
             color.O,
             len(payloadlist),
             len(str(len(totalpayloadlist))),
-        ))
+        ) + " Operative payloads:")
 
     listprint(payloadlist, nullbytes, wrappers)
     invalid = True
     while invalid:
         if not nosploit:
             payloads = input(
-                "{0}[?]{1}{3} Payloads{1}{0}|{1} Select indices\n{0} └──{1} {2}comma-separated{1} :> ".format(
-                    color.RD, color.END, color.CURSIVE, color.O
+                "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} └──{1} {2}{6}{1} :> ".format(
+                    color.RD, color.END, color.CURSIVE, color.O,
+                    " Payloads", "Select indices\n", "comma-separated",
                 )
             )
             try:
                 if payloads.strip().lower() == "a":
                     return payloadlist
-                elif (nullbytes or wrappers) and payloads.strip().lower() == "n":
+                elif (
+                    (nullbytes or wrappers)
+                    and payloads.strip().lower() == "n"
+                ):
                     return []
-                selected = [payloadlist[int(i.strip())] for i in payloads.split(",")]
+                selected = [
+                    payloadlist[int(i.strip())] for i in payloads.split(",")
+                ]
                 invalid = False
             except Exception:
                 pass
@@ -92,8 +98,9 @@ def select_techniques():
     print_techniques()
     while invalid:
         selected = input(
-            "{0}[?]{1}{3} Techniques{1}{0}|{1} Select indices\n{0} └──{1} {2}comma-separated{1} :> ".format(
-                color.RD, color.END, color.CURSIVE, color.O
+            "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} └──{1} {2}{6}{1} :> ".format(
+                color.RD, color.END, color.CURSIVE, color.O,
+                " Techniques", "Select indices\n", "comma-separated",
             )
         )
         try:

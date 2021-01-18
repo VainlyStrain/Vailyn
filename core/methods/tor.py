@@ -69,7 +69,9 @@ def torpipe(controller):
             ).stdout
         if "active (running)" in str(status) and not mac_os:
             return True
-        elif re.match(".*tor\s+started.*", str(status), flags=re.DOTALL) and mac_os:
+        elif re.match(
+            ".*tor\s+started.*", str(status), flags=re.DOTALL,
+        ) and mac_os:
             return True
         else:
             print(
