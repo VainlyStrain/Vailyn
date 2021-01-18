@@ -1044,7 +1044,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 app = None
 
 
-def app_qt5():
+def app_main():
     global app
     app = QtWidgets.QApplication(sys.argv)
     window = VailynApp()

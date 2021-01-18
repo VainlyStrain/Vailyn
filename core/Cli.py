@@ -81,7 +81,7 @@ filetree = treelib.Tree()
 filetree.create_node(color.O + "/" + color.END + color.RD, "root")
 
 
-def cli(parser, opt, args, shell=True) -> int:
+def cli_main(parser, opt, args, shell=True) -> int:
     """
     Vailyn's CLI interface.
      - parse rest of args
