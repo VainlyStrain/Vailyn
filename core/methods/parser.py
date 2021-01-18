@@ -108,7 +108,7 @@ class VainFormatter(argparse.RawDescriptionHelpFormatter):
             )
 
 
-def build_parser():
+def opt_parser():
     """
     constructs and returns an argument parser
     """

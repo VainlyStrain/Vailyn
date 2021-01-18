@@ -65,7 +65,7 @@ from core.methods.cookie import (
 )
 from core.methods.cache import load, save, parse_url
 from core.methods.tor import enable_tor
-from core.methods.version import check_update
+from core.methods.version import check_version
 from core.methods.loot import set_date
 from core.methods.print import (
     listprint2,
@@ -160,7 +160,7 @@ Arjun was slightly modified to fix false negatives with HTTP Basic Auth Sites.
 
 Found some false positives/negatives (or want to point out other bugs/improvements): please leave an issue!
         """)
-        if check_update():
+        if check_version():
             self.status = "latest version"
         else:
             self.status = "update available"

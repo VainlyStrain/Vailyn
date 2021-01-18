@@ -18,19 +18,19 @@ _____, ___
 """
 
 
-import core.variables as variables
-
-import colorama
-import sys
-
-from core.methods.parser import build_parser
-from core.methods.version import check_update
+from core.methods.version import check_version
 from core.methods.print import banner
+from core.methods.parser import opt_parser
 
 from core.Cli import cli
 from core.App import app_qt5
 from core.config import DESKTOP_NOTIFY
 from core.variables import is_windows
+
+import core.variables as variables
+
+import colorama
+import sys
 
 if not is_windows:
     import setproctitle
@@ -50,12 +50,12 @@ if __name__ == "__main__":
         if not is_windows:
             setproctitle.setproctitle("Vailyn")
         banner()
-        parser = build_parser()
+        parser = opt_parser()
         opt = vars(parser.parse_args())
         args = parser.parse_args()
         if opt["version"]:
             print("\n\n{}".format(variables.e_version))
-            if check_update():
+            if check_version():
                 print("latest available version.")
             else:
                 print("an update is available.")
