@@ -32,7 +32,14 @@ from scrapy.linkextractors import LinkExtractor
 from multiprocessing.pool import ThreadPool as Pool
 from pydispatch import dispatcher
 
-from core.variables import viclist, processes, stable, cachedir, payloadlist
+from core.variables import (
+    viclist,
+    processes,
+    stable,
+    cachedir,
+    payloadlist,
+)
+
 from core.colors import color
 from core.methods.attack import phase1, reset_counter
 from core.methods.cache import parse_url
@@ -46,7 +53,8 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 class UrlSpider(scrapy.Spider):
     """
-    URL crawler - enumerates all links related to the target for further analysis
+    URL crawler - enumerates all links related to the target
+    for further analysis
     """
     name = "vailyn_url_spider"
     start_urls = []
@@ -109,7 +117,8 @@ class UrlSpider(scrapy.Spider):
 
 def crawler_arjun(post=False, cookiefile=None):
     """
-    enumerate GET and POST parameters using Arjun by s0md3v to attack in respective phase
+    enumerate GET and POST parameters using Arjun by s0md3v
+    to attack in respective phase
     """
     subdir = parse_url(viclist[0])
 
@@ -145,7 +154,9 @@ def crawler_arjun(post=False, cookiefile=None):
     return siteparams
 
 
-def crawler_query(siteparams, victim2, verbose, depth, file, authcookie, gui=None):
+def crawler_query(
+    siteparams, victim2, verbose, depth, file, authcookie, gui=None
+):
     """
     attack each GET parameter found for each target URL
     """
@@ -200,7 +211,7 @@ def crawler_query(siteparams, victim2, verbose, depth, file, authcookie, gui=Non
                 if payloads and gui:
                     gui.crawlerResultDisplay.append("[+] Vulnerable!")
                     gui.crawlerResultDisplay.append(
-                        "Payloads: {}\nNullbytes: {}\nPHP Wrappers: {}".format(
+                        "Payloads: {}\nNullbytes: {}\nWrappers: {}".format(
                             payloads, nullbytes, wrappers,
                         )
                     )
@@ -227,7 +238,11 @@ def crawler_path(victim2, verbose, depth, file, authcookie, gui=None):
             ulist = splitted[1].split("/")
             last = ulist[-1]
             # delete file, but not hidden directory
-            if "." in last and not last.startswith(".") and last != ulist[0]:
+            if (
+                "." in last
+                and not last.startswith(".")
+                and last != ulist[0]
+            ):
                 del ulist[-1]
             url = splitted[0] + "://" + "/".join(ulist)
             if url not in pathviclist:
@@ -268,7 +283,7 @@ def crawler_path(victim2, verbose, depth, file, authcookie, gui=None):
             if payloads and gui:
                 gui.crawlerResultDisplay.append("[+] Vulnerable!")
                 gui.crawlerResultDisplay.append(
-                    "Payloads: {}\nNullbytes: {}\nPHP Wrappers: {}".format(
+                    "Payloads: {}\nNullbytes: {}\nWrappers: {}".format(
                         payloads, nullbytes, wrappers,
                     )
                 )
@@ -281,7 +296,9 @@ def crawler_path(victim2, verbose, depth, file, authcookie, gui=None):
     return result
 
 
-def crawler_cookie(victim2, verbose, depth, file, authcookie, gui=None):
+def crawler_cookie(
+    victim2, verbose, depth, file, authcookie, gui=None,
+):
     """
     attack each cookie delivered by the site
     """
@@ -292,17 +309,19 @@ def crawler_cookie(victim2, verbose, depth, file, authcookie, gui=None):
             sub = {}
             cookie = fetch_cookie(victim)
             if len(cookie.keys()) < 1:
-                print("\n{0}[INFO]{1} cookie{4}|{2} No cookies available for {3}.\n".format(
+                print("\n{0}[INFO]{1} cookie{4}|{2}{5}{3}.\n".format(
                     color.RD,
                     color.END + color.O,
                     color.END,
                     victim,
                     color.END + color.RD,
+                    " No cookies available for ",
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "\n[Info] cookie| No cookies available for {}".format(
-                            victim
+                        "\n[Info] cookie| {1}{0}".format(
+                            victim,
+                            "No cookies available for ",
                         )
                     )
                     gui.show()
@@ -353,7 +372,7 @@ def crawler_cookie(victim2, verbose, depth, file, authcookie, gui=None):
                 if payloads and gui:
                     gui.crawlerResultDisplay.append("[+] Vulnerable!")
                     gui.crawlerResultDisplay.append(
-                        "Payloads: {}\nNullbytes: {}\nPHP Wrappers: {}".format(
+                        "Payloads: {}\nNullbytes: {}\nWrappers: {}".format(
                             payloads, nullbytes, wrappers,
                         )
                     )
@@ -366,7 +385,9 @@ def crawler_cookie(victim2, verbose, depth, file, authcookie, gui=None):
     return result
 
 
-def crawler_post(siteparams, victim2, verbose, depth, file, authcookie, gui=None):
+def crawler_post(
+    siteparams, victim2, verbose, depth, file, authcookie, gui=None
+):
     """
     attack each POST parameter found for each target URL
     """
@@ -421,7 +442,7 @@ def crawler_post(siteparams, victim2, verbose, depth, file, authcookie, gui=None
                 if payloads and gui:
                     gui.crawlerResultDisplay.append("[+] Vulnerable!")
                     gui.crawlerResultDisplay.append(
-                        "Payloads: {}\nNullbytes: {}\nPHP Wrappers: {}".format(
+                        "Payloads: {}\nNullbytes: {}\nWrappers: {}".format(
                             payloads, nullbytes, wrappers,
                         )
                     )

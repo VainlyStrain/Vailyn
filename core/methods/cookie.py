@@ -38,21 +38,29 @@ def fetch_cookie(url):
     s = session()
     try:
         s.get(url, timeout=timeout)
-    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+    except (
+        requests.exceptions.Timeout,
+        requests.exceptions.ConnectionError,
+    ):
         sys.exit("Timeout fetching cookie.")
     return s.cookies
 
 
 def read_cookie(url):
     """
-    parses cookies and lets the attacker choose the injedction point
+    parses cookies and lets the attacker choose the
+    injection point
+
     @params:
         url - URL to fetch cookies from.
     """
     cookie = fetch_cookie(url)
     i = 0
     if len(cookie.keys()) < 1:
-        sys.exit(color.R + "[-]" + color.END + " Server did not send any cookies.")
+        sys.exit(
+            color.R + "[-]" + color.END
+            + " Server did not send any cookies."
+        )
     for key in cookie.keys():
         print(str(i) + ": " + key)
         i += 1

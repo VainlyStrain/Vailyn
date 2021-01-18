@@ -32,7 +32,8 @@ def parse_url(url):
     base_url = url.split("://")[1]
     name = base_url.split("/")[0]
 
-    # patch for Windows, which does not allow certain URI chars in dirname
+    # patch for Windows, which does not allow certain URI
+    # chars in dirname
     if "@" in name:
         name = name.split("@")[1]
     name = name.split(":")[0]
@@ -54,13 +55,25 @@ def save(subdir, plist, nlist, wlist):
     """
     if not os.path.exists(variables.cachedir + subdir):
         os.makedirs(variables.cachedir + subdir)
-    with open((variables.cachedir + subdir + "payloads.cache"), "w") as pcache:
+
+    with open(
+        (variables.cachedir + subdir + "payloads.cache"),
+        "w",
+    ) as pcache:
         for payload in plist:
             pcache.write(payload + "\n")
-    with open((variables.cachedir+subdir+"nullbytes.cache"), "w") as ncache:
+
+    with open(
+        (variables.cachedir + subdir + "nullbytes.cache"),
+        "w",
+    ) as ncache:
         for nullbyte in nlist:
             ncache.write(nullbyte + "\n")
-    with open((variables.cachedir+subdir+"wrappers.cache"), "w") as wcache:
+
+    with open(
+        (variables.cachedir + subdir + "wrappers.cache"),
+        "w",
+    ) as wcache:
         for wrapper in wlist:
             wcache.write(wrapper + "\n")
 
@@ -74,10 +87,22 @@ def load(subdir):
     plist = []
     nlist = []
     wlist = []
-    with open((variables.cachedir + subdir + "payloads.cache"), "r") as pcache:
+    with open(
+        (variables.cachedir + subdir + "payloads.cache"),
+        "r",
+    ) as pcache:
         plist = pcache.read().splitlines()
-    with open((variables.cachedir + subdir + "nullbytes.cache"), "r") as ncache:
+
+    with open(
+        (variables.cachedir + subdir + "nullbytes.cache"),
+        "r",
+    ) as ncache:
         nlist = ncache.read().splitlines()
-    with open((variables.cachedir + subdir + "wrappers.cache"), "r") as wcache:
+
+    with open(
+        (variables.cachedir + subdir + "wrappers.cache"),
+        "r",
+    ) as wcache:
         wlist = wcache.read().splitlines()
+
     return (plist, nlist, wlist)

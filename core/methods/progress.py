@@ -28,11 +28,11 @@ def progress(iteration, total, prefix="", suffix="", decimals=1):
     """
     Call in a loop to create terminal progress bar
     @params:
-        iteration   - Required  : current iteration (Int)
-        total       - Required  : total iterations (Int)
-        prefix      - Optional  : prefix string (Str)
-        suffix      - Optional  : suffix string (Str)
-        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        iteration   - current iteration (Int)
+        total       - total iterations (Int)
+        prefix      - prefix string (Str)
+        suffix      - suffix string (Str)
+        decimals    - number of decimals in percent complete (Int)
     """
     percent = ("{0:." + str(decimals) + "f}").format(
         100 * (iteration / float(total)),
