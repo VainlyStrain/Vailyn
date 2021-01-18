@@ -28,9 +28,17 @@ import time
 
 import core.variables as vars
 
-from core.methods.session import session, random_ua
 from core.colors import color
-from core.variables import payloadlist, nullchars, rce, is_windows, phase1_wrappers
+
+from core.variables import (
+    payloadlist,
+    nullchars,
+    rce,
+    is_windows,
+    phase1_wrappers
+)
+
+from core.methods.session import session, random_ua
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 from core.methods.progress import progress, progress_win, progress_gui

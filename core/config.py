@@ -19,5 +19,6 @@ _____, ___
 
 """configuration of optional Vailyn features"""
 
-# Display desktop notifications on certain events. Set False to disable. (default: True)
+# Display desktop notifications on certain events.
+# Set False to disable. (default: True)
 DESKTOP_NOTIFY = True
