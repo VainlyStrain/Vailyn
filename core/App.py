@@ -73,7 +73,7 @@ from core.methods.print import (
 )
 from core.methods.crawler import (
     UrlSpider,
-    arjunEnum,
+    crawler_arjun,
     crawler_query,
     crawler_path,
     crawler_cookie,
@@ -595,7 +595,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 1")
             self.show()
             app.processEvents()
-            siteparams = arjunEnum(cookiefile=self.authcookie)
+            siteparams = crawler_arjun(cookiefile=self.authcookie)
 
             self.timeLabel.setText("Active Phase: 2")
             self.show()
@@ -630,7 +630,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 5")
             self.show()
             app.processEvents()
-            postparams = arjunEnum(
+            postparams = crawler_arjun(
                 post=True,
                 cookiefile=self.authcookie,
             )

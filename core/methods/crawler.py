@@ -107,7 +107,7 @@ class UrlSpider(scrapy.Spider):
                 vicfile.write(link + "\n")
 
 
-def arjunEnum(post=False, cookiefile=None):
+def crawler_arjun(post=False, cookiefile=None):
     """
     enumerate GET and POST parameters using Arjun by s0md3v to attack in respective phase
     """

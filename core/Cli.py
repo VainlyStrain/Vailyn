@@ -68,7 +68,7 @@ from core.methods.print import (
 )
 from core.methods.crawler import (
     UrlSpider,
-    arjunEnum,
+    crawler_arjun,
     crawler_query,
     crawler_path,
     crawler_cookie,
@@ -290,7 +290,7 @@ def cli(parser, opt, args, shell=True) -> int:
         ))
 
         time.sleep(0.5)
-        siteparams = arjunEnum(cookiefile=cookiefile)
+        siteparams = crawler_arjun(cookiefile=cookiefile)
         time.sleep(1)
         print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Query Analysis\n".format(
             color.RD, color.END,
@@ -324,7 +324,7 @@ def cli(parser, opt, args, shell=True) -> int:
         ))
 
         time.sleep(0.5)
-        postparams = arjunEnum(post=True, cookiefile=cookiefile)
+        postparams = crawler_arjun(post=True, cookiefile=cookiefile)
         time.sleep(1)
         print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} POST Analysis\n".format(
             color.RD, color.END,
