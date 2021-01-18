@@ -215,7 +215,7 @@ def cli(parser, opt, args, shell=True) -> int:
         """
         crawler mode (scan every URL belonging to target with every vector)
         """
-        print("{0}[Vailyn]{1} v.ALL{2}|{3}".format(
+        print("{0}[Vailyn]{1}  ALL{2}|{3}".format(
             color.RD,
             color.END + color.RB,
             color.END + color.RD,
@@ -255,6 +255,9 @@ def cli(parser, opt, args, shell=True) -> int:
                 color.RD, color.END,
             )
         )
+
+        start_time = time.time()
+
         time.sleep(0.5)
         ua = variables.user_agents[
             random.randrange(0, len(variables.user_agents))
@@ -335,8 +338,18 @@ def cli(parser, opt, args, shell=True) -> int:
             postparams, victim2, verbose, checkdepth, vlnfile, cookiefile,
         )
         time.sleep(2.5)
-        print("\n\n{}FINAL RESULTS{}\n".format(
-            color.BOLD + color.UNDERLINE, color.END,
+
+        end_time = time.time()
+        duration = end_time - start_time - 12.0  # remove known sleeps
+        readable_time = datetime.timedelta(seconds=duration)
+
+        print("\n\n{0}[Vailyn]{1} SCAN{2}|{4} Finished in {5}{3}\n".format(
+            color.RD,
+            color.END + color.RB,
+            color.END + color.RD,
+            color.END,
+            color.END + color.RC,
+            readable_time,
         ))
 
         DATA = [table_print(
