@@ -136,8 +136,8 @@ class VailynApp(QtWidgets.QDialog):
         self.fileDictButton.clicked.connect(self.get_file_dictionary)
         self.dirDictButton.clicked.connect(self.get_dir_dictionary)
         self.addCookieButton.clicked.connect(self.get_auth_cookie)
-        self.shellBox.stateChanged.connect(self.handleShell)
-        self.nosploitBox.stateChanged.connect(self.handlePhase2)
+        self.shellBox.stateChanged.connect(self.handle_shell)
+        self.nosploitBox.stateChanged.connect(self.handle_phase2)
         self.attackOption.currentIndexChanged.connect(self.update_attack)
         self.attack = self.attackOption.currentIndex() + 1
         self.treeView.setHeaderHidden(True)
@@ -375,7 +375,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
         return (cookie, self.selected)
 
-    def handleShell(self):
+    def handle_shell(self):
         if self.shellBox.isChecked():
             variables.revshell = True
             self.portEdit.setEnabled(True)
@@ -394,7 +394,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.stackedWidget.setCurrentWidget(self.fileTree)
         self.show()
 
-    def handlePhase2(self):
+    def handle_phase2(self):
         if self.nosploitBox.isChecked():
             self.nosploit = True
         else:
