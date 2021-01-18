@@ -49,7 +49,7 @@ def notify(message):
         notification = notify2.Notification(
             "Vailyn",
             message=message,
-            icon=icon
+            icon=icon,
         )
 
         notification.show()
