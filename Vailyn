@@ -47,12 +47,20 @@ if DESKTOP_NOTIFY and not is_windows:
 
 if __name__ == "__main__":
     try:
+        # set custom process title
         if not is_windows:
             setproctitle.setproctitle("Vailyn")
+        
+        # print Vailyn's ascii art
         banner()
+
+        # parse commandline arguments
         parser = opt_parser()
         opt = vars(parser.parse_args())
         args = parser.parse_args()
+
+        # set global variables and determine
+        # main method
         if opt["version"]:
             print("\n\n{}".format(variables.e_version))
             if check_version():
@@ -60,18 +68,23 @@ if __name__ == "__main__":
             else:
                 print("an update is available.")
             sys.exit(0)
+
         if opt["timeout"]:
             variables.timeout = args.timeout
             variables.stable = True
             assert variables.timeout is not None
+
         if opt["precise"]:
             variables.precise = True
             assert variables.precise
+
         if opt["lfi"]:
             variables.lfi = True
             assert variables.lfi
+
         if opt["debug"]:
             variables.verbose = True
+
         if opt["phase2"]:
             typ, ip, port = args.phase2
             if typ == "rce":
@@ -83,9 +96,11 @@ if __name__ == "__main__":
                     and variables.LISTENIP is not None
                     and variables.LISTENPORT is not None
                 )
+
         if opt["app"]:
             app_qt5()
         else:
             cli(parser, opt, args)
     except KeyboardInterrupt:
         print("\nInterrvpted.\n")
+        sys.exit(1)
