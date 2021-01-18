@@ -29,8 +29,9 @@ if not is_windows and DESKTOP_NOTIFY:
 
 def notify(message):
     """
-    Display a notification. Used when further input is needed, or the scan is finished.
-    You can configure & disable notifications in the config.py file.
+    Display a notification. Used when further input is needed,
+    or the scan is finished. You can configure & disable
+    notifications in the config.py file.
 
     @params:
         message - message to show in the notification box
@@ -38,7 +39,17 @@ def notify(message):
 
     if DESKTOP_NOTIFY and not is_windows:
         icon = SEPARATOR.join([
-            os.path.dirname(os.path.realpath("__main__")), "core", "qt5", "icons", "tid.png"
+            os.path.dirname(os.path.realpath("__main__")),
+            "core",
+            "qt5",
+            "icons",
+            "tid.png",
         ])
-        notification = notify2.Notification("Vailyn", message=message, icon=icon)
+
+        notification = notify2.Notification(
+            "Vailyn",
+            message=message,
+            icon=icon
+        )
+
         notification.show()
