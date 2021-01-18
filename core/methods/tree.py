@@ -24,12 +24,16 @@ from core.colors import color
 
 def random_word(length):
     """
-    generates a random string, used for unique tree ids when duplicate file names
+    generates a random string, used for unique tree ids when
+    duplicate file names
+
     @params:
         length - length of the result string.
     """
     letters = string.ascii_lowercase
-    return "".join(random.choice(letters) for i in range(length))
+    return "".join(
+        random.choice(letters) for i in range(length)
+    )
 
 
 def replace_colors(ntag):
@@ -38,8 +42,13 @@ def replace_colors(ntag):
     @params:
         ntag - string to be handled.
     """
-    tag = ntag.replace(color.RD, "").replace(color.END, "").replace(color.O, "")
-    return tag.replace(color.CURSIVE, "").replace(color.BOLD, "")
+    tag = ntag.replace(color.RD, "")
+    tag = tag.replace(color.END, "")
+    tag = tag.replace(color.O, "")
+    tag = tag.replace(color.CURSIVE, "")
+    tag = tag.replace(color.BOLD, "")
+
+    return tag
 
 
 def tree_append(tree, path, parentnode):
@@ -55,13 +64,15 @@ def tree_append(tree, path, parentnode):
     if not tree.contains(id):
         if len(plist) > 1:
             tree.create_node(
-                color.END + color.CURSIVE + color.END + plist[0] + color.RD,
+                color.END + color.CURSIVE + color.END
+                + plist[0] + color.RD,
                 id,
                 parent=parentnode,
             )
         else:
             tree.create_node(
-                color.END + color.CURSIVE + plist[0] + color.END + color.RD,
+                color.END + color.CURSIVE + plist[0]
+                + color.END + color.RD,
                 id,
                 parent=parentnode,
             )
@@ -81,7 +92,8 @@ def tree_append(tree, path, parentnode):
                     )
                 else:
                     tree.create_node(
-                        color.END + color.CURSIVE + plist[0] + color.END + color.RD,
+                        color.END + color.CURSIVE
+                        + plist[0] + color.END + color.RD,
                         id,
                         parent=parentnode,
                     )

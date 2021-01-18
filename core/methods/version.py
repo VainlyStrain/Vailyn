@@ -28,8 +28,12 @@ def check_version():
     """
     try:
         s = session()
-        onver = s.get("https://raw.githubusercontent.com/VainlyStrain/Vailyn/master/core/doc/VERSION",
-                      timeout=2).text.strip()
+        onver = s.get(
+            "https://raw.githubusercontent.com/VainlyStrain"
+            "/Vailyn/master/core/doc/VERSION",
+            timeout=2,
+        ).text.strip()
+
         localmain = e_version.split("-")[0]
         localrev = e_version.split("-")[1]
         locallist = localmain.split(".")
