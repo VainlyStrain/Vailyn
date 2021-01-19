@@ -77,8 +77,8 @@ def download(url, file, cookie=None, post=None):
             try:
                 response = s.get(url, timeout=variables.timeout)
             except (
-                    requests.exceptions.Timeout,
-                    requests.exceptions.ConnectionError,
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
             ):
                 print("Timeout reached looting " + url)
                 return
@@ -91,8 +91,8 @@ def download(url, file, cookie=None, post=None):
                 prep.headers["content-length"] = len(new_body)
                 response = s.send(prep, timeout=variables.timeout)
             except (
-                    requests.exceptions.Timeout,
-                    requests.exceptions.ConnectionError,
+                requests.exceptions.Timeout,
+                requests.exceptions.ConnectionError,
             ):
                 print("Timeout reached looting " + url)
                 return
