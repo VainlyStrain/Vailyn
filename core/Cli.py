@@ -96,7 +96,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         sys.exit(
             "\n" + color.R + "[-]" + color.END + color.BOLD
             + " Invalid/missing params" + color.END + "\n"
-            + color.RD + "[HINT]" + color.END + " -v, -a and -l mandatory"
+            + color.RD + "[HINT]" + color.END + " -v, -a and -p2 mandatory"
         )
 
     loot = False
@@ -188,13 +188,13 @@ def cli_main(parser, opt, args, shell=True) -> int:
         """
 
         # is a POST data string specified?
-        if not opt["post"]:
+        if not opt["param"]:
             parser.print_help()
             sys.exit(
                 "\n" + color.R + "[-]" + color.END
                 + color.BOLD + " Invalid/missing params"
                 + color.END + "\n" + color.RD + "[HINT]" + color.END
-                + " -s mandatory for -a 4"
+                + " -p mandatory for -a 4"
             )
         print("{0}[Vailyn]{1} POST{2}|{3}".format(
             color.RD,
@@ -204,14 +204,15 @@ def cli_main(parser, opt, args, shell=True) -> int:
         ))
 
         # is the POST string specified sytactically correct?
-        post_data = args.post
+        post_data = args.param
         if "INJECT" not in post_data:
             parser.print_help()
             sys.exit(
                 "\n" + color.R + "[-]" + color.END + color.BOLD
                 + " Invalid/missing params" + color.END + "\n"
                 + color.RD + "[HINT]" + color.END
-                + " -s needs to contain INJECT at injection point"
+                + " -p needs to contain INJECT at injection point"
+                + " for POST attack"
             )
         if "=" not in post_data:
             parser.print_help()
@@ -219,7 +220,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
                 "\n" + color.R + "[-]" + color.END + color.BOLD
                 + " Invalid/missing params" + color.END + "\n"
                 + color.RD + "[HINT]" + color.END
-                + " -s needs to be of form P1=V1&P2=V2"
+                + " -p needs to be of form P1=V1&P2=V2 for"
+                + " POST attack"
             )
     elif args.attack == 5:
         """

@@ -58,26 +58,25 @@ mandatory:
   {2}  2{1}{3}|:{1}  Path            {2}  5{1}{3}|;{1}  Crawler (automatic)
   {2}  3{1}{3}|;{1}  Cookie
 
-  -l TP P1 P2, --phase2 TP P1 P2
+  -p2 TP P1 P2, --phase2 TP P1 P2
                         {0}Attack in Phase 2, and needed parameters{1}
 
 {3}{4}{1}
 
 additional:
-  -p P, --param P       {0}query parameter to use for --attack 1{1}
-  -s D, --post D        {0}POST Data (set injection point with INJECT){1}
+  -p PAM, --param PAM   {0}query parameter or POST data to for --attack 1, 4{1}
+  -i F, --check F       {0}File to check for in Phase 1 (df: /etc/passwd){1}
+  -Pi VIC2, --vic2 VIC2 {0}Attack Target, part 2 [post-payload]{1}
+  -c C, --cookie C      {0}File containing authentication cookie (if needed){1}
+  -l, --loot            {0}Download found files into the loot folder{1}
   -d I J K, --depths I J K
                         {0}depths (I: phase 1, J: phase 2, K: permutation level){1}
-  -n, --loot            {0}Download found files into the loot folder{1}
-  --lfi                 {0}Additionally use PHP wrappers to leak files{1}
-  -c C, --cookie C      {0}File containing authentication cookie (if needed){1}
   -h, --help            {0}show this help menu and exit{1}
-  -P, --precise         {0}Use exact depth in Phase 1 (not a range){1}
-  -i F, --check F       {0}File to check for in Phase 1 (df: /etc/passwd){1}
-  -q V, --vic2 V        {0}Attack Target, part 2 [post-payload]{1}
+  -s T, --timeout T     {0}Request Timeout; stable switch for Arjun{1}
   -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}
-  -k T, --timeout T     {0}Request Timeout; stable switch for Arjun{1}
-  -m, --nosploit        {0}skip Phase 2 (does not need -l FIL PATH){1}
+  -L, --lfi             {0}Additionally use PHP wrappers to leak files{1}
+  -n, --nosploit        {0}skip Phase 2 (does not need -l FIL PATH){1}
+  -P, --precise         {0}Use exact depth in Phase 1 (not a range){1}
   -A, --app             {0}Start Vailyn's Qt5 interface{1}
 
 develop:
@@ -96,13 +95,13 @@ class VainFormatter(argparse.RawDescriptionHelpFormatter):
         if prefix is None:
             prefix = color.RC + "Vsynta " + color.END
             return super(VainFormatter, self).add_usage(
-                "{}Vailyn{} -v VIC -a INT -l TP P1 P2 \n".format(
+                "{}Vailyn{} -v VIC -a INT -p2 TP P1 P2 \n".format(
                     color.RB, color.END,
                 )
-                + "        [-p P] [-s D] [-n] [--lfi]\n"
-                + "      [-c C] [-i F] [-t] "
-                + "[-m] \n       [-k T] [-d I J K] \n"
-                + "  [-q V] [-P] [-A] ",
+                + "        [-p PAM] [-i F] [-Pi VIC2]\n"
+                + "      [-c C] [-n] [-d I J K]\n"
+                + "       [-s T] [-t] [-L]\n"
+                + "  [-l] [-P] [-A] ",
                 actions,
                 groups,
                 prefix
@@ -121,13 +120,10 @@ def opt_parser():
                    help="Attack type (int, 1-4)[see the Markdown docs]",
                    metavar="INT",
                    type=int)
-    p.add_argument("-k", "--timeout",
+    p.add_argument("-s", "--timeout",
                    help="Request Timeout; stable switch for Arjun",
                    metavar="T",
                    type=int)
-    p.add_argument("-s", "--post",
-                   help="POST Data (set injection point with INJECT)",
-                   metavar="D",)
     p.add_argument("-d", "--depths",
                    help="depths (I: phase 1, J: phase 2, K: permutation level)",
                    metavar="I J K",
@@ -138,16 +134,16 @@ def opt_parser():
                    action="help",
                    default=argparse.SUPPRESS)
     p.add_argument("-p", "--param",
-                   help="query parameter to use for --attack 1",
+                   help="query parameter & post data to use for --attack 1, 4",
                    metavar="P")
-    p.add_argument("-l", "--phase2",
+    p.add_argument("-p2", "--phase2",
                    help="Phase 2 and needed parameters",
                    nargs=3,
                    metavar=("TP", "P1", "P2"))
-    p.add_argument("-n", "--loot",
+    p.add_argument("-l", "--loot",
                    help="Download found files into the loot folder",
                    action="store_true")
-    p.add_argument("-q", "--vic2",
+    p.add_argument("-Pi", "--vic2",
                    help="Attack Target, part 2 (post injection point)",
                    metavar=("V"))
     p.add_argument("-i", "--check",
@@ -162,7 +158,7 @@ def opt_parser():
     p.add_argument("--debug",
                    help="display every path tried, even 404s",
                    action="store_true",)
-    p.add_argument("-m", "--nosploit",
+    p.add_argument("-n", "--nosploit",
                    help="skip Phase 2 (does not need -l FIL PATH)",
                    action="store_true",)
     p.add_argument("-P", "--precise",
@@ -174,7 +170,7 @@ def opt_parser():
     p.add_argument("--version",
                    help="Print program version and exit.",
                    action="store_true",)
-    p.add_argument("--lfi",
+    p.add_argument("-L", "--lfi",
                    help="Use LFI wrappers to leak files",
                    action="store_true",)
     p.add_argument("--notmain",
