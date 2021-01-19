@@ -25,14 +25,14 @@ from core.methods.parser import opt_parser
 from core.Cli import cli_main
 from core.App import app_main
 from core.config import DESKTOP_NOTIFY
-from core.variables import is_windows
+from core.variables import adv_li
 
 import core.variables as variables
 
 import colorama
 import sys
 
-if not is_windows:
+if adv_li:
     import setproctitle
     import notify2
 
@@ -40,15 +40,11 @@ if not is_windows:
 # initialize colorama
 colorama.init()
 
-# initialize notifications
-if DESKTOP_NOTIFY and not is_windows:
-    notify2.init("Vailyn")
-
 
 if __name__ == "__main__":
     try:
         # set custom process title
-        if not is_windows:
+        if adv_li:
             setproctitle.setproctitle("Vailyn")
         
         # print Vailyn's ascii art
@@ -58,6 +54,13 @@ if __name__ == "__main__":
         parser = opt_parser()
         opt = vars(parser.parse_args())
         args = parser.parse_args()
+
+        if opt["notmain"]:
+            variables.adv_li = False
+
+        if variables.adv_li and DESKTOP_NOTIFY:
+            # initialize notifications
+            notify2.init("Vailyn")
 
         # set global variables and determine
         # main method

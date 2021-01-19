@@ -82,7 +82,8 @@ additional:
 
 develop:
   --debug               {0}Display every path tried, even 404s.{1}
-  --version             {0}Print program version and exit.{1}""".format(
+  --version             {0}Print program version and exit.{1}
+  --notmain             {0}Avoid notify2 crash in subprocess call.{1}""".format(
             color.RC, color.END, color.BOLD, color.RD, table
         ))
 
@@ -175,6 +176,9 @@ def opt_parser():
                    action="store_true",)
     p.add_argument("--lfi",
                    help="Use LFI wrappers to leak files",
+                   action="store_true",)
+    p.add_argument("--notmain",
+                   help="Vailyn is executed as subprocess.",
                    action="store_true",)
 
     return p

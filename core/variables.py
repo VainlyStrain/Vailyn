@@ -21,7 +21,11 @@ import multiprocessing
 import sys
 import os
 
+# is user running Windows?
 is_windows = sys.platform.lower().startswith("win")
+
+# can user run notify2?
+adv_li = not is_windows
 
 
 def generatePayloads():
