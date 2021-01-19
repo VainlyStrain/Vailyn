@@ -64,7 +64,7 @@ mandatory:
 {3}{4}{1}
 
 additional:
-  -p PAM, --param PAM   {0}query parameter or POST data to for --attack 1, 4{1}
+  -p PAM, --param PAM   {0}query parameter or POST data for --attack 1, 4{1}
   -i F, --check F       {0}File to check for in Phase 1 (df: /etc/passwd){1}
   -Pi VIC2, --vic2 VIC2 {0}Attack Target, part 2 [post-payload]{1}
   -c C, --cookie C      {0}File containing authentication cookie (if needed){1}
