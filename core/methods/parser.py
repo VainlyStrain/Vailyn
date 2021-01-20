@@ -75,7 +75,7 @@ additional:
   -s T, --timeout T     {0}Request Timeout; stable switch for Arjun{1}
   -t, --tor             {0}Pipe attacks through the Tor anonymity network{1}
   -L, --lfi             {0}Additionally use PHP wrappers to leak files{1}
-  -n, --nosploit        {0}skip Phase 2 (does not need -l FIL PATH){1}
+  -n, --nosploit        {0}skip Phase 2 (does not need -p2 TP P1 P2){1}
   -P, --precise         {0}Use exact depth in Phase 1 (not a range){1}
   -A, --app             {0}Start Vailyn's Qt5 interface{1}
 
@@ -159,7 +159,7 @@ def opt_parser():
                    help="display every path tried, even 404s",
                    action="store_true",)
     p.add_argument("-n", "--nosploit",
-                   help="skip Phase 2 (does not need -l FIL PATH)",
+                   help="skip Phase 2 (does not need -p2 TP P1 P2)",
                    action="store_true",)
     p.add_argument("-P", "--precise",
                    help="Use absolute Phase 1 Depth (not range)",
