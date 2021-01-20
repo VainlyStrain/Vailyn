@@ -127,7 +127,7 @@ additional:
   -s T, --timeout T     Request Timeout; stable switch for Arjun
   -t, --tor             Pipe attacks through the Tor anonymity network
   -L, --lfi             Additionally use PHP wrappers to leak files
-  -n, --nosploit        skip Phase 2 (does not need -l FIL PATH)
+  -n, --nosploit        skip Phase 2 (does not need -p2 TP P1 P2)
   -P, --precise         Use exact depth in Phase 1 (not a range)
   -A, --app             Start Vailyn's Qt5 interface
 
