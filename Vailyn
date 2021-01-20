@@ -46,7 +46,7 @@ if __name__ == "__main__":
         # set custom process title
         if adv_li:
             setproctitle.setproctitle("Vailyn")
-        
+
         # print Vailyn's ascii art
         banner()
 
