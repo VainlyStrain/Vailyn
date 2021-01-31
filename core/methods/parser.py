@@ -83,7 +83,7 @@ develop:
   --debug               {0}Display every path tried, even 404s.{1}
   --version             {0}Print program version and exit.{1}
   --notmain             {0}Avoid notify2 crash in subprocess call.{1}""".format(
-            color.RC, color.END, color.BOLD, color.RD, table
+            color.RC, color.END, color.O, color.RD, table
         ))
 
 
