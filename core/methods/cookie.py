@@ -69,16 +69,21 @@ def read_cookie(url):
     return (cookie, selected_part)
 
 
-def cookie_from_file(cookiefile):
+def dict_from_header(header):
     """
-    reads authentication cookie from file
-    @params:
-        cookiefile - File containing the cookies.
+    converts a cookie header to a dictionary
     """
-    jar = MozillaCookieJar(cookiefile)
-    jar.load(ignore_expires=True)
-    # set expiration time to avoid errors
-    for cookie in jar:
-        cookie.expires = time.time() + 14 * 24 * 3600
-    assert(len(jar) > 0)
-    return jar
+    # FIXME: breaks with base64 encoded cookies
+    result = {}
+    cookies = header.split(";")
+    for cookie in cookies:
+        parsed = cookie.strip().split("=")
+        result[parsed[0].strip()] = parsed[1].strip()
+    return result
+
+
+def jar_from_dict(cookiedict):
+    """
+    converts a dictionary to a cookiejar
+    """
+    return requests.utils.cookiejar_from_dict(cookiedict)

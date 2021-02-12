@@ -1564,16 +1564,16 @@ QProgressBar::chunk {
                        <widget class="QComboBox" name="attackOption"/>
                       </item>
                       <item row="12" column="5">
-                       <widget class="QPushButton" name="addCookieButton">
+                       <widget class="QPushButton" name="checkCookieButton">
                         <property name="toolTip">
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add an authentication cookie to bypass login screens.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="text">
-                         <string>Add</string>
+                         <string>Check</string>
                         </property>
                         <property name="icon">
                          <iconset>
-                          <normaloff>icons/add.svg</normaloff>icons/add.svg</iconset>
+                          <normaloff>icons/apply.svg</normaloff>icons/apply.svg</iconset>
                         </property>
                        </widget>
                       </item>

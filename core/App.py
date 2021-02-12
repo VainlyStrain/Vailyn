@@ -61,7 +61,7 @@ from core.methods.attack import (
     phase1, phase2, lfi_rce, reset_counter
 )
 from core.methods.cookie import (
-    fetch_cookie, cookie_from_file
+    fetch_cookie, dict_from_header
 )
 from core.methods.cache import load, save, parse_url
 from core.methods.tor import enable_tor
@@ -135,7 +135,7 @@ class VailynApp(QtWidgets.QDialog):
         self.infoButton.clicked.connect(self.show_attack_info)
         self.fileDictButton.clicked.connect(self.get_file_dictionary)
         self.dirDictButton.clicked.connect(self.get_dir_dictionary)
-        self.addCookieButton.clicked.connect(self.get_auth_cookie)
+        self.checkCookieButton.clicked.connect(self.validate_auth_cookie)
         self.shellBox.stateChanged.connect(self.handle_shell)
         self.nosploitBox.stateChanged.connect(self.handle_phase2)
         self.attackOption.currentIndexChanged.connect(self.update_attack)
@@ -152,9 +152,9 @@ A phased, evasive Path Traversal + LFI scanning & exploitation tool in Python
 >
 > Arjun:  Copyright © <a href="https://github.com/s0md3v">s0md3v</a>
 
-#### Arjun Modifications
+#### Arjun Dependency
 
-Arjun was slightly modified to fix false negatives with HTTP Basic Auth Sites.
+Arjun is no longer distributed with Vailyn. Install its latest version via pip.
 
 #### Possible Issues
 
@@ -185,8 +185,16 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
     def get_filename(self):
         return QFileDialog.getOpenFileName()
 
-    def get_auth_cookie(self):
-        self.cookieDisplay.setText(self.get_filename()[0])
+    def validate_auth_cookie(self):
+        valid = True
+        if "cookie:" in self.cookieDisplay.text().lower():
+            self.show_error("Only enter the header value. (omit Cookie:)")
+            valid = False
+        if "=" not in self.cookieDisplay.text():
+            self.show_error("Expected Format: name=val;name2=val2")
+            valid = False
+        if valid:
+            self.show_info("Cookie formatted correctly.")
 
     def get_file_dictionary(self):
         self.fileDictDisplay.setText(self.get_filename()[0])
@@ -530,8 +538,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             crawlcookies = {}
             arjunjar = None
             if self.authcookie != "":
-                arjunjar = cookie_from_file(self.authcookie)
-                crawlcookies = requests.utils.dict_from_cookiejar(arjunjar)
+                arjunjar = self.authcookie
+                crawlcookies = dict_from_header(arjunjar)
 
             def runSpider():
                 def f(q):
@@ -595,7 +603,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 1")
             self.show()
             app.processEvents()
-            siteparams = crawler_arjun(cookiefile=self.authcookie)
+            siteparams = crawler_arjun(cookie_header=self.authcookie)
 
             self.timeLabel.setText("Active Phase: 2")
             self.show()
@@ -632,7 +640,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             app.processEvents()
             postparams = crawler_arjun(
                 post=True,
-                cookiefile=self.authcookie,
+                cookie_header=self.authcookie,
             )
 
             self.timeLabel.setText("Active Phase: 6")

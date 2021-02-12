@@ -67,7 +67,7 @@ additional:
   -p PAM, --param PAM   {0}query parameter or POST data for --attack 1, 4{1}
   -i F, --check F       {0}File to check for in Phase 1 (df: /etc/passwd){1}
   -Pi VIC2, --vic2 VIC2 {0}Attack Target, part 2 [post-payload]{1}
-  -c C, --cookie C      {0}File containing authentication cookie (if needed){1}
+  -c C, --cookie C      {0}Cookie to append (in header format){1}
   -l, --loot            {0}Download found files into the loot folder{1}
   -d I J K, --depths I J K
                         {0}depths (I: phase 1, J: phase 2, K: permutation level){1}
@@ -150,7 +150,7 @@ def opt_parser():
                    help="File to check for in Phase 1 (df: /etc/passwd)",
                    metavar=("F"))
     p.add_argument("-c", "--cookie",
-                   help="File containing authentication cookie (if needed)",
+                   help="Cookie to append (in header format)",
                    metavar=("C"))
     p.add_argument("-t", "--tor",
                    help="Pipe attacks through the Tor anonymity network",

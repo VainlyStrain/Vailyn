@@ -42,7 +42,7 @@ from core.methods.session import session, random_ua
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
 from core.methods.progress import progress, progress_win, progress_gui
-from core.methods.cookie import cookie_from_file
+from core.methods.cookie import dict_from_header
 from core.methods.list import filegen
 from core.methods.notify import notify
 from urllib.parse import unquote
@@ -300,9 +300,10 @@ def phase1(
     s = session()
 
     if authcookie != "":
-        tmpjar = cookie_from_file(authcookie)
-        for cookie in tmpjar:
-            s.cookies.set_cookie(cookie)
+        requests.utils.add_dict_to_cookiejar(
+            s.cookies,
+            dict_from_header(authcookie),
+        )
 
     con2, con3 = initial_ping(s, attack, url, url2, keyword, timeout)
 
@@ -464,9 +465,10 @@ def phase2(
     s = session()
 
     if authcookie != "":
-        tmpjar = cookie_from_file(authcookie)
-        for cookie in tmpjar:
-            s.cookies.set_cookie(cookie)
+        requests.utils.add_dict_to_cookiejar(
+            s.cookies,
+            dict_from_header(authcookie),
+        )
 
     con2, con3 = initial_ping(s, attack, url, url2, keyword, timeout)
 
@@ -708,9 +710,10 @@ def sheller(
         success = ["something here"]
 
     if authcookie != "":
-        tmpjar = cookie_from_file(authcookie)
-        for cookie in tmpjar:
-            s.cookies.set_cookie(cookie)
+        requests.utils.add_dict_to_cookiejar(
+            s.cookies,
+            dict_from_header(authcookie),
+        )
 
     con2, con3 = initial_ping(
         s, attack, url, url2, keyword, timeout,

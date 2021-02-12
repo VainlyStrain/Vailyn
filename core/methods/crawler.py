@@ -76,8 +76,8 @@ class UrlSpider(scrapy.Spider):
         self.domain = dom
         assert self.domain != ""
         self.subdir = parse_url(url)
-        if not os.path.exists(cachedir+self.subdir):
-            os.makedirs(cachedir+self.subdir)
+        if not os.path.exists(cachedir + self.subdir):
+            os.makedirs(cachedir + self.subdir)
 
     def start_requests(self):
         for target in self.start_urls:
@@ -115,7 +115,7 @@ class UrlSpider(scrapy.Spider):
                 vicfile.write(link + "\n")
 
 
-def crawler_arjun(post=False, cookiefile=None):
+def crawler_arjun(post=False, cookie_header=None):
     """
     enumerate GET and POST parameters using Arjun by s0md3v
     to attack in respective phase
@@ -123,23 +123,27 @@ def crawler_arjun(post=False, cookiefile=None):
     subdir = parse_url(viclist[0])
 
     command = [
-        "python3",
-        "lib/Arjun/arjun.py",
-        "--urls", cachedir + subdir + "spider-phase0.txt",
-        "-f", "lib/Arjun/db/params.txt"
+        "arjun",
+        "-i", cachedir + subdir + "spider-phase0.txt",
     ]
     if post:
-        command += ["-o", cachedir+subdir+"spider-phase5.json", "--post"]
+        command += [
+            "-o", cachedir + subdir + "spider-phase5.json",
+            "-m", "POST",
+        ]
     else:
-        command += ["-o", cachedir+subdir+"spider-phase1.json", "--get"]
+        command += [
+            "-o", cachedir + subdir + "spider-phase1.json",
+            "-m", "GET",
+        ]
 
     if stable:
         command += ["--stable"]
     else:
         command += ["-t", str(processes)]
 
-    if cookiefile:
-        command += ["--cookies", cookiefile]
+    if cookie_header:
+        command += ["--headers", "Cookie: {}".format(cookie_header)]
 
     subprocess.run(command)
 
@@ -163,8 +167,9 @@ def crawler_query(
     result = {}
     subdir = parse_url(viclist[0])
     with Pool(processes=processes) as pool:
-        for victim, paramlist in siteparams.items():
+        for victim, vic_info in siteparams.items():
             sub = {}
+            paramlist = vic_info["params"]
             print("\n{0}[INFO]{1} param{4}|{2} Attacking {3}".format(
                 color.RD, color.END + color.O,
                 color.END, victim, color.END + color.RD
@@ -394,8 +399,9 @@ def crawler_post(
     result = {}
     subdir = parse_url(viclist[0])
     with Pool(processes=processes) as pool:
-        for victim, paramlist in siteparams.items():
+        for victim, vic_info in siteparams.items():
             sub = {}
+            paramlist = vic_info["params"]
             print("\n{0}[INFO]{1} post{4}|{2} Attacking {3}".format(
                 color.RD, color.END + color.O,
                 color.END, victim, color.END + color.RD

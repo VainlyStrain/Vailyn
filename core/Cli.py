@@ -56,7 +56,7 @@ from core.methods.attack import (
     phase1, phase2, lfi_rce, reset_counter
 )
 from core.methods.cookie import (
-    read_cookie, cookie_from_file
+    read_cookie, dict_from_header
 )
 from core.methods.cache import load, save, parse_url
 from core.methods.tor import enable_tor
@@ -111,7 +111,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
     vlnfile = "/etc/passwd"
     checkdepth = 8
     permutation_level = 2
-    cookiefile = ""
+    cookie_header = ""
 
     # handle optional arguments
     if opt["loot"]:
@@ -129,7 +129,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         vlnfile = args.check
 
     if opt["cookie"]:
-        cookiefile = args.cookie
+        cookie_header = args.cookie
 
     param = ""
     cookie = None
@@ -261,9 +261,9 @@ def cli_main(parser, opt, args, shell=True) -> int:
         crawlcookies = {}
         arjunjar = None
         # load authentication cookie for crawling
-        if cookiefile != "":
-            arjunjar = cookie_from_file(cookiefile)
-            crawlcookies = requests.utils.dict_from_cookiejar(arjunjar)
+        if cookie_header != "":
+            arjunjar = cookie_header
+            crawlcookies = dict_from_header(arjunjar)
 
         """
         Crawler Phase 0:
@@ -320,7 +320,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         ))
 
         time.sleep(0.5)
-        siteparams = crawler_arjun(cookiefile=cookiefile)
+        siteparams = crawler_arjun(cookie_header=cookie_header)
         time.sleep(1)
 
         """
@@ -334,7 +334,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
         time.sleep(0.5)
         queryattack = crawler_query(
-            siteparams, victim2, verbose, checkdepth, vlnfile, cookiefile,
+            siteparams, victim2, verbose, checkdepth, vlnfile, cookie_header,
         )
 
         """
@@ -350,7 +350,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
         time.sleep(0.5)
         pathattack = crawler_path(
-            victim2, verbose, checkdepth, vlnfile, cookiefile,
+            victim2, verbose, checkdepth, vlnfile, cookie_header,
         )
 
         """
@@ -365,7 +365,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
         time.sleep(0.5)
         cookieattack = crawler_cookie(
-            victim2, verbose, checkdepth, vlnfile, cookiefile,
+            victim2, verbose, checkdepth, vlnfile, cookie_header,
         )
 
         """
@@ -380,7 +380,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         ))
 
         time.sleep(0.5)
-        postparams = crawler_arjun(post=True, cookiefile=cookiefile)
+        postparams = crawler_arjun(post=True, cookie_header=cookie_header)
         time.sleep(1)
 
         """
@@ -394,7 +394,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
         time.sleep(0.5)
         postattack = crawler_post(
-            postparams, victim2, verbose, checkdepth, vlnfile, cookiefile,
+            postparams, victim2, verbose, checkdepth, vlnfile, cookie_header,
         )
         time.sleep(2.5)
 
@@ -524,7 +524,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
             res = [pool.apply_async(phase1, args=(
                         args.attack, args.victim, victim2, param, cookie,
                         selected, verbose, checkdepth, splitty, vlnfile,
-                        cookiefile, post_data, None,
+                        cookie_header, post_data, None,
                 )) for splitty in paysplit]
             for i in res:
                 # fetch results
@@ -647,7 +647,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
             lfi_rce(
                 techniques, args.attack, args.victim, victim2, param,
                 cookie, selected, verbose, selectedpayloads, selectednullbytes,
-                selectedwrappers, cookiefile, post_data, depth,
+                selectedwrappers, cookie_header, post_data, depth,
             )
         else:
             """
@@ -689,7 +689,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
                     param, cookie, selected, args.phase2[1],
                     slist, depth, verbose, loot,
                     selectedpayloads, selectednullbytes,
-                    selectedwrappers, cookiefile, post_data,
+                    selectedwrappers, cookie_header, post_data,
                     dirlen, None,
                 )) for slist in splitted]
 

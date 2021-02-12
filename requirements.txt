@@ -12,6 +12,7 @@ scrapy
 twisted
 PyDispatcher
 terminaltables
+arjun>=2.1.0
 
 # RCE Requirements
 psutil
