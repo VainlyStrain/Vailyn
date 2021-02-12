@@ -18,7 +18,6 @@ _____, ___
 """
 
 import subprocess
-import requests
 import sys
 import random
 import datetime

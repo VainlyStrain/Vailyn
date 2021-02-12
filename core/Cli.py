@@ -19,7 +19,6 @@ _____, ___
 
 import subprocess
 import treelib
-import requests
 import sys
 import random
 import datetime

@@ -20,9 +20,6 @@ _____, ___
 
 import requests
 import sys
-import time
-
-from http.cookiejar import MozillaCookieJar
 
 from core.colors import color
 from core.variables import timeout
