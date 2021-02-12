@@ -25,7 +25,6 @@ import core.variables as variables
 
 from urllib.parse import unquote
 
-from core.methods.session import session
 from core.colors import color
 from core.variables import SEPARATOR, is_windows
 
