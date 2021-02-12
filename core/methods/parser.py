@@ -52,11 +52,11 @@ class ArgumentParser(argparse.ArgumentParser):
         print("""
 mandatory:
   -v VIC, --victim VIC  {0}Target to attack, part 1 [pre-payload]{1}
-  -a INT, --attack INT  {0}Attack type (int, 1-5){1}
+  -a INT, --attack INT  {0}Attack type (int, 1-5, or A){1}
 
-  {2}  1{1}{3}|;{1}  Query Parameter {2}  4{1}{3}|:{1}  POST Data
-  {2}  2{1}{3}|:{1}  Path            {2}  5{1}{3}|;{1}  Crawler (automatic)
-  {2}  3{1}{3}|;{1}  Cookie
+  {2}  A{1}{3}|;{1}  Spider (all)    {2}  3{1}{3}|:{1}  Cookie
+  {2}  1{1}{3}|:{1}  Query Parameter {2}  4{1}{3}|;{1}  POST Data, plain
+  {2}  2{1}{3}|;{1}  Path            {2}  5{1}{3}|:{1}  {3}POST Data, json{1}
 
   -p2 TP P1 P2, --phase2 TP P1 P2
                         {0}Attack in Phase 2, and needed parameters{1}
@@ -64,7 +64,7 @@ mandatory:
 {3}{4}{1}
 
 additional:
-  -p PAM, --param PAM   {0}query parameter or POST data for --attack 1, 4{1}
+  -p PAM, --param PAM   {0}query parameter or POST data for --attack 1, 4, 5{1}
   -i F, --check F       {0}File to check for in Phase 1 (df: /etc/passwd){1}
   -Pi VIC2, --vic2 VIC2 {0}Attack Target, part 2 [post-payload]{1}
   -c C, --cookie C      {0}Cookie to append (in header format){1}
@@ -117,9 +117,8 @@ def opt_parser():
                    help="Target to attack, part 1 [pre injection point]",
                    metavar="VIC")
     p.add_argument("-a", "--attack",
-                   help="Attack type (int, 1-4)[see the Markdown docs]",
-                   metavar="INT",
-                   type=int)
+                   help="Attack type (int, 1-5 or A)[see the Markdown docs]",
+                   metavar="INT")
     p.add_argument("-s", "--timeout",
                    help="Request Timeout; stable switch for Arjun",
                    metavar="T",
@@ -134,7 +133,7 @@ def opt_parser():
                    action="help",
                    default=argparse.SUPPRESS)
     p.add_argument("-p", "--param",
-                   help="query parameter & post data to use for --attack 1, 4",
+                   help="query parameter & post data to use",
                    metavar="P")
     p.add_argument("-p2", "--phase2",
                    help="Phase 2 and needed parameters",

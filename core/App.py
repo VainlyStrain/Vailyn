@@ -124,11 +124,11 @@ class VailynApp(QtWidgets.QDialog):
     def __init__(self):
         super(VailynApp, self).__init__()
         uic.loadUi("core/qt5/Main.ui", self)  # Load the .ui file
+        self.attackOption.addItem("scraper")
         self.attackOption.addItem("query")
         self.attackOption.addItem("path")
         self.attackOption.addItem("cookie")
         self.attackOption.addItem("post")
-        self.attackOption.addItem("scraper")
         self.newTargetButton.clicked.connect(self.get_victim)
         self.attackButton.clicked.connect(self.attack_gui)
         self.infoButton.clicked.connect(self.show_attack_info)
@@ -138,7 +138,7 @@ class VailynApp(QtWidgets.QDialog):
         self.shellBox.stateChanged.connect(self.handle_shell)
         self.nosploitBox.stateChanged.connect(self.handle_phase2)
         self.attackOption.currentIndexChanged.connect(self.update_attack)
-        self.attack = self.attackOption.currentIndex() + 1
+        self.attack = self.attackOption.currentIndex()
         self.treeView.setHeaderHidden(True)
         self.textBrowser.setMarkdown("""
 ```
@@ -169,11 +169,12 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.stackedWidget.setCurrentWidget(self.fileTree)
         self.exitButton.clicked.connect(self.close)
         self.smallQuitBtn.clicked.connect(self.close)
+        self.update_attack()
         self.show()
 
     def update_attack(self):
-        self.attack = self.attackOption.currentIndex() + 1
-        if self.attack == 5:
+        self.attack = self.attackOption.currentIndex()
+        if self.attack == 0:
             self.stackedWidget.setCurrentWidget(self.crawlerOutput)
         elif self.shellBox.isChecked():
             self.stackedWidget.setCurrentWidget(self.crawlerOutput)
@@ -210,7 +211,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.show_info("[GET] http://example.com COOKIE=../../../")
         elif self.attack == 4:
             self.show_info("[POST] http://example.com POST=../../../")
-        elif self.attack == 5:
+        elif self.attack == 0:
             self.show_info("Automatically retreive all links & perform all tests")
 
     def show_info(self, message):
@@ -392,10 +393,10 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.portEdit.setEnabled(False)
             self.ipEdit.setEnabled(False)
 
-        self.attack = self.attackOption.currentIndex() + 1
+        self.attack = self.attackOption.currentIndex()
         if self.shellBox.isChecked():
             self.stackedWidget.setCurrentWidget(self.crawlerOutput)
-        elif self.attack == 5:
+        elif self.attack == 0:
             self.stackedWidget.setCurrentWidget(self.crawlerOutput)
         else:
             self.stackedWidget.setCurrentWidget(self.fileTree)
@@ -412,7 +413,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.foundurls = [""]
         self.foundpayloads = []
         self.foundnullbytes = []
-        self.attack = self.attackOption.currentIndex() + 1
+        self.attack = self.attackOption.currentIndex()
         self.filedict = self.fileDictDisplay.text().strip()
         self.dirdict = self.dirDictDisplay.text().strip()
 
@@ -423,7 +424,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
         if (self.victim == "" or (self.attack == 1 and self.param == "")
                 or ((self.filedict == "" or self.dirdict == "")
-                    and self.attack != 5 and not self.nosploit
+                    and self.attack != 0 and not self.nosploit
                     and not self.shellBox.isChecked())):
             self.show_error("Mandatory argument(s) not specified.")
             return
@@ -531,7 +532,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.progressBar.setEnabled(True)
         self.treeView.clear()
 
-        if self.attack == 5:
+        if self.attack == 0:
             self.crawlerResultDisplay.setText("")
             variables.viclist.clear()
             crawlcookies = {}
@@ -927,7 +928,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         self.victimDisplayLabel.setToolTip(
                             vic + "&" + pam + "=INJECT" + vic2,
                         )
-                elif self.attack == 3 or self.attack == 4 or self.attack == 5:
+                elif self.attack == 3 or self.attack == 4 or self.attack == 0:
                     self.victimDisplayLabel.setText(vic + vic2)
                     self.victimDisplayLabel.setToolTip(vic + vic2)
                 elif self.attack == 2:

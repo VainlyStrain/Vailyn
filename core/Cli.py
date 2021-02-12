@@ -89,7 +89,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
     # are all globally required arguments given?
     if (not (opt["victim"] and opt["attack"]) or
-            (args.attack != 5 and not opt["phase2"]
+            (args.attack.strip().lower() != "a" and not opt["phase2"]
                 and not opt["nosploit"])):
         parser.print_help()
         sys.exit(
@@ -140,7 +140,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
     paysplit = listsplit(payloadlist, round(len(payloadlist) / processes))
 
-    if (args.attack == 1):
+    if args.attack.strip() == "1":
         """
         query mode (scan GET Parameter)
         """
@@ -161,7 +161,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
             color.END,
         ))
         param = args.param
-    elif (args.attack == 2):
+    elif args.attack.strip() == "2":
         """
         path mode (scan URL Path)
         """
@@ -171,7 +171,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
             color.END + color.RD,
             color.END,
         ))
-    elif (args.attack == 3):
+    elif args.attack.strip() == "3":
         """
         cookie mode (scan HTTP cookie)
         """
@@ -181,9 +181,9 @@ def cli_main(parser, opt, args, shell=True) -> int:
             color.END + color.RD,
             color.END,
         ))
-    elif (args.attack == 4):
+    elif args.attack.strip() == "4":
         """
-        POST mode (scan POST/Form Data)
+        POST mode, plain (scan POST/Form Data)
         """
 
         # is a POST data string specified?
@@ -222,7 +222,9 @@ def cli_main(parser, opt, args, shell=True) -> int:
                 + " -p needs to be of form P1=V1&P2=V2 for"
                 + " POST attack"
             )
-    elif args.attack == 5:
+    elif args.attack.strip() == "5":
+        sys.exit("not implemented.")
+    elif args.attack.strip().lower() == "a":
         """
         crawler mode (scan every URL belonging to target with every vector)
         """
@@ -241,6 +243,13 @@ def cli_main(parser, opt, args, shell=True) -> int:
             + "[HINT]" + color.END + " -a needs to be in [1..5]"
         )
 
+    try:
+        # convert attack to digit used in logic
+        args.attack = int(args.attack)
+    except ValueError:
+        # crawler mode
+        args.attack = 0
+
     print("{0} └──{1} {2}{3}vainly{1}".format(
         color.RD,
         color.END,
@@ -256,7 +265,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
                 color.BOLD, color.CURSIVE, color.O,
             ))
 
-    if args.attack == 5:
+    if args.attack == 0:
         crawlcookies = {}
         arjunjar = None
         # load authentication cookie for crawling
