@@ -42,7 +42,7 @@ def set_date():
         date = time.strftime("%Y-%m-%d %H:%M:%S")
 
 
-def download(url, file, cookie=None, post=None):
+def download(url, file, attack, s, cookie=None, post=None):
     """
     download found files & save them in the loot folder
     @params:
@@ -51,9 +51,6 @@ def download(url, file, cookie=None, post=None):
         cookie - cookie to be used.
         post   - should we do a POST request? (default: GET)
     """
-    s = session()
-    if cookie:
-        s.cookies = cookie
 
     url_separator = "/"
     if "\\" in file:
@@ -84,12 +81,20 @@ def download(url, file, cookie=None, post=None):
                 return
         else:
             try:
-                req = requests.Request(method="POST", url=url, data=post)
-                prep = s.prepare_request(req)
-                new_body = unquote(prep.body)
-                prep.body = new_body
-                prep.headers["content-length"] = len(new_body)
-                response = s.send(prep, timeout=variables.timeout)
+                if attack == 4:
+                    req = requests.Request(method="POST", url=url, data=post)
+                    prep = s.prepare_request(req)
+                    new_body = unquote(prep.body)
+                    prep.body = new_body
+                    prep.headers["content-length"] = len(new_body)
+                    response = s.send(prep, timeout=variables.timeout)
+                elif attack == 5:
+                    req = requests.Request(method="POST", url=url, json=post)
+                    prep = s.prepare_request(req)
+                    new_body = unquote(prep.body)
+                    prep.body = new_body
+                    prep.headers["content-length"] = len(new_body)
+                    response = s.send(prep, timeout=variables.timeout)
             except (
                 requests.exceptions.Timeout,
                 requests.exceptions.ConnectionError,

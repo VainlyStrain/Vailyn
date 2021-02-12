@@ -115,7 +115,7 @@ class UrlSpider(scrapy.Spider):
                 vicfile.write(link + "\n")
 
 
-def crawler_arjun(post=False, cookie_header=None):
+def crawler_arjun(post=False, jpost=False, cookie_header=None):
     """
     enumerate GET and POST parameters using Arjun by s0md3v
     to attack in respective phase
@@ -130,6 +130,11 @@ def crawler_arjun(post=False, cookie_header=None):
         command += [
             "-o", cachedir + subdir + "spider-phase5.json",
             "-m", "POST",
+        ]
+    elif jpost:
+        command += [
+            "-o", cachedir + subdir + "spider-phase7.json",
+            "-m", "JSON",
         ]
     else:
         command += [
@@ -147,19 +152,25 @@ def crawler_arjun(post=False, cookie_header=None):
 
     subprocess.run(command)
 
-    siteparams = None
+    site_params = None
     if post:
-        with open(cachedir+subdir+"spider-phase5.json") as f:
-            siteparams = json.load(f)
+        with open(cachedir + subdir + "spider-phase5.json") as f:
+            site_params = json.load(f)
+    elif jpost:
+        with open(cachedir + subdir + "spider-phase7.json") as f:
+            site_params = json.load(f)
     else:
-        with open(cachedir+subdir+"spider-phase1.json") as f:
-            siteparams = json.load(f)
-    assert siteparams is not None
-    return siteparams
+        with open(cachedir + subdir + "spider-phase1.json") as f:
+            site_params = json.load(f)
+
+    print()
+    assert site_params is not None
+
+    return site_params
 
 
 def crawler_query(
-    siteparams, victim2, verbose, depth, file, authcookie, gui=None
+    site_params, victim2, verbose, depth, file, auth_cookie, gui=None
 ):
     """
     attack each GET parameter found for each target URL
@@ -167,7 +178,7 @@ def crawler_query(
     result = {}
     subdir = parse_url(viclist[0])
     with Pool(processes=processes) as pool:
-        for victim, vic_info in siteparams.items():
+        for victim, vic_info in site_params.items():
             sub = {}
             paramlist = vic_info["params"]
             print("\n{0}[INFO]{1} param{4}|{2} Attacking {3}".format(
@@ -201,7 +212,7 @@ def crawler_query(
                 reset_counter()
                 res = [pool.apply_async(phase1, args=(
                     1, victim, victim2, param, None, "", verbose,
-                    depth, splitty, file, authcookie, "", gui,
+                    depth, splitty, file, auth_cookie, "", gui,
                 )) for splitty in paysplit]
                 for i in res:
                     # fetch results
@@ -229,7 +240,7 @@ def crawler_query(
     return result
 
 
-def crawler_path(victim2, verbose, depth, file, authcookie, gui=None):
+def crawler_path(victim2, verbose, depth, file, auth_cookie, gui=None):
     """
     attack each URL using the path vector
     """
@@ -273,7 +284,7 @@ def crawler_path(victim2, verbose, depth, file, authcookie, gui=None):
             reset_counter()
             res = [pool.apply_async(phase1, args=(
                 2, victim, victim2, "", None, "", verbose, depth,
-                splitty, file, authcookie, "", gui,
+                splitty, file, auth_cookie, "", gui,
             )) for splitty in paysplit]
             for i in res:
                 # fetch results
@@ -302,7 +313,7 @@ def crawler_path(victim2, verbose, depth, file, authcookie, gui=None):
 
 
 def crawler_cookie(
-    victim2, verbose, depth, file, authcookie, gui=None,
+    victim2, verbose, depth, file, auth_cookie, gui=None,
 ):
     """
     attack each cookie delivered by the site
@@ -362,7 +373,7 @@ def crawler_cookie(
                 reset_counter()
                 res = [pool.apply_async(phase1, args=(
                     3, victim, victim2, "", cookie, key, verbose, depth,
-                    splitty, file, authcookie, "", gui,
+                    splitty, file, auth_cookie, "", gui,
                 )) for splitty in paysplit]
                 for i in res:
                     # fetch results
@@ -390,8 +401,8 @@ def crawler_cookie(
     return result
 
 
-def crawler_post(
-    siteparams, victim2, verbose, depth, file, authcookie, gui=None
+def crawler_post_plain(
+    site_params, victim2, verbose, depth, file, auth_cookie, gui=None
 ):
     """
     attack each POST parameter found for each target URL
@@ -399,7 +410,7 @@ def crawler_post(
     result = {}
     subdir = parse_url(viclist[0])
     with Pool(processes=processes) as pool:
-        for victim, vic_info in siteparams.items():
+        for victim, vic_info in site_params.items():
             sub = {}
             paramlist = vic_info["params"]
             print("\n{0}[INFO]{1} post{4}|{2} Attacking {3}".format(
@@ -433,7 +444,7 @@ def crawler_post(
                 reset_counter()
                 res = [pool.apply_async(phase1, args=(
                     4, victim, victim2, "", None, "", verbose, depth,
-                    splitty, file, authcookie, param + "=INJECT", gui,
+                    splitty, file, auth_cookie, param + "=INJECT", gui,
                 )) for splitty in paysplit]
                 for i in res:
                     # fetch results
@@ -457,5 +468,76 @@ def crawler_post(
     if not os.path.exists(cachedir + subdir):
         os.makedirs(cachedir + subdir)
     with open(cachedir + subdir + "spider-phase6.json", "w+") as f:
+        json.dump(result, f, sort_keys=True, indent=4)
+    return result
+
+
+def crawler_post_json(
+    site_params, victim2, verbose, depth, file, auth_cookie, gui=None
+):
+    """
+    attack each POST parameter found for each target URL
+    """
+    result = {}
+    subdir = parse_url(viclist[0])
+    with Pool(processes=processes) as pool:
+        for victim, vic_info in site_params.items():
+            sub = {}
+            paramlist = vic_info["params"]
+            print("\n{0}[INFO]{1} json{4}|{2} Attacking {3}".format(
+                color.RD, color.END + color.O,
+                color.END, victim, color.END + color.RD
+            ))
+            if gui:
+                gui.crawlerResultDisplay.append(
+                    "\n[Info] json| Attacking {}".format(victim)
+                )
+                gui.show()
+            time.sleep(0.5)
+            for param in paramlist:
+                payloads = []
+                nullbytes = []
+                wrappers = []
+                print("\n{0}[INFO]{1} json{4}|{2} Using {3}\n".format(
+                    color.RD, color.END + color.O,
+                    color.END, param, color.END + color.RD,
+                ))
+                if gui:
+                    gui.crawlerResultDisplay.append(
+                        "\n[Info] json| Using {}".format(param)
+                    )
+                    gui.show()
+                time.sleep(1.0)
+                paysplit = listsplit(
+                    payloadlist,
+                    round(len(payloadlist)/processes)
+                )
+                reset_counter()
+                res = [pool.apply_async(phase1, args=(
+                    5, victim, victim2, "", None, "", verbose, depth,
+                    splitty, file, auth_cookie, param + "=INJECT", gui,
+                )) for splitty in paysplit]
+                for i in res:
+                    # fetch results
+                    tuples = i.get()
+                    payloads += tuples[0]
+                    nullbytes += tuples[1]
+                    wrappers += tuples[2]
+                payloads = list(set(payloads))
+                nullbytes = list(set(nullbytes))
+                wrappers = list(set(wrappers))
+                sub[param] = (payloads, nullbytes, wrappers)
+                if payloads and gui:
+                    gui.crawlerResultDisplay.append("[+] Vulnerable!")
+                    gui.crawlerResultDisplay.append(
+                        "Payloads: {}\nNullbytes: {}\nWrappers: {}".format(
+                            payloads, nullbytes, wrappers,
+                        )
+                    )
+                    gui.show()
+            result[victim] = sub
+    if not os.path.exists(cachedir + subdir):
+        os.makedirs(cachedir + subdir)
+    with open(cachedir + subdir + "spider-phase8.json", "w+") as f:
         json.dump(result, f, sort_keys=True, indent=4)
     return result

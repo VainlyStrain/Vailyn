@@ -76,7 +76,8 @@ from core.methods.crawler import (
     crawler_query,
     crawler_path,
     crawler_cookie,
-    crawler_post,
+    crawler_post_plain,
+    crawler_post_json,
 )
 
 
@@ -94,7 +95,7 @@ class VailynApp(QtWidgets.QDialog):
     permutation_level = 2
     param = ""
     post = ""
-    authcookie = ""
+    auth_cookie = ""
     tor = False
     loot = False
     vlnfile = "/etc/passwd"
@@ -128,7 +129,8 @@ class VailynApp(QtWidgets.QDialog):
         self.attackOption.addItem("query")
         self.attackOption.addItem("path")
         self.attackOption.addItem("cookie")
-        self.attackOption.addItem("post")
+        self.attackOption.addItem("post-plain")
+        self.attackOption.addItem("post-json")
         self.newTargetButton.clicked.connect(self.get_victim)
         self.attackButton.clicked.connect(self.attack_gui)
         self.infoButton.clicked.connect(self.show_attack_info)
@@ -210,7 +212,9 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         elif self.attack == 3:
             self.show_info("[GET] http://example.com COOKIE=../../../")
         elif self.attack == 4:
-            self.show_info("[POST] http://example.com POST=../../../")
+            self.show_info("[POST] http://example.com PLAIN=../../../")
+        elif self.attack == 5:
+            self.show_info("[POST] http://example.com JSON=../../../")
         elif self.attack == 0:
             self.show_info("Automatically retreive all links & perform all tests")
 
@@ -479,7 +483,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 )
                 return
 
-        self.authcookie = self.cookieDisplay.text().strip()
+        self.auth_cookie = self.cookieDisplay.text().strip()
         self.loot = self.lootBox.isChecked()
         self.tor = self.torBox.isChecked()
         self.vlnfile = self.vlnFileInput.text().strip()
@@ -512,17 +516,18 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 "An attack parameter is required for this attack.",
             )
             return
-        elif self.attack == 4 and self.post == "":
+        elif (self.attack == 4 or self.attack == 5) and self.post == "":
             self.show_error(
                 "A post data string is required for this attack.",
             )
             return
 
-        if self.attack == 4 and "INJECT" not in self.post:
+        if self.attack in [4, 5] and "INJECT" not in self.post:
             self.show_error(
                 "POST Data needs to contain INJECT at injection point",
             )
             return
+
         if self.attack == 4 and "=" not in self.post:
             self.show_error(
                 "POST Data needs to be of form P1=V1&P2=V2",
@@ -537,8 +542,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             variables.viclist.clear()
             crawlcookies = {}
             arjunjar = None
-            if self.authcookie != "":
-                arjunjar = self.authcookie
+            if self.auth_cookie != "":
+                arjunjar = self.auth_cookie
                 crawlcookies = dict_from_header(arjunjar)
 
             def runSpider():
@@ -603,14 +608,14 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.timeLabel.setText("Active Phase: 1")
             self.show()
             app.processEvents()
-            siteparams = crawler_arjun(cookie_header=self.authcookie)
+            site_params = crawler_arjun(cookie_header=self.auth_cookie)
 
             self.timeLabel.setText("Active Phase: 2")
             self.show()
             app.processEvents()
             crawler_query(
-                siteparams, self.victim2, variables.verbose,
-                self.depth1, self.vlnfile, self.authcookie, gui=self,
+                site_params, self.victim2, variables.verbose,
+                self.depth1, self.vlnfile, self.auth_cookie, gui=self,
             )
             time.sleep(1)
 
@@ -619,7 +624,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             app.processEvents()
             crawler_path(
                 self.victim2, variables.verbose, self.depth1,
-                self.vlnfile, self.authcookie, gui=self,
+                self.vlnfile, self.auth_cookie, gui=self,
             )
             time.sleep(1)
 
@@ -628,29 +633,51 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             app.processEvents()
             crawler_cookie(
                 self.victim2, variables.verbose, self.depth1,
-                self.vlnfile, self.authcookie, gui=self,
+                self.vlnfile, self.auth_cookie, gui=self,
             )
             time.sleep(1)
 
             self.crawlerResultDisplay.append(
-                "\n[Info] Arjun POST Scan started.",
+                "\n[Info] Arjun POST Plain Scan started.",
             )
             self.timeLabel.setText("Active Phase: 5")
             self.show()
             app.processEvents()
-            postparams = crawler_arjun(
+            post_params = crawler_arjun(
                 post=True,
-                cookie_header=self.authcookie,
+                cookie_header=self.auth_cookie,
             )
 
             self.timeLabel.setText("Active Phase: 6")
             self.show()
             app.processEvents()
-            crawler_post(
-                postparams, self.victim2, variables.verbose,
-                self.depth1, self.vlnfile, self.authcookie,
+            crawler_post_plain(
+                post_params, self.victim2, variables.verbose,
+                self.depth1, self.vlnfile, self.auth_cookie,
                 gui=self,
             )
+            time.sleep(1)
+
+            self.crawlerResultDisplay.append(
+                "\n[Info] Arjun POST JSON Scan started.",
+            )
+            self.timeLabel.setText("Active Phase: 7")
+            self.show()
+            app.processEvents()
+            json_params = crawler_arjun(
+                jpost=True,
+                cookie_header=self.auth_cookie,
+            )
+
+            self.timeLabel.setText("Active Phase: 8")
+            self.show()
+            app.processEvents()
+            crawler_post_json(
+                json_params, self.victim2, variables.verbose,
+                self.depth1, self.vlnfile, self.auth_cookie,
+                gui=self,
+            )
+
             ending_time = time.time()
             total_time = ending_time - starting_time
             atime = datetime.timedelta(seconds=total_time)
@@ -702,7 +729,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     self.attack, self.victim, self.victim2,
                     self.param, self.cookie, self.selected,
                     variables.verbose, self.depth1, splitty,
-                    self.vlnfile, self.authcookie, self.post, self,
+                    self.vlnfile, self.auth_cookie, self.post, self,
                 )) for splitty in paysplit]
 
                 for i in res:
@@ -811,7 +838,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     self.victim2, self.param, self.cookie,
                     self.selected, variables.verbose,
                     self.selectedpayloads, self.selectednullbytes,
-                    self.selectedwrappers, self.authcookie, self.post,
+                    self.selectedwrappers, self.auth_cookie, self.post,
                     self.depth2, gui=self, app=app,
                 )
             else:
@@ -847,7 +874,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         self.cookie, self.selected, self.filedict, splitty,
                         self.depth2, variables.verbose, self.loot,
                         self.selectedpayloads, self.selectednullbytes,
-                        self.selectedwrappers, self.authcookie,
+                        self.selectedwrappers, self.auth_cookie,
                         self.post, dirlen, self,
                     )) for splitty in splitted]
                     for i in res:
@@ -897,7 +924,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 self.show_error(
                     "-p PAM must be specified for query attack.",
                 )
-            elif self.attack == 4 and post == "":
+            elif self.attack in [4, 5] and post == "":
                 self.show_error(
                     "-s DAT must be specified for POST attack.",
                 )
@@ -910,7 +937,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 if self.attack == 1:
                     self.param = pam
                 self.victim2 = vic2
-                if self.attack == 4:
+                if self.attack in [4, 5]:
                     self.post = post
                 self.targetDialog.close()
                 if self.attack == 1:
@@ -928,7 +955,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         self.victimDisplayLabel.setToolTip(
                             vic + "&" + pam + "=INJECT" + vic2,
                         )
-                elif self.attack == 3 or self.attack == 4 or self.attack == 0:
+                elif self.attack in [0, 3, 4, 5]:
                     self.victimDisplayLabel.setText(vic + vic2)
                     self.victimDisplayLabel.setToolTip(vic + vic2)
                 elif self.attack == 2:
@@ -960,7 +987,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         else:
             self.targetDialog.paramLabel.setEnabled(False)
             self.targetDialog.paramField.setEnabled(False)
-        if self.attack == 4:
+        if self.attack in [4, 5]:
             self.targetDialog.postLabel.setEnabled(True)
             self.targetDialog.postInput.setEnabled(True)
         else:

