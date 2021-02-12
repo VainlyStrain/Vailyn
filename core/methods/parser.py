@@ -56,7 +56,7 @@ mandatory:
 
   {2}  A{1}{3}|;{1}  Spider (all)    {2}  3{1}{3}|:{1}  Cookie
   {2}  1{1}{3}|:{1}  Query Parameter {2}  4{1}{3}|;{1}  POST Data, plain
-  {2}  2{1}{3}|;{1}  Path            {2}  5{1}{3}|:{1}  {3}POST Data, json{1}
+  {2}  2{1}{3}|;{1}  Path            {2}  5{1}{3}|:{1}  POST Data, json{1}
 
   -p2 TP P1 P2, --phase2 TP P1 P2
                         {0}Attack in Phase 2, and needed parameters{1}
