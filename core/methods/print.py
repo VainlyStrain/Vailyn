@@ -194,7 +194,7 @@ def print_techniques():
     for i in items:
         tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(
             color.RB, i, color.END + color.RD, color.END,
-            rce[i], len(str(len(items))),
+            rce[i], max(3, len(str(len(items)))),
         )
         tmplist.append(tmpstr)
     maxlen = len(max(tmplist, key=len))
