@@ -80,6 +80,8 @@ from core.methods.crawler import (
     crawler_post_json,
 )
 
+from core.methods.error import ShellPopException
+
 
 class VailynApp(QtWidgets.QDialog):
     """
@@ -833,14 +835,17 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                 if not self.techniques:
                     return
                 starting_time = time.time()
-                lfi_rce(
-                    self.techniques, self.attack, self.victim,
-                    self.victim2, self.param, self.cookie,
-                    self.selected, variables.verbose,
-                    self.selectedpayloads, self.selectednullbytes,
-                    self.selectedwrappers, self.auth_cookie, self.post,
-                    self.depth2, gui=self, app=app,
-                )
+                try:
+                    lfi_rce(
+                        self.techniques, self.attack, self.victim,
+                        self.victim2, self.param, self.cookie,
+                        self.selected, variables.verbose,
+                        self.selectedpayloads, self.selectednullbytes,
+                        self.selectedwrappers, self.auth_cookie, self.post,
+                        self.depth2, gui=self, app=app,
+                    )
+                except ShellPopException:
+                    pass
             else:
                 set_date()
                 # equally split dictionary entries to all threads

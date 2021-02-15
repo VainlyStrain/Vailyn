@@ -94,7 +94,7 @@ ____{4},{0} __              |
         color.END,
     )
 
-    banners = [stealth, large_dark]
+    banners = [stealth]
     subprocess.run(CLEAR_CMD)
     print(banners[random.randrange(0, len(banners))])
 

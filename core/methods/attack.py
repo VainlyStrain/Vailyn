@@ -46,6 +46,8 @@ from core.methods.progress import progress, progress_win, progress_gui
 from core.methods.cookie import dict_from_header
 from core.methods.list import filegen
 from core.methods.notify import notify
+from core.methods.error import ShellPopException
+
 from urllib.parse import unquote
 
 global maxlen
@@ -720,12 +722,12 @@ def sheller(
     print(
         color.RD+"[INFO]" + color.O + " RCE" + color.END
         + color.RD + "|" + color.END + "  "
-        + color.RC + "Using Technique:" + color.END + color.O
+        + color.RC + "Technique:" + color.END + color.O
         + "" + str(rce[technique]) + color.END
     )
     if gui:
         gui.crawlerResultDisplay.append(
-            "[Info] RCE|  Using Technique: {}".format(
+            "[Info] RCE|  Technique: {}".format(
                 str(rce[technique])
             )
         )
@@ -827,7 +829,7 @@ def sheller(
                 d += 1
                 if found:
                     sys.stdout.write(
-                        "{0} OK  {2}|{1}\n".format(
+                        "{0}   ✓{2}|{1}\n".format(
                             color.O, color.END, color.END + color.RD
                         )
                     )
@@ -1267,7 +1269,7 @@ def sheller(
                     if app:
                         app.processEvents()
     else:
-        sys.stdout.write("{0} FAIL{2}|{1}\n".format(
+        sys.stdout.write("{0}   ✗{2}|{1}\n".format(
             color.O, color.END, color.END + color.RD
         ))
         if gui:
@@ -1306,7 +1308,7 @@ def show_status(gui, timeout=False, exception=None):
     print status of RCE probe
     """
     if exception:
-        sys.stdout.write("{0} FAIL{2}|{1}\n".format(
+        sys.stdout.write("{0}  ✗!{2}|{1}\n".format(
             color.O, color.END, color.END + color.RD
         ))
         print("{0}Exception:{1}\n{2}".format(
@@ -1322,7 +1324,7 @@ def show_status(gui, timeout=False, exception=None):
         if check_conn():
             # single threaded server times out when
             # shell drops
-            sys.stdout.write("{0} PWN {2}|{1}\n".format(
+            sys.stdout.write("{0}   ✓{2}|{1}\n".format(
                 color.O, color.END, color.END + color.RD
             ))
             notify(
@@ -1333,8 +1335,9 @@ def show_status(gui, timeout=False, exception=None):
             if gui:
                 gui.crawlerResultDisplay.append(" PWN\n")
                 gui.show()
+            raise ShellPopException("pwnd")
         else:
-            sys.stdout.write("{0} DIED{2}|{1}\n".format(
+            sys.stdout.write("{0}  ✗!{2}|{1}\n".format(
                 color.O, color.END, color.END + color.RD
             ))
             if gui:
@@ -1342,7 +1345,7 @@ def show_status(gui, timeout=False, exception=None):
                 gui.show()
         return
     if check_conn():
-        sys.stdout.write("{0} PWN {2}|{1}\n".format(
+        sys.stdout.write("{0}   ✓{2}|{1}\n".format(
             color.O, color.END, color.END + color.RD
         ))
         notify(
@@ -1353,8 +1356,9 @@ def show_status(gui, timeout=False, exception=None):
         if gui:
             gui.crawlerResultDisplay.append(" PWN\n")
             gui.show()
+        raise ShellPopException("pwnd")
     else:
-        sys.stdout.write("{0} FAIL{2}|{1}\n".format(
+        sys.stdout.write("{0}   ✗{2}|{1}\n".format(
             color.O, color.END, color.END + color.RD
         ))
         if gui:

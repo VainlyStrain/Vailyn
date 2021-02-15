@@ -75,6 +75,8 @@ from core.methods.crawler import (
     crawler_post_json,
 )
 
+from core.methods.error import ShellPopException
+
 
 # initialize file tree
 filetree = treelib.Tree()
@@ -730,11 +732,15 @@ def cli_main(parser, opt, args, shell=True) -> int:
             starting_time = time.time()
 
             # start attack
-            lfi_rce(
-                techniques, args.attack, args.victim, victim2, param,
-                cookie, selected, verbose, selectedpayloads, selectednullbytes,
-                selectedwrappers, cookie_header, post_data, depth,
-            )
+            try:
+                lfi_rce(
+                    techniques, args.attack, args.victim, victim2,
+                    param, cookie, selected, verbose, selectedpayloads,
+                    selectednullbytes, selectedwrappers, cookie_header,
+                    post_data, depth,
+                )
+            except ShellPopException:
+                pass
         else:
             """
             Leak Module - LFI & Path Traversal.
