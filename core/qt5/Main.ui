@@ -1431,6 +1431,9 @@ QProgressBar::chunk {
                       </item>
                       <item row="12" column="1" colspan="4">
                        <widget class="QLineEdit" name="cookieDisplay">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Authentication Cookie in HTTP Header format (omit Cookie:)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="placeholderText">
                          <string>Cookie File</string>
                         </property>
@@ -1566,7 +1569,7 @@ QProgressBar::chunk {
                       <item row="12" column="5">
                        <widget class="QPushButton" name="checkCookieButton">
                         <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add an authentication cookie to bypass login screens.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Verify Cookie Syntax&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="text">
                          <string>Check</string>
@@ -1729,6 +1732,9 @@ QProgressBar::chunk {
              <layout class="QHBoxLayout" name="horizontalLayout_10">
               <item>
                <widget class="QCheckBox" name="lfiBox">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Also include php://filter in Phase 1 and Leak.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="text">
                  <string>LFI</string>
                 </property>

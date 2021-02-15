@@ -848,7 +848,7 @@ background: #1d161d;
         </font>
        </property>
        <property name="text">
-        <string>-v VIC</string>
+        <string>Target</string>
        </property>
       </widget>
      </item>
@@ -873,7 +873,7 @@ background: #1d161d;
         </font>
        </property>
        <property name="text">
-        <string>-p PAM</string>
+        <string>GET Param</string>
        </property>
       </widget>
      </item>
@@ -898,7 +898,7 @@ background: #1d161d;
         </font>
        </property>
        <property name="text">
-        <string>-q VIC2</string>
+        <string>Target 2</string>
        </property>
       </widget>
      </item>
@@ -932,7 +932,7 @@ background: #1d161d;
         <bool>false</bool>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;POST Data to infect.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;POST Data to infect. Mark injection point with INJECT.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="placeholderText">
         <string>p1=v1&amp;p2=INJECT</string>
@@ -945,7 +945,7 @@ background: #1d161d;
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>-s DAT</string>
+        <string>POST Data</string>
        </property>
       </widget>
      </item>
