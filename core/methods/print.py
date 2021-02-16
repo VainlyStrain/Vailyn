@@ -182,7 +182,7 @@ def print_techniques_gui():
     items = rce.keys()
     for i in items:
         tstr = tstr + "{0}{1:{5}}{2}|{3}  {4}\n".format(
-            "", i, "", "", rce[i], len(str(len(items))),
+            "", i, "", "", rce[i], max(3, len(str(len(items)))),
         )
     tstr = tstr + "{0}{1}|{2}  {3}\n".format("", "  A", "", "ALL")
     return tstr
