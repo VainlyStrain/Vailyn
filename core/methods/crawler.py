@@ -323,7 +323,7 @@ def crawler_cookie(
     with Pool(processes=processes) as pool:
         for victim in viclist:
             sub = {}
-            cookie = fetch_cookie(victim)
+            cookie = fetch_cookie(victim, auth_cookie=auth_cookie)
             if len(cookie.keys()) < 1:
                 print("\n{0}[INFO]{1} cookie{4}|{2}{5}{3}.\n".format(
                     color.RD,

@@ -351,7 +351,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         )
         self.payloadShowDialog.exec_()
 
-    def read_cookie_gui(self, target):
+    def read_cookie_gui(self, target, cookie=""):
         def intern():
             self.selected = self.cookieDialog.cookieSelectInput.text().strip()
             if self.selected == "" or self.selected not in self.cstr:
@@ -359,7 +359,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             else:
                 self.cookieDialog.close()
 
-        cookie = fetch_cookie(target)
+        cookie = fetch_cookie(target, auth_cookie=cookie)
         self.cocancel = False
         i = 0
         if len(cookie.keys()) < 1:
@@ -694,7 +694,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             (
                 self.cookie,
                 self.selected,
-            ) = self.read_cookie_gui(self.victim)
+            ) = self.read_cookie_gui(self.victim, cookie=self.auth_cookie)
             if self.cookie is None or self.selected is None:
                 return
 

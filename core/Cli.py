@@ -578,7 +578,9 @@ def cli_main(parser, opt, args, shell=True) -> int:
         print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Parsing Cookie\n".format(
             color.RD, color.END,
         ))
-        cookie, selected = read_cookie(args.victim)
+        cookie, selected = read_cookie(
+            args.victim, auth_cookie=cookie_header,
+        )
 
     print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Analysis Phase\n".format(
         color.RD, color.END,

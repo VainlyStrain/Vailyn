@@ -26,13 +26,18 @@ from core.variables import timeout
 from core.methods.session import session
 
 
-def fetch_cookie(url):
+def fetch_cookie(url, auth_cookie=""):
     """
     fetches cookies from the website for the cookie attack
     @params:
         url - URL to fetch cookies from.
     """
     s = session()
+    if auth_cookie:
+        requests.utils.add_dict_to_cookiejar(
+            s.cookies,
+            dict_from_header(auth_cookie),
+        )
     try:
         s.get(url, timeout=timeout)
     except (
@@ -43,7 +48,7 @@ def fetch_cookie(url):
     return s.cookies
 
 
-def read_cookie(url):
+def read_cookie(url, auth_cookie=""):
     """
     parses cookies and lets the attacker choose the
     injection point
@@ -51,7 +56,7 @@ def read_cookie(url):
     @params:
         url - URL to fetch cookies from.
     """
-    cookie = fetch_cookie(url)
+    cookie = fetch_cookie(url, auth_cookie=auth_cookie)
     i = 0
     if len(cookie.keys()) < 1:
         sys.exit(
