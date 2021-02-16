@@ -799,13 +799,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
     if not args.nosploit:
         notification = "Attack done in {}.".format(readable_time)
         if variables.revshell:
-            techniquesTried = len(techniques)
-            if 6 in techniques:
-                techniquesTried = techniquesTried + variables.wrapperCount - 1
-            mult = "" if techniquesTried == 1 else "s"
-            notification += " {} technique{} tried.".format(
-                techniquesTried, mult,
-            )
+            pass
         else:
             mult = "" if (len(foundfiles) - 1) == 1 else "s"
             notification += " Found {} file{}.".format(

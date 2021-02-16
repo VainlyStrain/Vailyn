@@ -720,9 +720,9 @@ def sheller(
     success = None
 
     print(
-        color.RD+"[INFO]" + color.O + " RCE" + color.END
+        color.RD+"[Vailyn]" + color.O + " LFI" + color.END
         + color.RD + "|" + color.END + "  "
-        + color.RC + "Technique:" + color.END + color.O
+        + color.RC + "" + color.END + color.RD
         + "" + str(rce[technique]) + color.END
     )
     if gui:
@@ -1366,18 +1366,18 @@ def show_status(gui, timeout=False, exception=None):
             gui.show()
 
 
-def check_conn(delay=True):
+def check_conn():
     """
     check if our reverse shell has arrived
     """
     # give the server some time
-    if delay:
-        time.sleep(2)
+    time.sleep(2)
     try:
         # list all connections
         connections = psutil.net_connections()
         for connection in connections:
             if connection.laddr[1] == int(vars.LISTENPORT):
+                # selected listener connection
                 if connection.status == psutil.CONN_ESTABLISHED:
                     # shell has arrived, all good
                     return True
