@@ -356,6 +356,20 @@ def crawler_cookie(
                 payloads = []
                 nullbytes = []
                 wrappers = []
+                if key in auth_cookie:
+                    print("\n{0}[INFO]{1} cookie{4}|{2} {3}\n".format(
+                        color.RD, color.END + color.O,
+                        color.END, "Skipping Auth Cookie",
+                        color.END + color.RD,
+                    ))
+                    if gui:
+                        gui.crawlerResultDisplay.append(
+                            "[Info] cookie| {}".format(
+                                "Skipping Auth Cookie"
+                            )
+                        )
+                        gui.show()
+                    continue
                 print("\n{0}[INFO]{1} cookie{4}|{2} Using {3}\n".format(
                     color.RD, color.END + color.O,
                     color.END, key, color.END + color.RD,
