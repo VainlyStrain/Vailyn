@@ -20,6 +20,8 @@ _____, ___
 
 import core.variables as variables
 
+import re
+
 from urllib.parse import unquote
 
 
@@ -31,6 +33,10 @@ def filecheck(r, con2, con3, payload, post=False):
     """
     con = r.content
     conn = str(con).lower()
+
+    # /etc/passwd regex to reduce false positives
+    # in default configuration
+    passwd_regex = "\w*:\w*:[0-9]*:[0-9]*:\w*:"
 
     if variables.lfi:
         for wrapper in variables.phase1_wrappers:
@@ -70,7 +76,21 @@ def filecheck(r, con2, con3, payload, post=False):
         and check2
     )
 
+    # does attack page match /etc/passwd, and does it really
+    # come from our inclusion/traversal?
+    reg_check = (
+        re.findall(passwd_regex, txt)
+        and not re.findall(passwd_regex, str(con2).lower())
+    )
+
     if con3:
         check = check and con3 != con
+        reg_check = (
+            reg_check
+            and not re.findall(passwd_regex, str(con3).lower())
+        )
+
+    if "etc/passwd" in payload:
+        check = check and reg_check
 
     return check
