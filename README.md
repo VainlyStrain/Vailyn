@@ -209,6 +209,7 @@ To distinguish real results from false positives, Vailyn does the following chec
 * check if the payload is contained in the response: this is an additional check for the case the server responds 200 for non-existing files, and reflects the payload in a message (like ../../secret not found)
 * check if the entire response is contained in the init check response: useful when the server has a default include which disappears in case of 404
 * for `-a 2`, perform an additional check if the response content matches the content from the server root URL
+* REGEX check for `/etc/passwd` if using that as lookup file
 
 ### Examples
 
