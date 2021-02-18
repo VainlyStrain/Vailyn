@@ -1391,7 +1391,7 @@ QProgressBar::chunk {
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;File to be checked for during Vulnerability Analysis.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="text">
-                         <string>/etc/passwd</string>
+                         <string>etc/passwd</string>
                         </property>
                        </widget>
                       </item>
