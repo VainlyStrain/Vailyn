@@ -117,7 +117,7 @@ mandatory:
 
 additional:
   -p PAM, --param PAM   query parameter or POST data for --attack 1, 4, 5
-  -i F, --check F       File to check for in Phase 1 (df: /etc/passwd)
+  -i F, --check F       File to check for in Phase 1 (df: etc/passwd)
   -Pi VIC2, --vic2 VIC2 Attack Target, part 2 [post-payload]
   -c C, --cookie C      Cookie to append (in header format)
   -l, --loot            Download found files into the loot folder

@@ -65,7 +65,7 @@ mandatory:
 
 additional:
   -p PAM, --param PAM   {0}query parameter or POST data for --attack 1, 4, 5{1}
-  -i F, --check F       {0}File to check for in Phase 1 (df: /etc/passwd){1}
+  -i F, --check F       {0}File to check for in Phase 1 (df: etc/passwd){1}
   -Pi VIC2, --vic2 VIC2 {0}Attack Target, part 2 [post-payload]{1}
   -c C, --cookie C      {0}Cookie to append (in header format){1}
   -l, --loot            {0}Download found files into the loot folder{1}
@@ -146,7 +146,7 @@ def opt_parser():
                    help="Attack Target, part 2 (post injection point)",
                    metavar=("V"))
     p.add_argument("-i", "--check",
-                   help="File to check for in Phase 1 (df: /etc/passwd)",
+                   help="File to check for in Phase 1 (df: etc/passwd)",
                    metavar=("F"))
     p.add_argument("-c", "--cookie",
                    help="Cookie to append (in header format)",

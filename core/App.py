@@ -100,7 +100,7 @@ class VailynApp(QtWidgets.QDialog):
     auth_cookie = ""
     tor = False
     loot = False
-    vlnfile = "/etc/passwd"
+    vlnfile = "etc/passwd"
     victim2 = ""
 
     nosploit = False

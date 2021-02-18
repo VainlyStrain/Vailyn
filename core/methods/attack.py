@@ -297,7 +297,7 @@ def phase1(
         verbose    - print 404s?
         depth      - attack depth (-d INT)
         paylist    - payload list (all)
-        file       - file to be looked up (-i FIL, default: /etc/passwd)
+        file       - file to be looked up (-i FIL, default: etc/passwd)
         auth_cookie - Authentication Cookie File to bypass Login Screens
         post_data   - POST Data for --attack 4
         gui        - GUI frame to set the graphical progress bar
