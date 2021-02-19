@@ -859,7 +859,7 @@ def sheller(
         )
         # don't wait for shell requests to finish, so that
         # script doesn't block & shows if shell worked
-        timeout2 = 0.0000000001
+        timeout2 = 3.0
         if technique != 6:
             if attack == 1:
                 prep = query(
