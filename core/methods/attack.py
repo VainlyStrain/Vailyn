@@ -972,9 +972,17 @@ def sheller(
                     app.processEvents()
                 try:
                     if is_windows:
-                        subprocess.run(
-                            ["putty.exe", "-ssh", sshs[i]]
-                        )
+                        with open(os.devnull, "w") as DEVNULL:
+                            subprocess.Popen(
+                                [
+                                    "plink",
+                                    "-ssh", host,
+                                    "-l", sshs[i].split("@")[0],
+                                    "-pw", "toor",
+                                ],
+                                stdout=DEVNULL,
+                                stderr=subprocess.STDOUT,
+                            )
                     else:
                         with open(os.devnull, "w") as DEVNULL:
                             subprocess.Popen(
