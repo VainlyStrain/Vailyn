@@ -64,7 +64,7 @@ If twisted fails to install, there is an unofficial version available [here](htt
 
 #### Final Steps
 
-If you want to use the reverse shell module, you'll need to have `ncat` and `konsole` installed. Package names vary by Linux distribution. On Windows, you'll need to start the listener manually beforehand.
+If you want to fully use the reverse shell module, you'll need to have `sshpass`, `ncat` and `konsole` installed. Package names vary by Linux distribution. On Windows, you'll need to start the listener manually beforehand.
 
 That's it! Fire Vailyn up by moving to its installation directory and performing
 
