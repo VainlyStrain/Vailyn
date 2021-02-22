@@ -22,3 +22,7 @@ _____, ___
 # Display desktop notifications on certain events.
 # Set False to disable. (default: True)
 DESKTOP_NOTIFY = True
+
+# Check if response matches /etc/passwd REGEX
+# if that file is used. (default: True)
+REGEX_CHECK = True

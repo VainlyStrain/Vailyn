@@ -24,6 +24,8 @@ import re
 
 from urllib.parse import unquote
 
+from core.config import REGEX_CHECK
+
 
 def filecheck(r, con2, con3, payload, post=False):
     """
@@ -90,7 +92,7 @@ def filecheck(r, con2, con3, payload, post=False):
             and not re.findall(passwd_regex, str(con3).lower())
         )
 
-    if "etc/passwd" in payload:
+    if "etc/passwd" in payload and REGEX_CHECK:
         check = check and reg_check
 
     return check
