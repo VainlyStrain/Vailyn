@@ -64,7 +64,7 @@ If twisted fails to install, there is an unofficial version available [here](htt
 
 #### Final Steps
 
-If you want to fully use the reverse shell module, you'll need to have `sshpass`, `ncat` and `konsole` installed. Package names vary by Linux distribution. On Windows, you'll need to start the listener manually beforehand.
+If you want to fully use the reverse shell module, you'll need to have `sshpass`, `ncat` and `konsole` installed. Package names vary by Linux distribution. On Windows, you'll need to start the listener manually beforehand. If you prefer a different terminal emulator, you can specify it in `core/config.py`.
 
 That's it! Fire Vailyn up by moving to its installation directory and performing
 
@@ -277,4 +277,4 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 >
 > Arjun:  Copyright © <a href="https://github.com/s0md3v">s0md3v</a>
 
-Arjun is no longer distributed with Vailyn. Install its latest version via pip.
+**Arjun is no longer distributed with Vailyn. Install its latest version via pip.**
