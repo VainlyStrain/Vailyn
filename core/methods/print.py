@@ -26,51 +26,13 @@ import random
 from core.colors import color
 from core.variables import CLEAR_CMD, payloadlist, rce
 from core.methods.list import listsplit
+from core.config import ASCII_ONLY
 
 
 def banner():
     """
     prints asciiart when starting the tool
     """
-
-    large_dark = """{0}                      |
-                      :
-                      |
-                      :
-                      .
-                      .
-____{4},{0} __              |
-   {4}+{0}{1} {4};{0}               :|
-   {4}.{1}:,{0}{1}
-     {4}’{0}{1}
-    {4}.{0}{1}              /
-    {4}+{0}{1} {4};{0}{1}           :,
-    {4};.{0}{1}           /,
-   {0}  {4};{0}          /;' ;
-     {4};{0}         /;{2}|{0}  : ^
-     {4}’{0}      / {2}:{0}  ;.’  °
-          '/; \\
-         ./ '. \\
-          '.  ’·   {0}
-         {1}   '.    {0}|{3} Vailyn {0}|{1}
-               {0}[ {6}VainlyStrain{0} ]{0}{1}
-               ,
-                \\.
-                 .,.
-                   .'.
-                  ''.;:
-                    .|.
-                     | '
-                     '    {5}
-    """.format(
-        color.END + color.RD,
-        color.BOLD,
-        color.CURSIVE,
-        color.END + color.O,
-        color.RD,
-        color.END,
-        color.END + color.R,
-    )
 
     stealth = """{1}
    ,                \\                  /      {0}         , {1}
@@ -96,7 +58,9 @@ ____{4},{0} __              |
 
     banners = [stealth]
     subprocess.run(CLEAR_CMD)
-    print(banners[random.randrange(0, len(banners))])
+
+    if not ASCII_ONLY:
+        print(banners[random.randrange(0, len(banners))])
 
 
 """

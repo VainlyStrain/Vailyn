@@ -18,7 +18,7 @@ _____, ___
 """
 
 
-from core.colors import color
+from core.colors import color, lines
 from core.methods.print import listprint, print_techniques
 from core.variables import rce
 from core.variables import payloadlist as totalpayloadlist
@@ -62,9 +62,10 @@ def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
     while invalid:
         if not nosploit:
             payloads = input(
-                "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} └──{1} {2}{6}{1} :> ".format(
+                "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
                     color.RD, color.END, color.CURSIVE, color.O,
                     " Payloads", "Select indices\n", "comma-separated",
+                    lines.SW,
                 )
             )
             try:
@@ -98,9 +99,10 @@ def select_techniques():
     print_techniques()
     while invalid:
         selected = input(
-            "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} └──{1} {2}{6}{1} :> ".format(
+            "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
                 color.RD, color.END, color.CURSIVE, color.O,
                 " Techniques", "Select indices\n", "comma-separated",
+                lines.SW,
             )
         )
         try:

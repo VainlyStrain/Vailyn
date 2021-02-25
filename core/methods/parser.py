@@ -24,6 +24,8 @@ import terminaltables
 
 from core.colors import color
 
+from core.config import ASCII_ONLY
+
 from core.methods.print import table_print
 
 
@@ -44,10 +46,16 @@ class ArgumentParser(argparse.ArgumentParser):
         DATA = [table_print(("TP", "P1", "P2"))]
         DATA.append(table_print(("leak", "File Dict", "Directory Dict")))
         DATA.append(table_print(("rce", "IP Addr", "Listening Port")))
-        table = terminaltables.SingleTable(DATA, "[ {}Values{} ]".format(
-            color.END,
-            color.RD),
-        ).table
+        if ASCII_ONLY:
+            table = terminaltables.AsciiTable(DATA, "[ {}Values{} ]".format(
+                color.END,
+                color.RD),
+            ).table
+        else:
+            table = terminaltables.SingleTable(DATA, "[ {}Values{} ]".format(
+                color.END,
+                color.RD),
+            ).table
         self.print_usage(sys.stderr)
         print("""
 mandatory:

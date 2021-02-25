@@ -33,9 +33,8 @@ from multiprocessing.pool import ThreadPool as Pool
 
 from scrapy.crawler import CrawlerProcess
 
-from terminaltables import SingleTable
+from core.colors import color, FAIL, lines
 
-from core.colors import color
 from core.variables import (
     payloadlist,
     nullchars,
@@ -43,6 +42,8 @@ from core.variables import (
     cachedir,
     is_windows,
 )
+
+from core.config import TERMINAL, TERM_CMD_TYPE, ASCII_ONLY
 
 from core.methods.list import (
     listsplit,
@@ -76,6 +77,11 @@ from core.methods.crawler import (
 )
 
 from core.methods.error import ShellPopException
+
+if ASCII_ONLY:
+    from terminaltables import AsciiTable as SingleTable
+else:
+    from terminaltables import SingleTable
 
 
 # initialize file tree
@@ -283,11 +289,12 @@ def cli_main(parser, opt, args, shell=True) -> int:
         # crawler mode
         args.attack = 0
 
-    print("{0} └──{1} {2}{3}vainly{1}".format(
+    print("{0} {4}{1} {2}{3}vainly{1}".format(
         color.RD,
         color.END,
         color.CURSIVE,
         color.END + color.RC + color.BOLD,
+        lines.SW,
     ))
     time.sleep(0.5)
 
@@ -312,8 +319,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
          - save in spider-phase0.txt
         """
         print(
-            "\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Link Spider\n".format(
-                color.RD, color.END,
+            "\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Link Spider\n".format(
+                color.RD, color.END, lines.SWL, lines.NW,
             )
         )
 
@@ -356,8 +363,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
          - save in spider-phase1.json
         """
         time.sleep(1)
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum (GET)\n".format(
-            color.RD, color.END,
+        print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Param Enum (GET)\n".format(
+            color.RD, color.END, lines.SWL, lines.NW,
         ))
 
         time.sleep(0.5)
@@ -369,8 +376,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
          - attack every GET parameter of every page
          - save in spider-phase2.json
         """
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Query Analysis\n".format(
-            color.RD, color.END,
+        print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Query Analysis\n".format(
+            color.RD, color.END, lines.SWL, lines.NW,
         ))
 
         time.sleep(0.5)
@@ -385,8 +392,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
          - save in spider-phase3.json
         """
         time.sleep(1)
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Path Analysis\n".format(
-            color.RD, color.END,
+        print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Path Analysis\n".format(
+            color.RD, color.END, lines.SWL, lines.NW,
         ))
 
         time.sleep(0.5)
@@ -400,8 +407,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
          - save in spider-phase4.json
         """
         time.sleep(1)
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Cookie Analysis\n".format(
-            color.RD, color.END,
+        print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Cookie Analysis\n".format(
+            color.RD, color.END, lines.SWL, lines.NW,
         ))
 
         time.sleep(0.5)
@@ -416,8 +423,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
          - save in spider-phase5.json
         """
         time.sleep(1)
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum {2}\n".format(
-            color.RD, color.END, "(POST, plain)",
+        print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} Param Enum {2}\n".format(
+            color.RD, color.END, "(POST, plain)", lines.SWL, lines.NW,
         ))
 
         time.sleep(0.5)
@@ -429,8 +436,9 @@ def cli_main(parser, opt, args, shell=True) -> int:
          - attack every POST parameter of every page
          - save in spider-phase6.json
         """
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} {2}\n".format(
+        print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} {2}\n".format(
             color.RD, color.END, "POST Analysis, plain",
+            lines.SWL, lines.NW,
         ))
 
         time.sleep(0.5)
@@ -445,8 +453,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
          - save in spider-phase7.json
         """
         time.sleep(1)
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Param Enum {2}\n".format(
-            color.RD, color.END, "(POST, json)",
+        print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} Param Enum {2}\n".format(
+            color.RD, color.END, "(POST, json)", lines.SWL, lines.NW,
         ))
 
         time.sleep(0.5)
@@ -458,8 +466,9 @@ def cli_main(parser, opt, args, shell=True) -> int:
          - attack every POST parameter of every page
          - save in spider-phase8.json
         """
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} {2}\n".format(
+        print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} {2}\n".format(
             color.RD, color.END, "POST Analysis, json",
+            lines.SWL, lines.NW,
         ))
 
         time.sleep(0.5)
@@ -575,15 +584,15 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
     # fetch and select cookie for cookie mode
     if args.attack == 3:
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Parsing Cookie\n".format(
-            color.RD, color.END,
+        print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Parsing Cookie\n".format(
+            color.RD, color.END, lines.SWL, lines.NW,
         ))
         cookie, selected = read_cookie(
             args.victim, auth_cookie=cookie_header,
         )
 
-    print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Analysis Phase\n".format(
-        color.RD, color.END,
+    print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Analysis Phase\n".format(
+        color.RD, color.END, lines.SWL, lines.NW,
     ))
     vlnysis = True
 
@@ -596,7 +605,9 @@ def cli_main(parser, opt, args, shell=True) -> int:
             "{0}[?]{1}{2} Cache{1}{0}|{1} Load from".format(
                 color.RD, color.END, color.O,
             )
-            + " previous attack?\n{0} └──{1}".format(color.RD, color.END)
+            + " previous attack?\n{0} {2}{1}".format(
+                color.RD, color.END, lines.SW,
+            )
             + " {1}enter if not{0} :> ".format(
                 color.END, color.CURSIVE,
             ))
@@ -661,9 +672,15 @@ def cli_main(parser, opt, args, shell=True) -> int:
         if not opt["nosploit"]:
             notify("No payload succeeded. Attack anyways?")
             cont = input(
-                "\n{0}[✗]{1} No payload succeeded.".format(color.RD, color.END)
-                + " Attack anyways?\n{0} └──{1} ".format(color.RD, color.END)
-                + "{1}enter if not{0} :> ".format(color.END, color.CURSIVE)
+                "\n{0}[{2}]{1} No payload succeeded.".format(
+                    color.RD, color.END, FAIL,
+                )
+                + " Attack anyways?\n{0} {2}{1} ".format(
+                    color.RD, color.END, lines.SW,
+                )
+                + "{1}enter if not{0} :> ".format(
+                    color.END, color.CURSIVE,
+                )
             )
             if cont != "":
                 attack = True
@@ -692,8 +709,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
     if attack:
         reset_counter()
-        print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Sploit Phase\n".format(
-            color.RD, color.END,
+        print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Sploit Phase\n".format(
+            color.RD, color.END, lines.SWL, lines.NW,
         ))
         if variables.revshell:
             """
@@ -719,11 +736,20 @@ def cli_main(parser, opt, args, shell=True) -> int:
                         "before starting the attack.",
                     )
             else:
+                listener_cmd = ["konsole", "--hold", "-e"]
+                if TERMINAL:
+                    listener_cmd = TERMINAL
+                cmd_str = [
+                    "nc -lvp {}".format(variables.LISTENPORT),
+                ]
+                cmd_list = ["nc", "-lvp", variables.LISTENPORT]
+                if TERM_CMD_TYPE.strip().upper() == "STRING":
+                    listener_cmd += cmd_str
+                else:
+                    listener_cmd += cmd_list
                 with open(os.devnull, "w") as DEVNULL:
                     subprocess.Popen(
-                        ["konsole", "--hold", "-e", "nc -lvp {}".format(
-                            variables.LISTENPORT,
-                        )],
+                        listener_cmd,
                         close_fds=True,
                         stdout=DEVNULL,
                         stderr=subprocess.STDOUT,
@@ -810,12 +836,15 @@ def cli_main(parser, opt, args, shell=True) -> int:
         notify(notification)
 
     # display found files in a file tree
-    print("\n{0}┌─[{1}Vailyn{0}]{1}\n{0}└──╼{1} Directory Tree\n".format(
-        color.RD, color.END,
+    print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Directory Tree\n".format(
+        color.RD, color.END, lines.SWL, lines.NW,
     ))
     if foundfiles:
         create_tree(filetree, foundfiles)
-        filetree.show()
+        if ASCII_ONLY:
+            filetree.show(line_type="ascii")
+        else:
+            filetree.show(line_type="ascii-ex")
     if not foundurls:
         print("nothing found")
 

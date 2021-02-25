@@ -18,6 +18,9 @@ _____, ___
 """
 
 
+from core.config import ASCII_ONLY
+
+
 class color:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
@@ -30,3 +33,13 @@ class color:
     RC = "\033[0m\033[38;2;58;49;58m\033[3m"
     RD = "\033[0m\033[38;2;58;49;58m"
     R = "\033[1m\033[38;2;58;49;58m"
+
+
+FAIL = "-" if ASCII_ONLY else "✗"
+SUCCESS = "+" if ASCII_ONLY else "✓"
+
+
+class lines:
+    SW = "'--" if ASCII_ONLY else "└──"
+    SWL = "'---" if ASCII_ONLY else "└──╼"
+    NW = ".-" if ASCII_ONLY else "┌─"

@@ -50,6 +50,8 @@ from core.variables import (
     is_windows,
 )
 
+from core.config import TERMINAL, TERM_CMD_TYPE
+
 from core.methods.list import (
     listsplit,
     listperm,
@@ -822,11 +824,20 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         )
                         return
                 else:
+                    listener_cmd = ["konsole", "--hold", "-e"]
+                    if TERMINAL:
+                        listener_cmd = TERMINAL
+                    cmd_str = [
+                        "nc -lvp {}".format(variables.LISTENPORT),
+                    ]
+                    cmd_list = ["nc", "-lvp", variables.LISTENPORT]
+                    if TERM_CMD_TYPE.strip().upper() == "STRING":
+                        listener_cmd += cmd_str
+                    else:
+                        listener_cmd += cmd_list
                     with open(os.devnull, "w") as DEVNULL:
                         subprocess.Popen(
-                            ["konsole", "--hold", "-e", "nc -lvp {}".format(
-                                variables.LISTENPORT
-                            )],
+                            listener_cmd,
                             close_fds=True,
                             stdout=DEVNULL,
                             stderr=subprocess.STDOUT,

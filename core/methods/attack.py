@@ -30,7 +30,7 @@ import os
 
 import core.variables as vars
 
-from core.colors import color
+from core.colors import color, SUCCESS, FAIL, lines
 
 from core.variables import (
     payloadlist,
@@ -776,8 +776,8 @@ def sheller(
     )
 
     if technique != 6:
-        sys.stdout.write("{0} └── Looking for Log File:{1}".format(
-            color.RD, color.END
+        sys.stdout.write("{0} {2} Looking for Log File:{1}".format(
+            color.RD, color.END, lines.SW,
         ))
         for candidate in files:
             for i in paylist:
@@ -848,8 +848,11 @@ def sheller(
                     d += 1
                     if found:
                         sys.stdout.write(
-                            "{0}   ✓{2}|{1}\n".format(
-                                color.O, color.END, color.END + color.RD
+                            "{0}   {3}{2}|{1}\n".format(
+                                color.O,
+                                color.END,
+                                color.END + color.RD,
+                                SUCCESS,
                             )
                         )
                         file = candidate
@@ -1240,8 +1243,8 @@ def sheller(
                     if app:
                         app.processEvents()
     else:
-        sys.stdout.write("{0}   ✗{2}|{1}\n".format(
-            color.O, color.END, color.END + color.RD
+        sys.stdout.write("{0}   {3}{2}|{1}\n".format(
+            color.O, color.END, color.END + color.RD, FAIL
         ))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\n")
@@ -1279,8 +1282,8 @@ def show_status(gui, timeout=False, exception=None):
     print status of RCE probe
     """
     if exception:
-        sys.stdout.write("{0}  ✗!{2}|{1}\n".format(
-            color.O, color.END, color.END + color.RD
+        sys.stdout.write("{0}  {3}!{2}|{1}\n".format(
+            color.O, color.END, color.END + color.RD, FAIL
         ))
         print("{0}Exception:{1}\n{2}".format(
             color.O, color.END, exception
@@ -1295,8 +1298,11 @@ def show_status(gui, timeout=False, exception=None):
         if check_conn():
             # single threaded server times out when
             # shell drops
-            sys.stdout.write("{0}   ✓{2}|{1}\n".format(
-                color.O, color.END, color.END + color.RD
+            sys.stdout.write("{0}   {3}{2}|{1}\n".format(
+                color.O,
+                color.END,
+                color.END + color.RD,
+                SUCCESS,
             ))
             notify(
                 "Reverse Shell arrived on Port {}.".format(
@@ -1308,16 +1314,19 @@ def show_status(gui, timeout=False, exception=None):
                 gui.show()
             raise ShellPopException("pwnd")
         else:
-            sys.stdout.write("{0}  ✗!{2}|{1}\n".format(
-                color.O, color.END, color.END + color.RD
+            sys.stdout.write("{0}  {3}!{2}|{1}\n".format(
+                color.O, color.END, color.END + color.RD, FAIL
             ))
             if gui:
                 gui.crawlerResultDisplay.append(" FAIL\nTimeout\n")
                 gui.show()
         return
     if check_conn():
-        sys.stdout.write("{0}   ✓{2}|{1}\n".format(
-            color.O, color.END, color.END + color.RD
+        sys.stdout.write("{0}   {3}{2}|{1}\n".format(
+            color.O,
+            color.END,
+            color.END + color.RD,
+            SUCCESS,
         ))
         notify(
             "Reverse Shell arrived on Port {}.".format(
@@ -1329,8 +1338,8 @@ def show_status(gui, timeout=False, exception=None):
             gui.show()
         raise ShellPopException("pwnd")
     else:
-        sys.stdout.write("{0}   ✗{2}|{1}\n".format(
-            color.O, color.END, color.END + color.RD
+        sys.stdout.write("{0}   {3}{2}|{1}\n".format(
+            color.O, color.END, color.END + color.RD, FAIL
         ))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\n")
