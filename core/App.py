@@ -824,7 +824,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         )
                         return
                 else:
-                    listener_cmd = ["konsole", "--hold", "-e"]
+                    listener_cmd = ["konsole", "-e"]
                     if TERMINAL:
                         listener_cmd = TERMINAL
                     cmd_str = [

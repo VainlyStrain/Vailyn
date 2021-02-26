@@ -736,7 +736,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
                         "before starting the attack.",
                     )
             else:
-                listener_cmd = ["konsole", "--hold", "-e"]
+                listener_cmd = ["konsole", "-e"]
                 if TERMINAL:
                     listener_cmd = TERMINAL
                 cmd_str = [
