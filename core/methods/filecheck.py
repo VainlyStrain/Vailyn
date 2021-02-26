@@ -38,7 +38,7 @@ def filecheck(r, con2, con3, payload, post=False):
 
     # /etc/passwd regex to reduce false positives
     # in default configuration
-    passwd_regex = "\w*:\w*:[0-9]*:[0-9]*:\w*:"
+    passwd_regex = "[\w]+:[\w\s\*]+:[0-9\-]+:[0-9\-]+:[\w\s]+:[\w\s/]+:[\w/]+"
 
     if variables.lfi:
         for wrapper in variables.phase1_wrappers:
@@ -80,17 +80,14 @@ def filecheck(r, con2, con3, payload, post=False):
 
     # does attack page match /etc/passwd, and does it really
     # come from our inclusion/traversal?
-    reg_check = (
-        re.findall(passwd_regex, txt)
-        and not re.findall(passwd_regex, str(con2).lower())
-    )
+    match_con = re.findall(passwd_regex, conn)
+    match_con2 = re.findall(passwd_regex, str(con2).lower())
+    reg_check = match_con and match_con != match_con2
 
     if con3:
         check = check and con3 != con
-        reg_check = (
-            reg_check
-            and not re.findall(passwd_regex, str(con3).lower())
-        )
+        match_con3 = re.findall(passwd_regex, str(con3).lower())
+        reg_check = reg_check and match_con != match_con3
 
     if "etc/passwd" in payload and REGEX_CHECK:
         check = check and reg_check
