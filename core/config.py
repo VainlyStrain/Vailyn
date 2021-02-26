@@ -39,7 +39,18 @@ TERMINAL = [
 ]
 
 # How does the terminal accept commands?
-# TERM -e "command -with args" --> STRING
-# TERM -e command -with args --> LIST
-# (default: STRING for konsole)
+# TERM -e "command -with args" --> "STRING"
+# TERM -e command -with args --> "LIST"
+# (default: "STRING" for konsole)
 TERM_CMD_TYPE = "STRING"
+
+# Do not flush the terminal when starting
+# the tool (default: False)
+NO_CLEAR = False
+
+# override the default payload used by the
+# RCE module (reverse shell over /dev/tcp)
+# if you want to spawn a reverse shell, use
+# the placeholders <IP> and <PORT>
+# (default: "")
+PAYLOAD_OVERRIDE = ""

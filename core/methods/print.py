@@ -26,7 +26,7 @@ import random
 from core.colors import color
 from core.variables import CLEAR_CMD, payloadlist, rce
 from core.methods.list import listsplit
-from core.config import ASCII_ONLY
+from core.config import ASCII_ONLY, NO_CLEAR
 
 
 def banner():
@@ -57,7 +57,8 @@ def banner():
     )
 
     banners = [stealth]
-    subprocess.run(CLEAR_CMD)
+    if not NO_CLEAR:
+        subprocess.run(CLEAR_CMD)
 
     if not ASCII_ONLY:
         print(banners[random.randrange(0, len(banners))])

