@@ -17,7 +17,10 @@ _____, ___
 └──╼ VainlyStrain
 """
 
-"""configuration of optional Vailyn features"""
+
+"""
+Optional Vailyn Features
+"""
 
 # Display desktop notifications on certain events.
 # Set False to disable. (default: True)
@@ -27,10 +30,23 @@ DESKTOP_NOTIFY = True
 # if that file is used. (default: True)
 REGEX_CHECK = True
 
+
+"""
+Output Options
+"""
+
 # Only use ASCII characters in output
 # (default: False)
 ASCII_ONLY = False
 
+# Do not flush the terminal when starting
+# the tool (default: False)
+NO_CLEAR = False
+
+
+"""
+RCE Module Configuration
+"""
 # Use a custom terminal emulator for the
 # netcat listener. Use subprocess syntax and
 # leave command value blank. (default: [])
@@ -43,10 +59,6 @@ TERMINAL = [
 # TERM -e command -with args --> "LIST"
 # (default: "STRING" for konsole)
 TERM_CMD_TYPE = "STRING"
-
-# Do not flush the terminal when starting
-# the tool (default: False)
-NO_CLEAR = False
 
 # override the default payload used by the
 # RCE module (reverse shell over /dev/tcp)
