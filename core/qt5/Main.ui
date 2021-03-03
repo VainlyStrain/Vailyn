@@ -1410,6 +1410,9 @@ QProgressBar::chunk {
                         <property name="enabled">
                          <bool>false</bool>
                         </property>
+                        <property name="toolTip">
+                         <string>Destination file to replace on server. (include traversal payload)</string>
+                        </property>
                         <property name="placeholderText">
                          <string>Server Destination</string>
                         </property>
@@ -1694,6 +1697,9 @@ QProgressBar::chunk {
                        <widget class="QLineEdit" name="implantSrcEdit">
                         <property name="enabled">
                          <bool>false</bool>
+                        </property>
+                        <property name="toolTip">
+                         <string>Path of source file to upload.</string>
                         </property>
                         <property name="placeholderText">
                          <string>Source File</string>
