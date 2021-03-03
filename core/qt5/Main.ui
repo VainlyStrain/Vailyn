@@ -1374,6 +1374,9 @@ QProgressBar::chunk {
                       </item>
                       <item row="9" column="0">
                        <widget class="QCheckBox" name="implantBox">
+                        <property name="toolTip">
+                         <string>Replace a file on the server by upload path traversal.</string>
+                        </property>
                         <property name="text">
                          <string>Implant</string>
                         </property>
