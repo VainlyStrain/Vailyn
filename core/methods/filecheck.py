@@ -27,11 +27,23 @@ from urllib.parse import unquote
 from core.config import REGEX_CHECK
 
 
-def filecheck(r, con2, con3, payload, post=False):
+def filecheck(r, con2, con3, payload, post=False, impcheck=None):
     """
     This method filters out false positives.
     It does so by many different checks, listed in the
     README.md file.
+    """
+    if impcheck:
+        check = filecheck_implant(r, impcheck, post=post)
+    else:
+        check = filecheck_leak(r, con2, con3, payload, post=post)
+
+    return check
+
+
+def filecheck_leak(r, con2, con3, payload, post=False):
+    """
+    Filecheck module for including files.
     """
     con = r.content
     conn = str(con).lower()
@@ -92,4 +104,16 @@ def filecheck(r, con2, con3, payload, post=False):
     if "etc/passwd" in payload and REGEX_CHECK:
         check = check and reg_check
 
+    return check
+
+
+def filecheck_implant(r, src, post=False):
+    """
+    Filecheck module for replacing files.
+    """
+    if r.encoding is None:
+        r.encoding = "utf-8"
+
+    # TODO: verify & strengthen me
+    check = src in r.text
     return check
