@@ -67,7 +67,7 @@ mandatory:
   -a INT, --attack INT  {0}Attack type (int, 1-5, or A){1}
 
   {2}  A{1}{3}|{1}  Spider (all)     {2}  2{1}{3}|{1}  Path             {2}  5{1}{3}|{1}  POST Data, json
-  {2}  P{1}{3}|{1}  {5}Spider (partial){1} {2}  3{1}{3}|{1}  Cookie
+  {2}  P{1}{3}|{1}  Spider (partial) {2}  3{1}{3}|{1}  Cookie
   {2}  1{1}{3}|{1}  Query Parameter  {2}  4{1}{3}|{1}  POST Data, plain{1}
 
   -p2 TP P1 P2, --phase2 TP P1 P2
@@ -95,7 +95,7 @@ develop:
   --debug               {0}Display every path tried, even 404s.{1}
   --version             {0}Print program version and exit.{1}
   --notmain             {0}Avoid notify2 crash in subprocess call.{1}""".format(
-            color.RC, color.END, color.O, color.RD, table, color.CURSIVE,
+            color.RC, color.END, color.O, color.RD, table,
         ))
 
 

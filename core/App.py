@@ -453,7 +453,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             variables.revshell = False
             self.portEdit.setEnabled(False)
             self.ipEdit.setEnabled(False)
-        
+
         if self.shellBox.isChecked() or self.implantBox.isChecked():
             self.fileDictDisplay.setEnabled(False)
             self.dirDictDisplay.setEnabled(False)
@@ -518,11 +518,16 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         variables.precise = self.preciseFlag.isChecked()
         variables.lfi = self.lfiBox.isChecked()
 
-        if (self.victim == "" or (self.attack == 1 and self.param == "")
-                or ((self.filedict == "" or self.dirdict == "")
-                    and self.attack != 0 and not self.nosploit
-                    and not self.shellBox.isChecked())
-                    and not self.implantBox.isChecked()):
+        if (
+            self.victim == ""
+            or (self.attack == 1 and self.param == "")
+            or (
+                (self.filedict == "" or self.dirdict == "")
+                and self.attack != 0 and not self.nosploit
+                and not self.shellBox.isChecked()
+                and not self.implantBox.isChecked()
+            )
+        ):
             self.show_error("Mandatory argument(s) not specified.")
             return
 
