@@ -19,8 +19,8 @@ _____, ___
 
 
 from core.colors import color, lines
-from core.methods.print import listprint, print_techniques
-from core.variables import rce
+from core.methods.print import listprint, print_techniques, print_vectors
+from core.variables import rce, vector_count
 from core.variables import payloadlist as totalpayloadlist
 
 
@@ -123,3 +123,40 @@ def select_techniques():
             pass
 
     return techniques
+
+
+def select_vectors():
+    """
+    select vectors to use in custom crawler mode
+    @return:
+        selected vectors, as a list
+    """
+    vectors = []
+    invalid = True
+    print_vectors()
+    while invalid:
+        selected = input(
+            "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
+                color.RD, color.END, color.CURSIVE, color.O,
+                " Vectors", "Select indices\n", "comma-separated",
+                lines.SW,
+            )
+        )
+        try:
+            error = False
+            if selected.strip().lower() == "a":
+                return list(range(1, vector_count + 1))
+            for i in selected.split(","):
+                vector = int(i.strip())
+                if vector not in range(1, vector_count + 1):
+                    error = True
+                elif vector not in vectors:
+                    vectors.append(vector)
+            if vectors and not error:
+                invalid = False
+            else:
+                vectors = []
+        except Exception:
+            pass
+
+    return vectors

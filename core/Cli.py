@@ -50,7 +50,11 @@ from core.methods.list import (
     listperm,
     gensplit,
 )
-from core.methods.select import select, select_techniques
+from core.methods.select import (
+    select,
+    select_techniques,
+    select_vectors,
+)
 from core.methods.tree import create_tree
 from core.methods.attack import (
     phase1, phase2, lfi_rce, reset_counter
@@ -97,9 +101,13 @@ def cli_main(parser, opt, args, shell=True) -> int:
     """
 
     # are all globally required arguments given?
-    if (not (opt["victim"] and opt["attack"]) or
-            (args.attack.strip().lower() != "a" and not opt["phase2"]
-                and not opt["nosploit"])):
+    if (
+        not (opt["victim"] and opt["attack"]) or (
+            args.attack.strip().lower() not in ["a", "p"]
+            and not opt["phase2"]
+            and not opt["nosploit"]
+        )
+    ):
         parser.print_help()
         sys.exit(
             "\n" + color.R + "[-]" + color.END + color.BOLD
@@ -143,6 +151,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
     cookie = None
     post_data = ""
     selected = ""
+
+    crawler_all = True
 
     if opt["tor"]:
         enable_tor()
@@ -273,13 +283,25 @@ def cli_main(parser, opt, args, shell=True) -> int:
             color.END + color.RD,
             color.END,
         ))
+    elif args.attack.strip().lower() == "p":
+        """
+        custom crawler mode (scan every URL belonging to target with
+        selected vectors)
+        """
+        print("{0}[Vailyn]{1}  ALL{2}|{3}".format(
+            color.RD,
+            color.END + color.RB,
+            color.END + color.RD,
+            color.END,
+        ))
+        crawler_all = False
     else:
         # attack index not in range
         parser.print_help()
         sys.exit(
             "\n" + color.R + "[-]" + color.END + color.BOLD
             + " Invalid/missing params" + color.END + "\n" + color.RD
-            + "[HINT]" + color.END + " -a needs to be in [1..5, A]"
+            + "[HINT]" + color.END + " -a needs to be in [1..5, A, P]"
         )
 
     try:
@@ -306,6 +328,10 @@ def cli_main(parser, opt, args, shell=True) -> int:
             ))
 
     if args.attack == 0:
+        time_slept = 0.0
+        crawler_list = []
+        if not crawler_all:
+            crawler_list = select_vectors()
         crawlcookies = {}
         arjunjar = None
         # load authentication cookie for crawling
@@ -327,6 +353,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         start_time = time.time()
 
         time.sleep(0.5)
+        time_slept += 0.5
         ua = variables.user_agents[
             random.randrange(0, len(variables.user_agents))
         ]
@@ -356,129 +383,156 @@ def cli_main(parser, opt, args, shell=True) -> int:
         linkTable.inner_heading_row_border = False
         print("{}{}{}".format(color.RD, linkTable.table, color.END))
 
-        """
-        Crawler Phase 1:
-         - enumerate all HTTP GET parameters for each link
-         - uses Arjun
-         - save in spider-phase1.json
-        """
-        time.sleep(1)
-        print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Param Enum (GET)\n".format(
-            color.RD, color.END, lines.SWL, lines.NW,
-        ))
+        queryattack = {}
+        if crawler_all or 1 in crawler_list:
+            """
+            Crawler Phase 1:
+            - enumerate all HTTP GET parameters for each link
+            - uses Arjun
+            - save in spider-phase1.json
+            """
+            time.sleep(1)
+            print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} {4}\n".format(
+                color.RD, color.END, lines.SWL, lines.NW, "Param Enum (GET)",
+            ))
 
-        time.sleep(0.5)
-        site_params = crawler_arjun(cookie_header=cookie_header)
-        time.sleep(1)
+            time.sleep(0.5)
+            site_params = crawler_arjun(cookie_header=cookie_header)
+            time.sleep(1)
 
-        """
-        Crawler Phase 2:
-         - attack every GET parameter of every page
-         - save in spider-phase2.json
-        """
-        print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Query Analysis\n".format(
-            color.RD, color.END, lines.SWL, lines.NW,
-        ))
+            """
+            Crawler Phase 2:
+            - attack every GET parameter of every page
+            - save in spider-phase2.json
+            """
+            print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} {4}\n".format(
+                color.RD, color.END, lines.SWL, lines.NW, "Query Analysis",
+            ))
 
-        time.sleep(0.5)
-        queryattack = crawler_query(
-            site_params, victim2, verbose, checkdepth, vlnfile, cookie_header,
-        )
+            time.sleep(0.5)
+            queryattack = crawler_query(
+                site_params, victim2, verbose, checkdepth,
+                vlnfile, cookie_header,
+            )
+            time_slept += 3.0
 
-        """
-        Crawler Phase 3:
-         - attack every page using the path vector
-         - duplicate paths only attacked once
-         - save in spider-phase3.json
-        """
-        time.sleep(1)
-        print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Path Analysis\n".format(
-            color.RD, color.END, lines.SWL, lines.NW,
-        ))
+        pathattack = {}
+        if crawler_all or 2 in crawler_list:
+            """
+            Crawler Phase 3:
+            - attack every page using the path vector
+            - duplicate paths only attacked once
+            - save in spider-phase3.json
+            """
+            time.sleep(1)
+            print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} {4}\n".format(
+                color.RD, color.END, lines.SWL, lines.NW, "Path Analysis",
+            ))
 
-        time.sleep(0.5)
-        pathattack = crawler_path(
-            victim2, verbose, checkdepth, vlnfile, cookie_header,
-        )
+            time.sleep(0.5)
+            pathattack = crawler_path(
+                victim2, verbose, checkdepth, vlnfile, cookie_header,
+            )
+            time_slept += 1.5
 
-        """
-        Crawler Phase 4:
-         - attack every cookie found
-         - save in spider-phase4.json
-        """
-        time.sleep(1)
-        print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} Cookie Analysis\n".format(
-            color.RD, color.END, lines.SWL, lines.NW,
-        ))
+        cookieattack = {}
+        if crawler_all or 3 in crawler_list:
+            """
+            Crawler Phase 4:
+            - attack every cookie found
+            - save in spider-phase4.json
+            """
+            time.sleep(1)
+            print("\n{0}{3}[{1}Vailyn{0}]{1}\n{0}{2}{1} {4}\n".format(
+                color.RD, color.END, lines.SWL, lines.NW,
+                "Cookie Analysis",
+            ))
 
-        time.sleep(0.5)
-        cookieattack = crawler_cookie(
-            victim2, verbose, checkdepth, vlnfile, cookie_header,
-        )
+            time.sleep(0.5)
+            cookieattack = crawler_cookie(
+                victim2, verbose, checkdepth, vlnfile, cookie_header,
+            )
+            time_slept += 1.5
 
-        """
-        Crawler Phase 5:
-         - enumerate all HTTP POST parameters (plain) for each link
-         - uses Arjun
-         - save in spider-phase5.json
-        """
-        time.sleep(1)
-        print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} Param Enum {2}\n".format(
-            color.RD, color.END, "(POST, plain)", lines.SWL, lines.NW,
-        ))
+        post_attack = {}
+        if crawler_all or 4 in crawler_list:
+            """
+            Crawler Phase 5:
+            - enumerate all HTTP POST parameters (plain) for each link
+            - uses Arjun
+            - save in spider-phase5.json
+            """
+            time.sleep(1)
+            print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} {2}\n".format(
+                color.RD, color.END, "Param Enum (POST, plain)",
+                lines.SWL, lines.NW,
+            ))
 
-        time.sleep(0.5)
-        post_params = crawler_arjun(post=True, cookie_header=cookie_header)
-        time.sleep(1)
+            time.sleep(0.5)
+            post_params = crawler_arjun(
+                post=True, cookie_header=cookie_header,
+            )
+            time.sleep(1)
 
-        """
-        Crawler Phase 6:
-         - attack every POST parameter of every page
-         - save in spider-phase6.json
-        """
-        print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} {2}\n".format(
-            color.RD, color.END, "POST Analysis, plain",
-            lines.SWL, lines.NW,
-        ))
+            """
+            Crawler Phase 6:
+            - attack every POST parameter of every page
+            - save in spider-phase6.json
+            """
+            print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} {2}\n".format(
+                color.RD, color.END, "POST Analysis, plain",
+                lines.SWL, lines.NW,
+            ))
 
-        time.sleep(0.5)
-        post_attack = crawler_post_plain(
-            post_params, victim2, verbose, checkdepth, vlnfile, cookie_header,
-        )
+            time.sleep(0.5)
+            post_attack = crawler_post_plain(
+                post_params, victim2, verbose, checkdepth,
+                vlnfile, cookie_header,
+            )
+            time_slept += 3.0
 
-        """
-        Crawler Phase 7:
-         - enumerate all HTTP POST parameters (JSON) for each link
-         - uses Arjun
-         - save in spider-phase7.json
-        """
-        time.sleep(1)
-        print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} Param Enum {2}\n".format(
-            color.RD, color.END, "(POST, json)", lines.SWL, lines.NW,
-        ))
+        json_attack = {}
+        if crawler_all or 5 in crawler_list:
+            """
+            Crawler Phase 7:
+            - enumerate all HTTP POST parameters (JSON) for each link
+            - uses Arjun
+            - save in spider-phase7.json
+            """
+            time.sleep(1)
+            print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} {2}\n".format(
+                color.RD, color.END, "Param Enum (POST, json)",
+                lines.SWL, lines.NW,
+            ))
 
-        time.sleep(0.5)
-        json_params = crawler_arjun(jpost=True, cookie_header=cookie_header)
-        time.sleep(1)
+            time.sleep(0.5)
+            json_params = crawler_arjun(
+                jpost=True, cookie_header=cookie_header,
+            )
+            time.sleep(1)
 
-        """
-        Crawler Phase 8:
-         - attack every POST parameter of every page
-         - save in spider-phase8.json
-        """
-        print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} {2}\n".format(
-            color.RD, color.END, "POST Analysis, json",
-            lines.SWL, lines.NW,
-        ))
+            """
+            Crawler Phase 8:
+            - attack every POST parameter of every page
+            - save in spider-phase8.json
+            """
+            print("\n{0}{4}[{1}Vailyn{0}]{1}\n{0}{3}{1} {2}\n".format(
+                color.RD, color.END, "POST Analysis, json",
+                lines.SWL, lines.NW,
+            ))
 
-        time.sleep(0.5)
-        json_attack = crawler_post_json(
-            json_params, victim2, verbose, checkdepth, vlnfile, cookie_header,
-        )
+            time.sleep(0.5)
+            json_attack = crawler_post_json(
+                json_params, victim2, verbose, checkdepth,
+                vlnfile, cookie_header,
+            )
+            time_slept += 3.0
+
         time.sleep(2.5)
+        time_slept += 2.5
 
         end_time = time.time()
-        duration = end_time - start_time - 15.0  # remove known sleeps
+        duration = end_time - start_time - time_slept  # remove sleeps
         readable_time = datetime.timedelta(seconds=duration)
 
         """

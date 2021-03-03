@@ -48,6 +48,7 @@ from core.variables import (
     cachedir,
     rce,
     is_windows,
+    vector_count,
 )
 
 from core.config import TERMINAL, TERM_CMD_TYPE
@@ -71,6 +72,7 @@ from core.methods.loot import set_date
 from core.methods.print import (
     listprint2,
     print_techniques_gui,
+    print_vectors_gui,
 )
 from core.methods.crawler import (
     UrlSpider,
@@ -329,6 +331,55 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             return None
         return self.selection
 
+    def gui_select_vectors(self):
+        def intern():
+            self.vectorStr = self.vectorDialog.payloadSelectInput.text()
+            error = False
+            if self.vectorStr.strip().lower() == "a":
+                self.selection = list(range(1, vector_count + 1))
+                self.vectorDialog.close()
+            else:
+                try:
+                    for i in self.vectorStr.split(","):
+                        vector = int(i.strip())
+                        if vector not in range(1, vector_count + 1):
+                            error = True
+                        elif vector not in self.selection:
+                            self.selection.append(vector)
+                    if error:
+                        self.show_error("Invalid Selection string.")
+                        self.selection = []
+                    else:
+                        self.vectorDialog.close()
+                except Exception:
+                    self.show_error("Invalid Selection string.")
+
+        self.pacancel = False
+
+        def cancel():
+            self.pacancel = True
+            self.vectorDialog.close()
+
+        vstr = ""
+        vstr = vstr + print_vectors_gui()
+
+        self.vectorStr = ""
+        self.vectorDialog = QtWidgets.QDialog()
+        uic.loadUi("core/qt5/Payload.ui", self.vectorDialog)
+        self.vectorDialog.payloadBrowser.setText(vstr)
+        self.vectorDialog.selectLabel.setText("Select Vectors")
+        self.vectorDialog.selectPayloadButton.clicked.connect(intern)
+        self.vectorDialog.cancelButton.clicked.connect(cancel)
+        self.vectorDialog.payloadSelectInput.returnPressed.connect(
+            self.vectorDialog.selectPayloadButton.click
+        )
+        self.selection = []
+        self.vectorDialog.exec_()
+
+        if self.pacancel:
+            return None
+        return self.selection
+
     def show_payloads(self, payloadlist, nullbytelist, wrapperlist):
         # filter duplicates
         payloadlist = list(set(payloadlist))
@@ -580,6 +631,11 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         self.treeView.clear()
 
         if self.attack == 0:
+            crawler_list = self.gui_select_vectors()
+            if not crawler_list:
+                self.show_error("Error occurred with selection.")
+                return
+            time_slept = 0.0
             self.crawlerResultDisplay.setText("")
             variables.viclist.clear()
             crawlcookies = {}
@@ -644,84 +700,93 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                         "[+] Found {}".format(line.strip()),
                     )
 
-            self.crawlerResultDisplay.append(
-                "\n[Info] Arjun GET Scan started.",
-            )
-            self.timeLabel.setText("Active Phase: 1")
-            self.show()
-            app.processEvents()
-            site_params = crawler_arjun(cookie_header=self.auth_cookie)
+            if 1 in crawler_list:
+                self.crawlerResultDisplay.append(
+                    "\n[Info] Arjun GET Scan started.",
+                )
+                self.timeLabel.setText("Active Phase: Arjun")
+                self.show()
+                app.processEvents()
+                site_params = crawler_arjun(cookie_header=self.auth_cookie)
 
-            self.timeLabel.setText("Active Phase: 2")
-            self.show()
-            app.processEvents()
-            crawler_query(
-                site_params, self.victim2, variables.verbose,
-                self.depth1, self.vlnfile, self.auth_cookie, gui=self,
-            )
-            time.sleep(1)
+                self.timeLabel.setText("Active Phase: Query")
+                self.show()
+                app.processEvents()
+                crawler_query(
+                    site_params, self.victim2, variables.verbose,
+                    self.depth1, self.vlnfile, self.auth_cookie, gui=self,
+                )
+                time.sleep(1)
+                time_slept += 1.0
 
-            self.timeLabel.setText("Active Phase: 3")
-            self.show()
-            app.processEvents()
-            crawler_path(
-                self.victim2, variables.verbose, self.depth1,
-                self.vlnfile, self.auth_cookie, gui=self,
-            )
-            time.sleep(1)
+            if 2 in crawler_list:
+                self.timeLabel.setText("Active Phase: Path")
+                self.show()
+                app.processEvents()
+                crawler_path(
+                    self.victim2, variables.verbose, self.depth1,
+                    self.vlnfile, self.auth_cookie, gui=self,
+                )
+                time.sleep(1)
+                time_slept += 1.0
 
-            self.timeLabel.setText("Active Phase: 4")
-            self.show()
-            app.processEvents()
-            crawler_cookie(
-                self.victim2, variables.verbose, self.depth1,
-                self.vlnfile, self.auth_cookie, gui=self,
-            )
-            time.sleep(1)
+            if 3 in crawler_list:
+                self.timeLabel.setText("Active Phase: Cookie")
+                self.show()
+                app.processEvents()
+                crawler_cookie(
+                    self.victim2, variables.verbose, self.depth1,
+                    self.vlnfile, self.auth_cookie, gui=self,
+                )
+                time.sleep(1)
+                time_slept += 1.0
 
-            self.crawlerResultDisplay.append(
-                "\n[Info] Arjun POST Plain Scan started.",
-            )
-            self.timeLabel.setText("Active Phase: 5")
-            self.show()
-            app.processEvents()
-            post_params = crawler_arjun(
-                post=True,
-                cookie_header=self.auth_cookie,
-            )
+            if 4 in crawler_list:
+                self.crawlerResultDisplay.append(
+                    "\n[Info] Arjun POST Plain Scan started.",
+                )
+                self.timeLabel.setText("Active Phase: Arjun")
+                self.show()
+                app.processEvents()
+                post_params = crawler_arjun(
+                    post=True,
+                    cookie_header=self.auth_cookie,
+                )
 
-            self.timeLabel.setText("Active Phase: 6")
-            self.show()
-            app.processEvents()
-            crawler_post_plain(
-                post_params, self.victim2, variables.verbose,
-                self.depth1, self.vlnfile, self.auth_cookie,
-                gui=self,
-            )
-            time.sleep(1)
+                self.timeLabel.setText("Active Phase: POST, plain")
+                self.show()
+                app.processEvents()
+                crawler_post_plain(
+                    post_params, self.victim2, variables.verbose,
+                    self.depth1, self.vlnfile, self.auth_cookie,
+                    gui=self,
+                )
+                time.sleep(1)
+                time_slept += 1
 
-            self.crawlerResultDisplay.append(
-                "\n[Info] Arjun POST JSON Scan started.",
-            )
-            self.timeLabel.setText("Active Phase: 7")
-            self.show()
-            app.processEvents()
-            json_params = crawler_arjun(
-                jpost=True,
-                cookie_header=self.auth_cookie,
-            )
+            if 5 in crawler_list:
+                self.crawlerResultDisplay.append(
+                    "\n[Info] Arjun POST JSON Scan started.",
+                )
+                self.timeLabel.setText("Active Phase: Arjun")
+                self.show()
+                app.processEvents()
+                json_params = crawler_arjun(
+                    jpost=True,
+                    cookie_header=self.auth_cookie,
+                )
 
-            self.timeLabel.setText("Active Phase: 8")
-            self.show()
-            app.processEvents()
-            crawler_post_json(
-                json_params, self.victim2, variables.verbose,
-                self.depth1, self.vlnfile, self.auth_cookie,
-                gui=self,
-            )
+                self.timeLabel.setText("Active Phase: POST, json")
+                self.show()
+                app.processEvents()
+                crawler_post_json(
+                    json_params, self.victim2, variables.verbose,
+                    self.depth1, self.vlnfile, self.auth_cookie,
+                    gui=self,
+                )
 
             ending_time = time.time()
-            total_time = ending_time - starting_time
+            total_time = ending_time - starting_time - time_slept
             atime = datetime.timedelta(seconds=total_time)
             self.timeLabel.setText(
                 "Done after " + str(atime) + ".",

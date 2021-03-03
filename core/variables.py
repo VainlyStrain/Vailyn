@@ -79,7 +79,7 @@ phase1_wrappers = [
     "PhP://FilTer/convert.iconv.utf-8.utf-16/resource=",
 ]
 
-wrapperCount = 4
+wrapper_count = 4
 
 rce = {
     1: "/proc/self/environ Poisoning",
@@ -87,8 +87,18 @@ rce = {
     3: "SSH Log Poisoning",
     4: "Poisoned Mail to Web User",
     5: "Nginx Access Log Poisoning",
-    6: "Wrapper RCE ({} submodules)".format(wrapperCount)
+    6: "Wrapper RCE ({} submodules)".format(wrapper_count)
 }
+
+vector_dict = {
+    1: "Query Parameter",
+    2: "Path",
+    3: "Cookie",
+    4: "POST Data, plain",
+    5: "POST Data, json",
+}
+
+vector_count = len(vector_dict.keys())
 
 # Tor variables
 tor = False

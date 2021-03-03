@@ -24,7 +24,7 @@ import math
 import random
 
 from core.colors import color
-from core.variables import CLEAR_CMD, payloadlist, rce
+from core.variables import CLEAR_CMD, payloadlist, rce, vector_dict
 from core.methods.list import listsplit
 from core.config import ASCII_ONLY, NO_CLEAR
 
@@ -165,6 +165,33 @@ def print_techniques():
         tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(
             color.RB, i, color.END + color.RD, color.END,
             rce[i], max(3, len(str(len(items)))),
+        )
+        tmplist.append(tmpstr)
+    maxlen = len(max(tmplist, key=len))
+    termwidth = shutil.get_terminal_size()[0]
+    column_number = math.floor(len(items) / (termwidth / ((maxlen + 4))))
+    columns = listsplit(tmplist, column_number)
+    listdisplay(columns, maxlen, False, False)
+
+
+def print_vectors_gui():
+    vstr = ""
+    items = vector_dict.keys()
+    for i in items:
+        vstr = vstr + "{0}{1:{5}}{2}|{3}  {4}\n".format(
+            "", i, "", "", vector_dict[i], max(3, len(str(len(items)))),
+        )
+    vstr = vstr + "{0}{1}|{2}  {3}\n".format("", "  A", "", "ALL")
+    return vstr
+
+
+def print_vectors():
+    tmplist = []
+    items = vector_dict.keys()
+    for i in items:
+        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(
+            color.RB, i, color.END + color.RD, color.END,
+            vector_dict[i], max(3, len(str(len(items)))),
         )
         tmplist.append(tmpstr)
     maxlen = len(max(tmplist, key=len))
