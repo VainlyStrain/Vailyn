@@ -1,6 +1,6 @@
 # core requirements
 treelib
-requests
+requests>=2.25.1
 argparse
 colorama
 
@@ -8,7 +8,7 @@ colorama
 PyQt5
 
 # Crawler Requirements
-scrapy
+scrapy>=2.4.1
 twisted
 PyDispatcher
 terminaltables
