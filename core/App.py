@@ -142,6 +142,7 @@ class VailynApp(QtWidgets.QDialog):
         self.dirDictButton.clicked.connect(self.get_dir_dictionary)
         self.checkCookieButton.clicked.connect(self.validate_auth_cookie)
         self.shellBox.stateChanged.connect(self.handle_shell)
+        self.implantBox.stateChanged.connect(self.handle_implant)
         self.nosploitBox.stateChanged.connect(self.handle_phase2)
         self.attackOption.currentIndexChanged.connect(self.update_attack)
         self.attack = self.attackOption.currentIndex()
@@ -396,6 +397,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             variables.revshell = True
             self.portEdit.setEnabled(True)
             self.ipEdit.setEnabled(True)
+            self.implantBox.setChecked(False)
         else:
             variables.revshell = False
             self.portEdit.setEnabled(False)
@@ -408,6 +410,19 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             self.stackedWidget.setCurrentWidget(self.crawlerOutput)
         else:
             self.stackedWidget.setCurrentWidget(self.fileTree)
+        self.show()
+
+    def handle_implant(self):
+        if self.implantBox.isChecked():
+            variables.implant = True
+            self.implantSrcEdit.setEnabled(True)
+            self.implantDestEdit.setEnabled(True)
+            self.shellBox.setChecked(False)
+        else:
+            variables.implant = False
+            self.implantSrcEdit.setEnabled(False)
+            self.implantDestEdit.setEnabled(False)
+
         self.show()
 
     def handle_phase2(self):
@@ -433,7 +448,8 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
         if (self.victim == "" or (self.attack == 1 and self.param == "")
                 or ((self.filedict == "" or self.dirdict == "")
                     and self.attack != 0 and not self.nosploit
-                    and not self.shellBox.isChecked())):
+                    and not self.shellBox.isChecked())
+                    and not self.implantBox.isChecked()):
             self.show_error("Mandatory argument(s) not specified.")
             return
 
@@ -810,6 +826,7 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
         if attackphase:
             reset_counter()
+            starting_time = time.time()
             self.timeLabel.setText("Active Phase: 2")
             if variables.revshell:
                 if is_windows:
@@ -857,6 +874,9 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
                     )
                 except ShellPopException:
                     pass
+            elif variables.implant:
+                # TODO
+                self.show_error("Not implemented.")
             else:
                 set_date()
                 # equally split dictionary entries to all threads

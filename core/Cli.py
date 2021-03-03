@@ -769,6 +769,11 @@ def cli_main(parser, opt, args, shell=True) -> int:
                 )
             except ShellPopException:
                 pass
+        elif variables.implant:
+            # TODO
+            print("{}[{}] {}not implemented.{}".format(
+                color.RD, FAIL, color.END + color.CURSIVE, color.END,
+            ))
         else:
             """
             Leak Module - LFI & Path Traversal.

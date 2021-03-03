@@ -128,11 +128,16 @@ def listdisplay(gen, maxlen, nb, wrappers):
     print()
 
 
-def table_print(oldTuple):
-    newTuple = []
-    for elem in oldTuple:
-        newTuple.append("{}{}{}".format(color.END, elem, color.RD))
-    return tuple(newTuple)
+def table_print(old_tuple, not_implemented=False):
+    new_tuple = []
+    for elem in old_tuple:
+        if not_implemented:
+            new_tuple.append("{}{}{}".format(
+                color.END + color.CURSIVE, elem, color.END + color.RD,
+            ))
+        else:
+            new_tuple.append("{}{}{}".format(color.END, elem, color.RD))
+    return tuple(new_tuple)
 
 
 def table_entry_print(entry):

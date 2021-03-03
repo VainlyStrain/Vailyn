@@ -93,7 +93,8 @@ if __name__ == "__main__":
 
         if opt["phase2"]:
             typ, ip, port = args.phase2
-            if typ == "rce":
+            if typ == "inject":
+                # RCE for LFI
                 variables.revshell = True
                 variables.LISTENIP = ip
                 variables.LISTENPORT = port
@@ -102,6 +103,10 @@ if __name__ == "__main__":
                     and variables.LISTENIP is not None
                     and variables.LISTENPORT is not None
                 )
+            elif typ == "implant":
+                # RCE for path traversal
+                variables.implant = True
+                assert variables.implant
 
         if opt["app"]:
             app_main()

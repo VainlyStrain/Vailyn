@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>450</width>
-    <height>630</height>
+    <height>650</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1342,66 +1342,6 @@ QProgressBar::chunk {
                       <property name="rightMargin">
                        <number>0</number>
                       </property>
-                      <item row="1" column="5">
-                       <widget class="QPushButton" name="newTargetButton">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the attack target.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="text">
-                         <string>New</string>
-                        </property>
-                        <property name="icon">
-                         <iconset>
-                          <normaloff>icons/add.svg</normaloff>icons/add.svg</iconset>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="8" column="0">
-                       <widget class="QCheckBox" name="shellBox">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Try to obtain a reverse shell by Log Poisoning &amp; wrappers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="text">
-                         <string>PHP Shell</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="7" column="0">
-                       <widget class="QLabel" name="advancedLabel">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
-                        <property name="text">
-                         <string>Advanced</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="9" column="1" colspan="5">
-                       <widget class="QLineEdit" name="vlnFileInput">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;File to be checked for during Vulnerability Analysis.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="text">
-                         <string>etc/passwd</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="12" column="0">
-                       <widget class="QLabel" name="label_7">
-                        <property name="text">
-                         <string>Cookie: </string>
-                        </property>
-                       </widget>
-                      </item>
                       <item row="2" column="5">
                        <widget class="QPushButton" name="infoButton">
                         <property name="toolTip">
@@ -1416,55 +1356,26 @@ QProgressBar::chunk {
                         </property>
                        </widget>
                       </item>
-                      <item row="8" column="1" colspan="3">
-                       <widget class="QLineEdit" name="ipEdit">
-                        <property name="enabled">
-                         <bool>false</bool>
-                        </property>
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IP listening for a reverse shell.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="placeholderText">
-                         <string>Listening IP</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="12" column="1" colspan="4">
-                       <widget class="QLineEdit" name="cookieDisplay">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Authentication Cookie in HTTP Header format (omit Cookie:)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="placeholderText">
-                         <string>Cookie File</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="0">
-                       <widget class="QLabel" name="victimTitle">
+                      <item row="1" column="1" colspan="4">
+                       <widget class="QLabel" name="victimDisplayLabel">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
-                        <property name="font">
-                         <font>
-                          <weight>75</weight>
-                          <bold>true</bold>
-                         </font>
-                        </property>
                         <property name="text">
-                         <string>Victim: </string>
+                         <string>none</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
                         </property>
                        </widget>
                       </item>
-                      <item row="11" column="2">
-                       <widget class="QLineEdit" name="phase2Depth">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lookup Depth of the Exploitation phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="placeholderText">
-                         <string>2nd</string>
+                      <item row="9" column="0">
+                       <widget class="QCheckBox" name="implantBox">
+                        <property name="text">
+                         <string>Implant</string>
                         </property>
                        </widget>
                       </item>
@@ -1487,126 +1398,20 @@ QProgressBar::chunk {
                         </property>
                        </widget>
                       </item>
-                      <item row="11" column="0">
-                       <widget class="QLabel" name="label_6">
-                        <property name="text">
-                         <string>Depths: </string>
+                      <item row="4" column="1" colspan="5">
+                       <widget class="QLineEdit" name="fileDictDisplay">
+                        <property name="placeholderText">
+                         <string>File Dictionary Path</string>
                         </property>
                        </widget>
                       </item>
-                      <item row="11" column="5">
-                       <widget class="QLineEdit" name="timeoutEdit">
-                        <property name="maximumSize">
-                         <size>
-                          <width>105</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Timeout for requests. Will also trigger the --stable flag in Arjun.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <item row="9" column="4" colspan="2">
+                       <widget class="QLineEdit" name="implantDestEdit">
+                        <property name="enabled">
+                         <bool>false</bool>
                         </property>
                         <property name="placeholderText">
-                         <string>seconds</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="1" colspan="4">
-                       <widget class="QLabel" name="victimDisplayLabel">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="text">
-                         <string>none</string>
-                        </property>
-                        <property name="wordWrap">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="10" column="2">
-                       <spacer name="verticalSpacer_5">
-                        <property name="orientation">
-                         <enum>Qt::Vertical</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>20</width>
-                          <height>40</height>
-                         </size>
-                        </property>
-                       </spacer>
-                      </item>
-                      <item row="4" column="0">
-                       <widget class="QPushButton" name="fileDictButton">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify a dictionary containing filenames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="text">
-                         <string>Choose</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="5" column="1" colspan="5">
-                       <widget class="QLineEdit" name="dirDictDisplay">
-                        <property name="placeholderText">
-                         <string>Directory Dictionary</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="11" column="4">
-                       <widget class="QLabel" name="label_2">
-                        <property name="text">
-                         <string>Timeout: </string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="2" column="1" colspan="4">
-                       <widget class="QComboBox" name="attackOption"/>
-                      </item>
-                      <item row="12" column="5">
-                       <widget class="QPushButton" name="checkCookieButton">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Verify Cookie Syntax&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="text">
-                         <string>Check</string>
-                        </property>
-                        <property name="icon">
-                         <iconset>
-                          <normaloff>icons/apply.svg</normaloff>icons/apply.svg</iconset>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="3" column="1">
-                       <spacer name="verticalSpacer_4">
-                        <property name="orientation">
-                         <enum>Qt::Vertical</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>20</width>
-                          <height>40</height>
-                         </size>
-                        </property>
-                       </spacer>
-                      </item>
-                      <item row="5" column="0">
-                       <widget class="QPushButton" name="dirDictButton">
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify a dictionary containing directory names.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="text">
-                         <string>Choose</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="9" column="0">
-                       <widget class="QLabel" name="label_5">
-                        <property name="text">
-                         <string>Phase 1 File</string>
+                         <string>Server Destination</string>
                         </property>
                        </widget>
                       </item>
@@ -1623,13 +1428,198 @@ QProgressBar::chunk {
                         </property>
                        </spacer>
                       </item>
-                      <item row="11" column="3">
-                       <widget class="QLineEdit" name="phase2PLevel">
+                      <item row="3" column="1">
+                       <spacer name="verticalSpacer_4">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item row="15" column="0">
+                       <widget class="QLabel" name="label_7">
+                        <property name="text">
+                         <string>Cookie: </string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="1" colspan="5">
+                       <widget class="QLineEdit" name="dirDictDisplay">
+                        <property name="placeholderText">
+                         <string>Directory Dictionary</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="5" column="0">
+                       <widget class="QPushButton" name="dirDictButton">
                         <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Permutation Level of the Exploitation Phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify a dictionary containing directory names.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="text">
+                         <string>Choose</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="10" column="0">
+                       <spacer name="verticalSpacer_8">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item row="15" column="5">
+                       <widget class="QPushButton" name="checkCookieButton">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Verify Cookie Syntax&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="text">
+                         <string>Check</string>
+                        </property>
+                        <property name="icon">
+                         <iconset>
+                          <normaloff>icons/apply.svg</normaloff>icons/apply.svg</iconset>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="14" column="5">
+                       <widget class="QLineEdit" name="timeoutEdit">
+                        <property name="maximumSize">
+                         <size>
+                          <width>105</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Timeout for requests. Will also trigger the --stable flag in Arjun.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="placeholderText">
-                         <string>PL</string>
+                         <string>seconds</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="14" column="1">
+                       <widget class="QLineEdit" name="phase1Depth">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lookup Depth of the Vulnerability Analysis phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="placeholderText">
+                         <string>1st</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="8" column="1" colspan="3">
+                       <widget class="QLineEdit" name="ipEdit">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;IP listening for a reverse shell.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="placeholderText">
+                         <string>Listening IP</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="2" column="1" colspan="4">
+                       <widget class="QComboBox" name="attackOption"/>
+                      </item>
+                      <item row="13" column="2">
+                       <spacer name="verticalSpacer_5">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item row="0" column="1">
+                       <spacer name="verticalSpacer_7">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>20</width>
+                          <height>40</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item row="14" column="2">
+                       <widget class="QLineEdit" name="phase2Depth">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lookup Depth of the Exploitation phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="placeholderText">
+                         <string>2nd</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="8" column="0">
+                       <widget class="QCheckBox" name="shellBox">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Try to obtain a reverse shell by Log Poisoning &amp; wrappers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="text">
+                         <string>PHP Shell</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="victimTitle">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>75</weight>
+                          <bold>true</bold>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>Victim: </string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="12" column="0">
+                       <widget class="QLabel" name="label_5">
+                        <property name="text">
+                         <string>Phase 1 File</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="4" column="0">
+                       <widget class="QPushButton" name="fileDictButton">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify a dictionary containing filenames.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="text">
+                         <string>Choose</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="14" column="0">
+                       <widget class="QLabel" name="label_6">
+                        <property name="text">
+                         <string>Depths: </string>
                         </property>
                        </widget>
                       </item>
@@ -1649,35 +1639,108 @@ QProgressBar::chunk {
                         </property>
                        </widget>
                       </item>
-                      <item row="11" column="1">
-                       <widget class="QLineEdit" name="phase1Depth">
+                      <item row="1" column="5">
+                       <widget class="QPushButton" name="newTargetButton">
                         <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lookup Depth of the Vulnerability Analysis phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the attack target.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
-                        <property name="placeholderText">
-                         <string>1st</string>
+                        <property name="text">
+                         <string>New</string>
                         </property>
-                       </widget>
-                      </item>
-                      <item row="4" column="1" colspan="5">
-                       <widget class="QLineEdit" name="fileDictDisplay">
-                        <property name="placeholderText">
-                         <string>File Dictionary Path</string>
+                        <property name="icon">
+                         <iconset>
+                          <normaloff>icons/add.svg</normaloff>icons/add.svg</iconset>
                         </property>
                        </widget>
                       </item>
-                      <item row="0" column="1">
-                       <spacer name="verticalSpacer_7">
-                        <property name="orientation">
-                         <enum>Qt::Vertical</enum>
+                      <item row="15" column="1" colspan="4">
+                       <widget class="QLineEdit" name="cookieDisplay">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Authentication Cookie in HTTP Header format (omit Cookie:)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>20</width>
-                          <height>40</height>
-                         </size>
+                        <property name="placeholderText">
+                         <string>Cookie File</string>
                         </property>
-                       </spacer>
+                       </widget>
+                      </item>
+                      <item row="12" column="1" colspan="5">
+                       <widget class="QLineEdit" name="vlnFileInput">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;File to be checked for during Vulnerability Analysis.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="text">
+                         <string>etc/passwd</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="14" column="3">
+                       <widget class="QLineEdit" name="phase2PLevel">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Permutation Level of the Exploitation Phase.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="placeholderText">
+                         <string>PL</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="14" column="4">
+                       <widget class="QLabel" name="label_2">
+                        <property name="text">
+                         <string>Timeout: </string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="9" column="1" colspan="3">
+                       <widget class="QLineEdit" name="implantSrcEdit">
+                        <property name="enabled">
+                         <bool>false</bool>
+                        </property>
+                        <property name="placeholderText">
+                         <string>Source File</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="7" column="1" colspan="4">
+                       <widget class="QLabel" name="phase2Label">
+                        <property name="text">
+                         <string>Alt. Phase 2</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="7" column="5">
+                       <widget class="QCheckBox" name="nosploitBox">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not exploit found vulnerabilities.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="text">
+                         <string>Nosploit</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="11" column="0" colspan="6">
+                       <widget class="QLabel" name="advancedLabel">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <weight>50</weight>
+                          <bold>false</bold>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>Advanced</string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignCenter</set>
+                        </property>
+                       </widget>
                       </item>
                      </layout>
                     </widget>
@@ -1761,24 +1824,27 @@ QProgressBar::chunk {
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="nosploitBox">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not exploit found vulnerabilities.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>NSp.</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="preciseFlag">
                 <property name="toolTip">
                  <string>Use exact depth in Phase 1, not a range.</string>
                 </property>
                 <property name="text">
-                 <string>Prcs.</string>
+                 <string>Precise</string>
                 </property>
                </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
               <item>
                <widget class="QPushButton" name="attackButton">

@@ -102,6 +102,9 @@ revshell = False
 LISTENIP = None
 LISTENPORT = None
 
+# additional RCE technique for path traversal
+implant = False
+
 # crawler list
 viclist = []
 
