@@ -402,6 +402,17 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             variables.revshell = False
             self.portEdit.setEnabled(False)
             self.ipEdit.setEnabled(False)
+        
+        if self.shellBox.isChecked() or self.implantBox.isChecked():
+            self.fileDictDisplay.setEnabled(False)
+            self.dirDictDisplay.setEnabled(False)
+            self.fileDictButton.setEnabled(False)
+            self.dirDictButton.setEnabled(False)
+        else:
+            self.fileDictDisplay.setEnabled(True)
+            self.dirDictDisplay.setEnabled(True)
+            self.fileDictButton.setEnabled(True)
+            self.dirDictButton.setEnabled(True)
 
         self.attack = self.attackOption.currentIndex()
         if self.shellBox.isChecked():
@@ -422,6 +433,17 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
             variables.implant = False
             self.implantSrcEdit.setEnabled(False)
             self.implantDestEdit.setEnabled(False)
+
+        if self.shellBox.isChecked() or self.implantBox.isChecked():
+            self.fileDictDisplay.setEnabled(False)
+            self.dirDictDisplay.setEnabled(False)
+            self.fileDictButton.setEnabled(False)
+            self.dirDictButton.setEnabled(False)
+        else:
+            self.fileDictDisplay.setEnabled(True)
+            self.dirDictDisplay.setEnabled(True)
+            self.fileDictButton.setEnabled(True)
+            self.dirDictButton.setEnabled(True)
 
         self.show()
 
