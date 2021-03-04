@@ -123,7 +123,9 @@ class VailynApp(QtWidgets.QDialog):
 
     unix = False
 
-    attack_index = 2
+    target_index = 0
+    attack_index = 1
+    option_index = 2
     status = ""
 
     firstiter = True
@@ -149,37 +151,44 @@ class VailynApp(QtWidgets.QDialog):
         self.attackOption.currentIndexChanged.connect(self.update_attack)
         self.attack = self.attackOption.currentIndex()
         self.treeView.setHeaderHidden(True)
-        self.textBrowser.setMarkdown("""
-```
-A phased, evasive Path Traversal + LFI scanning & exploitation tool in Python
-```
-
-#### Credits & Copyright
-
-> Vailyn: Copyright © <a href="https://github.com/VainlyStrain">VainlyStrain</a>
->
-> Arjun:  Copyright © <a href="https://github.com/s0md3v">s0md3v</a>
-
-#### Arjun Dependency
-
-Arjun is no longer distributed with Vailyn. Install its latest version via pip.
-
-#### Possible Issues
-
-Found some false positives/negatives (or want to point out other bugs/improvements): please leave an issue!
-        """)
-        if check_version():
-            self.status = "latest version"
-        else:
-            self.status = "update available"
-        self.versionLabel.setText("Vailyn {} : {}".format(
-            variables.e_version, self.status,
+        self.versionLabel.setText("Vailyn {}".format(
+            variables.e_version,
         ))
         self.stackedWidget.setCurrentWidget(self.fileTree)
-        self.exitButton.clicked.connect(self.close)
+        self.updateButton.clicked.connect(self.gui_check_update)
         self.smallQuitBtn.clicked.connect(self.close)
+        self.tabWidget.currentChanged.connect(self.update_title)
         self.update_attack()
         self.show()
+
+    def gui_check_update(self, initial=False):
+        if check_version():
+            self.status = "latest version"
+            if not initial:
+                self.show_info(
+                    "You are running the latest version of Vailyn."
+                )
+        else:
+            self.status = "update available"
+            if not initial:
+                self.show_info(
+                    "An update is available!"
+                )
+
+    def update_title(self):
+        index_map = {
+            self.target_index: "Vailyn",
+            self.attack_index: "Attack",
+            self.option_index: "Conf.",
+        }
+
+        title = "Vailyn"
+        try:
+            title = index_map[self.tabWidget.currentIndex()]
+        except KeyError:
+            print("[EXCEPTION] KeyError setting title!")
+
+        self.activeTitleLabel.setText(title)
 
     def update_attack(self):
         self.attack = self.attackOption.currentIndex()

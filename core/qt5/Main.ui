@@ -601,9 +601,12 @@
 color: #ffffff;
 }
 
+QTabWidget::pane { border: 0; }
+
 QTabWidget::tab-bar {
 background-color: #130e13;
 min-width: 21;
+alignment: center;
 } 
 
 QTabBar::tab {
@@ -612,34 +615,21 @@ background: #130e13; /*221922*/
 border-radius: 2px;
 spacing: 6;
 padding: 2px;
+margin-bottom: 1px;
 }
 
 QTabBar::tab:selected {
-border: 1px solid #221922;
-border-left-color: #130e13; 
-border-right-color: #4a3e4a; 
+border: 1px solid #4a3e4a; /*221922*/
+/*border-left-color: #130e13; */
+border-right-color: #221922; /*4a3e4a*/
 background: #221922;
 }
 QTabBar::tab:!selected {
-border: 1px solid #221922;
-border-left-color: #130e13; 
-border-right-color: #4a3e4a; 
+border: 1px solid #4a3e4a; /*221922*/
+/*border-left-color: #130e13; */
+border-right-color: #221922; /*4a3e4a*/
 background: #221922;
-}
-QTabBar::tab:first:!selected {
-border: 1px solid #130e13;
-border-right-color: #4a3e4a; 
-border-top-color: #4a3e4a; 
-border-bottom-color: #221922;
-border-top-left-radius: 0px;
-background: #221922;
-}
-QTabBar::tab:first:selected {
-border: 1px solid #4a3e4a;
-border-left-color: #130e13; 
-border-top-left-radius: 0px;
-border-bottom-color: #221922;
-background: #221922;
+margin-left: 2px;
 }
 
 QPushButton {
@@ -851,6 +841,24 @@ QProgressBar::chunk {
     </layout>
    </item>
    <item>
+    <widget class="QLabel" name="activeTitleLabel">
+     <property name="font">
+      <font>
+       <family>Passero One</family>
+       <pointsize>12</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Vailyn</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <property name="spacing">
       <number>10</number>
@@ -909,7 +917,7 @@ QProgressBar::chunk {
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="elideMode">
            <enum>Qt::ElideNone</enum>
@@ -918,112 +926,20 @@ QProgressBar::chunk {
            <bool>true</bool>
           </property>
           <property name="documentMode">
-           <bool>true</bool>
-          </property>
-          <property name="tabBarAutoHide">
            <bool>false</bool>
           </property>
-          <widget class="QWidget" name="titleTab">
-           <attribute name="icon">
-            <iconset>
-             <normaloff>icons/tid.png</normaloff>icons/tid.png</iconset>
-           </attribute>
-           <attribute name="title">
-            <string notr="true">Vailyn‹›</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_tab5">
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
-              <item>
-               <widget class="QLabel" name="infoLabel">
-                <property name="font">
-                 <font>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
-                </property>
-                <property name="text">
-                 <string>Info</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QTextBrowser" name="textBrowser">
-                <property name="openLinks">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_3">
-                <item>
-                 <widget class="QLabel" name="versionLabel">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="text">
-                   <string>Vailyn ‹› : ‹›</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_2">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="exitButton">
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Exit the application.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string>Close</string>
-                  </property>
-                  <property name="icon">
-                   <iconset>
-                    <normaloff>icons/window-close.svg</normaloff>icons/window-close.svg</iconset>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
+          <property name="tabBarAutoHide">
+           <bool>true</bool>
+          </property>
           <widget class="QWidget" name="configTab">
            <attribute name="icon">
             <iconset>
              <normaloff>icons/Vailyn.png</normaloff>icons/Vailyn.png</iconset>
            </attribute>
            <attribute name="title">
-            <string notr="true">Conf.</string>
+            <string notr="true">Main </string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_tab5">
-            <item>
-             <widget class="QLabel" name="mandatoryLabel">
-              <property name="font">
-               <font>
-                <family>Passero One</family>
-                <pointsize>12</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-                <underline>false</underline>
-               </font>
-              </property>
-              <property name="text">
-               <string>Vailyn</string>
-              </property>
-             </widget>
-            </item>
             <item>
              <layout class="QVBoxLayout" name="verticalLayout_7">
               <item>
@@ -1885,25 +1801,6 @@ background-color: #1d161d;
            </attribute>
            <layout class="QVBoxLayout" name="moduleLayout">
             <item>
-             <widget class="QLabel" name="treeLabel">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <weight>75</weight>
-                <bold>true</bold>
-               </font>
-              </property>
-              <property name="text">
-               <string>Attack</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QStackedWidget" name="stackedWidget">
               <property name="currentIndex">
                <number>1</number>
@@ -1991,6 +1888,320 @@ background-color: #1d161d;
                 </property>
                 <property name="value">
                  <number>0</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="optionTab">
+           <attribute name="icon">
+            <iconset>
+             <normaloff>icons/settings.png</normaloff>icons/settings.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string notr="true">Conf.</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_optTab">
+            <item>
+             <widget class="QGroupBox" name="settingsBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>120</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="palette">
+               <palette>
+                <active>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>255</red>
+                    <green>255</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Button">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>29</red>
+                    <green>22</green>
+                    <blue>29</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>255</red>
+                    <green>255</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="ButtonText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>255</red>
+                    <green>255</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Base">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>29</red>
+                    <green>22</green>
+                    <blue>29</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Window">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>29</red>
+                    <green>22</green>
+                    <blue>29</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="NoBrush">
+                   <color alpha="128">
+                    <red>255</red>
+                    <green>255</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </active>
+                <inactive>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>255</red>
+                    <green>255</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Button">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>29</red>
+                    <green>22</green>
+                    <blue>29</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>255</red>
+                    <green>255</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="ButtonText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>255</red>
+                    <green>255</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Base">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>29</red>
+                    <green>22</green>
+                    <blue>29</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Window">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>29</red>
+                    <green>22</green>
+                    <blue>29</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="NoBrush">
+                   <color alpha="128">
+                    <red>255</red>
+                    <green>255</green>
+                    <blue>255</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </inactive>
+                <disabled>
+                 <colorrole role="WindowText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>91</red>
+                    <green>89</green>
+                    <blue>92</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Button">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>29</red>
+                    <green>22</green>
+                    <blue>29</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Text">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>98</red>
+                    <green>94</green>
+                    <blue>98</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="ButtonText">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>100</red>
+                    <green>95</green>
+                    <blue>101</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Base">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>29</red>
+                    <green>22</green>
+                    <blue>29</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="Window">
+                  <brush brushstyle="SolidPattern">
+                   <color alpha="255">
+                    <red>29</red>
+                    <green>22</green>
+                    <blue>29</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                 <colorrole role="PlaceholderText">
+                  <brush brushstyle="NoBrush">
+                   <color alpha="128">
+                    <red>239</red>
+                    <green>240</green>
+                    <blue>241</blue>
+                   </color>
+                  </brush>
+                 </colorrole>
+                </disabled>
+               </palette>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::ClickFocus</enum>
+              </property>
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
+              <property name="title">
+               <string/>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="flat">
+               <bool>false</bool>
+              </property>
+              <property name="checkable">
+               <bool>false</bool>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_9Dup">
+               <item>
+                <widget class="QWidget" name="gridWidgetDup" native="true">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <layout class="QGridLayout" name="optLayout" columnstretch="0">
+                  <property name="sizeConstraint">
+                   <enum>QLayout::SetDefaultConstraint</enum>
+                  </property>
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="versionLabel">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="text">
+                 <string>VERSION</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="updateButton">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check for updates.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Fetch</string>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>icons/settings.png</normaloff>icons/settings.png</iconset>
                 </property>
                </widget>
               </item>
