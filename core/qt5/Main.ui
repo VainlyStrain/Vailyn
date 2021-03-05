@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
+    <width>440</width>
     <height>650</height>
    </rect>
   </property>
@@ -601,7 +601,11 @@
 color: #ffffff;
 }
 
-QTabWidget::pane { border: 0; }
+QTabWidget::pane {
+    border: 0; 
+    position: absolute;
+    left: -0.7em;
+}
 
 QTabWidget::tab-bar {
 background-color: #130e13;
@@ -1170,7 +1174,7 @@ QProgressBar::chunk {
                    <bool>false</bool>
                   </property>
                   <property name="title">
-                   <string>Conf.</string>
+                   <string>Main</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -1864,6 +1868,9 @@ background-color: #1d161d;
              <layout class="QHBoxLayout" name="horizontalLayout">
               <item>
                <widget class="QLabel" name="timeLabel">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
                 <property name="minimumSize">
                  <size>
                   <width>100</width>
@@ -1871,7 +1878,7 @@ background-color: #1d161d;
                  </size>
                 </property>
                 <property name="text">
-                 <string/>
+                 <string>Attack State</string>
                 </property>
                </widget>
               </item>
