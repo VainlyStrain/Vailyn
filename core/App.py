@@ -130,6 +130,8 @@ class VailynApp(QtWidgets.QDialog):
 
     firstiter = True
 
+    last_phase2 = "leak"
+
     def __init__(self):
         super(VailynApp, self).__init__()
         uic.loadUi("core/qt5/Main.ui", self)  # Load the .ui file
@@ -510,8 +512,35 @@ class VailynApp(QtWidgets.QDialog):
     def handle_phase2(self):
         if self.nosploitBox.isChecked():
             self.nosploit = True
+            if self.shellBox.isChecked():
+                self.last_phase2 = "inject"
+                self.shellBox.setChecked(False)
+            elif self.implantBox.isChecked():
+                self.last_phase2 = "implant"
+                self.implantBox.setChecked(False)
+            else:
+                self.last_phase2 = "leak"
+            self.fileDictDisplay.setEnabled(False)
+            self.dirDictDisplay.setEnabled(False)
+            self.fileDictButton.setEnabled(False)
+            self.dirDictButton.setEnabled(False)
+            self.shellBox.setEnabled(False)
+            self.implantBox.setEnabled(False)
         else:
             self.nosploit = False
+            if self.last_phase2 == "inject":
+                self.shellBox.setChecked(True)
+            elif self.last_phase2 == "implant":
+                self.implantBox.setChecked(True)
+            else:
+                self.fileDictDisplay.setEnabled(True)
+                self.dirDictDisplay.setEnabled(True)
+                self.fileDictButton.setEnabled(True)
+                self.dirDictButton.setEnabled(True)
+            self.shellBox.setEnabled(True)
+            self.implantBox.setEnabled(True)
+
+        self.show()
 
     def attack_gui(self):
         self.foundfiles = [""]
