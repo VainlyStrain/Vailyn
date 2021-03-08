@@ -135,7 +135,7 @@ class VailynApp(QtWidgets.QDialog):
     def __init__(self):
         super(VailynApp, self).__init__()
         uic.loadUi("core/qt5/Main.ui", self)  # Load the .ui file
-        self.attackOption.addItem("scraper")
+        self.attackOption.addItem("spider")
         self.attackOption.addItem("query")
         self.attackOption.addItem("path")
         self.attackOption.addItem("cookie")
