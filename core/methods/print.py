@@ -70,10 +70,10 @@ def ldis():
     """
     if SHOW_WARNING:
         print(
-            """  {2}  {3}{1}{0}|{1}  The developers assume no liability and are not amenable for any
-  {2}  {3}{1}{0}|{1}  misuse or damage caused. Don't deploy illicitly or maliciously.
+            """  {2}  {3}{1}{0}|{4}  The developers assume no liability and are not amenable for any{1}
+  {2}  {3}{1}{0}|{4}  misuse or damage caused. Don't deploy illicitly or maliciously.{1}
             """.format(
-                color.RD, color.END, color.O, WRN,
+                color.RD, color.END, color.O, WRN, color.RBC,
             )
         )
 
