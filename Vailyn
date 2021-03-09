@@ -19,12 +19,14 @@ _____, ___
 
 
 from core.methods.version import check_version
-from core.methods.print import banner
-from core.methods.parser import opt_parser
+from core.methods.print import intro, ldis
+from core.methods.parser import parser
 
 from core.Cli import cli_main
 from core.App import app_main
-from core.config import DESKTOP_NOTIFY
+from core.config import (
+    DESKTOP_NOTIFY,
+)
 from core.colors import (
     color, FAIL, lines,
 )
@@ -41,7 +43,8 @@ if adv_li:
 
 
 # initialize colorama
-colorama.init()
+if not adv_li:
+    colorama.init()
 
 
 if __name__ == "__main__":
@@ -51,12 +54,15 @@ if __name__ == "__main__":
             setproctitle.setproctitle("Vailyn")
 
         # print Vailyn's ascii art
-        banner()
+        intro()
 
         # parse commandline arguments
-        parser = opt_parser()
+        parser = parser()
         opt = vars(parser.parse_args())
         args = parser.parse_args()
+
+        # print legal disclaimer
+        ldis()
 
         if opt["notmain"]:
             variables.adv_li = False

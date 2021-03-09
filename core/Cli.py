@@ -110,7 +110,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
     ):
         parser.print_help()
         sys.exit(
-            "\n" + color.R + "[-]" + color.END + color.BOLD
+            "\n" + color.R + f"[{FAIL}]" + color.END + color.BOLD
             + " Invalid/missing params" + color.END + "\n"
             + color.RD + "[HINT]" + color.END + " -v, -a and -p2 mandatory"
         )
@@ -168,7 +168,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         if not opt["param"]:
             parser.print_help()
             sys.exit(
-                "\n" + color.R + "[-]" + color.END + color.BOLD
+                "\n" + color.R + f"[{FAIL}]" + color.END + color.BOLD
                 + " Invalid/missing params" + color.END + "\n"
                 + color.RD + "[HINT]" + color.END
                 + " -p mandatory for -a 1"
@@ -209,7 +209,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         if not opt["param"]:
             parser.print_help()
             sys.exit(
-                "\n" + color.R + "[-]" + color.END
+                "\n" + color.R + f"[{FAIL}]" + color.END
                 + color.BOLD + " Invalid/missing params"
                 + color.END + "\n" + color.RD + "[HINT]" + color.END
                 + " -p mandatory for -a 4"
@@ -226,7 +226,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         if "INJECT" not in post_data:
             parser.print_help()
             sys.exit(
-                "\n" + color.R + "[-]" + color.END + color.BOLD
+                "\n" + color.R + f"[{FAIL}]" + color.END + color.BOLD
                 + " Invalid/missing params" + color.END + "\n"
                 + color.RD + "[HINT]" + color.END
                 + " -p needs to contain INJECT at injection point"
@@ -235,7 +235,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         if "=" not in post_data:
             parser.print_help()
             sys.exit(
-                "\n" + color.R + "[-]" + color.END + color.BOLD
+                "\n" + color.R + f"[{FAIL}]" + color.END + color.BOLD
                 + " Invalid/missing params" + color.END + "\n"
                 + color.RD + "[HINT]" + color.END
                 + " -p needs to be of form P1=V1&P2=V2 for"
@@ -250,7 +250,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         if not opt["param"]:
             parser.print_help()
             sys.exit(
-                "\n" + color.R + "[-]" + color.END
+                "\n" + color.R + f"[{FAIL}]" + color.END
                 + color.BOLD + " Invalid/missing params"
                 + color.END + "\n" + color.RD + "[HINT]" + color.END
                 + " -p mandatory for -a 5"
@@ -267,7 +267,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         if "INJECT" not in post_data:
             parser.print_help()
             sys.exit(
-                "\n" + color.R + "[-]" + color.END + color.BOLD
+                "\n" + color.R + f"[{FAIL}]" + color.END + color.BOLD
                 + " Invalid/missing params" + color.END + "\n"
                 + color.RD + "[HINT]" + color.END
                 + " -p needs to contain INJECT at injection point"
@@ -299,7 +299,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
         # attack index not in range
         parser.print_help()
         sys.exit(
-            "\n" + color.R + "[-]" + color.END + color.BOLD
+            "\n" + color.R + f"[{FAIL}]" + color.END + color.BOLD
             + " Invalid/missing params" + color.END + "\n" + color.RD
             + "[HINT]" + color.END + " -a needs to be in [1..5, A, P]"
         )

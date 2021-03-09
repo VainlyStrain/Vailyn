@@ -43,6 +43,10 @@ ASCII_ONLY = False
 # the tool (default: False)
 NO_CLEAR = False
 
+# show legal warning when starting the tool
+# (default: True)
+SHOW_WARNING = True
+
 
 """
 RCE Module Configuration

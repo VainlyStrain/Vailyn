@@ -23,13 +23,13 @@ import shutil
 import math
 import random
 
-from core.colors import color
+from core.colors import color, WRN
 from core.variables import CLEAR_CMD, payloadlist, rce, vector_dict
 from core.methods.list import listsplit
-from core.config import ASCII_ONLY, NO_CLEAR
+from core.config import ASCII_ONLY, NO_CLEAR, SHOW_WARNING
 
 
-def banner():
+def intro():
     """
     prints asciiart when starting the tool
     """
@@ -62,6 +62,20 @@ def banner():
 
     if not ASCII_ONLY:
         print(banners[random.randrange(0, len(banners))])
+
+
+def ldis():
+    """
+    print a legal warning on the terminal
+    """
+    if SHOW_WARNING:
+        print(
+            """  {2}  {3}{1}{0}|{1}  The developers assume no liability and are not amenable for any
+  {2}  {3}{1}{0}|{1}  misuse or damage caused. Don't deploy illicitly or maliciously.
+            """.format(
+                color.RD, color.END, color.O, WRN,
+            )
+        )
 
 
 """

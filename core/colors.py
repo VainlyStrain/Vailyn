@@ -37,6 +37,7 @@ class color:
 
 FAIL = "-" if ASCII_ONLY else "✗"
 SUCCESS = "+" if ASCII_ONLY else "✓"
+WRN = "!" if ASCII_ONLY else "✗"
 
 
 class lines:

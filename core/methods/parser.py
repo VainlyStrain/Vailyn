@@ -22,7 +22,7 @@ import sys
 import argparse
 import terminaltables
 
-from core.colors import color
+from core.colors import color, FAIL
 
 from core.config import ASCII_ONLY
 
@@ -37,7 +37,7 @@ class ArgumentParser(argparse.ArgumentParser):
         self.print_help()
         self.exit(
             2,
-            "\n" + color.R + "[-]" + color.END + color.BOLD
+            "\n" + color.R + f"[{FAIL}]" + color.END + color.BOLD
             + " Invalid/missing params" + color.END + "\n"
             + color.RD + "[HINT]" + color.END + " %s\n" % (message)
         )
@@ -120,7 +120,7 @@ class VainFormatter(argparse.RawDescriptionHelpFormatter):
             )
 
 
-def opt_parser():
+def parser():
     """
     constructs and returns an argument parser
     """
