@@ -1527,7 +1527,7 @@ QProgressBar::chunk {
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter Authentication Cookie in HTTP Header format (omit Cookie:)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="placeholderText">
-                         <string>Cookie File</string>
+                         <string>Cookie String</string>
                         </property>
                        </widget>
                       </item>
