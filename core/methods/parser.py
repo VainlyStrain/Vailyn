@@ -22,7 +22,7 @@ import sys
 import argparse
 import terminaltables
 
-from core.colors import color, FAIL
+from core.colors import color, FAIL, TRI
 
 from core.config import ASCII_ONLY
 
@@ -62,7 +62,7 @@ class ArgumentParser(argparse.ArgumentParser):
             ).table
         self.print_usage(sys.stderr)
         print("""
-mandatory:
+{5}mandatory{6}{1}
   -v VIC, --victim VIC  {0}Target to attack, part 1 [pre-payload]{1}
   -a INT, --attack INT  {0}Attack type (int, 1-5, or A){1}
 
@@ -75,7 +75,7 @@ mandatory:
 
 {3}{4}{1}
 
-additional:
+{5}additional{6}{1}
   -p PAM, --param PAM   {0}query parameter or POST data for --attack 1, 4, 5{1}
   -i F, --check F       {0}File to check for in Phase 1 (df: etc/passwd){1}
   -Pi VIC2, --vic2 VIC2 {0}Attack Target, part 2 [post-payload]{1}
@@ -91,11 +91,12 @@ additional:
   -P, --precise         {0}Use exact depth in Phase 1 (not a range){1}
   -A, --app             {0}Start Vailyn's Qt5 interface{1}
 
-develop:
+{5}develop{6}{1}
   --debug               {0}Display every path tried, even 404s.{1}
   --version             {0}Print program version and exit.{1}
   --notmain             {0}Avoid notify2 crash in subprocess call.{1}""".format(
             color.RC, color.END, color.O, color.RD, table,
+            color.RBB, TRI,
         ))
 
 

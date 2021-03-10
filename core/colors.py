@@ -34,12 +34,12 @@ class color:
     RD = "\033[0m\033[38;2;58;49;58m"
     R = "\033[1m\033[38;2;58;49;58m"
     RBC = "\033[0m\033[48;2;42;35;42m\033[1m\033[3m"
-    RDD = "\033[0m\033[38;2;42;35;42m"
+    RBB = "\033[0m\033[48;2;42;35;42m\033[1m"
 
 
 FAIL = "-" if ASCII_ONLY else "✗"
 SUCCESS = "+" if ASCII_ONLY else "✓"
-# WRN = "!" if ASCII_ONLY else "✗"
+TRI = ":" if ASCII_ONLY else u"\033[0m\033[38;2;42;35;42m\uE0B0"
 
 
 class lines:
