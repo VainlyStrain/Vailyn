@@ -23,7 +23,7 @@ import shutil
 import math
 import random
 
-from core.colors import color, WRN
+from core.colors import color, lines
 from core.variables import CLEAR_CMD, payloadlist, rce, vector_dict
 from core.methods.list import listsplit
 from core.config import ASCII_ONLY, NO_CLEAR, SHOW_WARNING
@@ -70,10 +70,13 @@ def ldis():
     """
     if SHOW_WARNING:
         print(
-            """  {2}  {3}{1}{0}|{4}  The developers assume no liability and are not amenable for any{1}
-  {2}  {3}{1}{0}|{4}  misuse or damage caused. Don't deploy illicitly or maliciously.{1}
+            """     {0}_________________________________________________{1}
+     {2}  The developers assume no liability and aren't  {1}
+     {2}  amenable for any misuse or damage caused. Do   {1}
+     {2}  not deploy illicitly or maliciously.           {1}
+     {0}{3}{1}
             """.format(
-                color.RD, color.END, color.O, WRN, color.RBC,
+                color.RD, color.END, color.RBC, lines.OL * 49,
             )
         )
 
