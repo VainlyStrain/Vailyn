@@ -21,14 +21,14 @@ _____, ___
 from itertools import permutations, islice
 
 
-def listsplit(l, n):
+def listsplit(inp_list, n):
     """
     equally split list for threads
     """
     if n == 0:
         n += 1
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
+    for i in range(0, len(inp_list), n):
+        yield inp_list[i:i + n]
 
 
 def listperm(sdirs, depth):

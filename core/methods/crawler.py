@@ -95,7 +95,7 @@ class UrlSpider(scrapy.Spider):
                 if variables.verbose:
                     print("{0}[INFO]{1} found{4}|{2} {3}".format(
                         color.RD,
-                        color.END + color.O,
+                        color.END + color.RB,
                         color.END,
                         link.url,
                         color.END + color.RD,
@@ -182,7 +182,7 @@ def crawler_query(
             sub = {}
             paramlist = vic_info["params"]
             print("\n{0}[INFO]{1} param{4}|{2} Attacking {3}".format(
-                color.RD, color.END + color.O,
+                color.RD, color.END + color.RB,
                 color.END, victim, color.END + color.RD
             ))
             if gui:
@@ -200,7 +200,7 @@ def crawler_query(
                     round(len(payloadlist)/processes),
                 )
                 print("\n{0}[INFO]{1} param{4}|{2} Using {3}\n".format(
-                    color.RD, color.END + color.O,
+                    color.RD, color.END + color.RB,
                     color.END, param, color.END + color.RD,
                 ))
                 if gui:
@@ -268,7 +268,7 @@ def crawler_path(victim2, verbose, depth, file, auth_cookie, gui=None):
             nullbytes = []
             wrappers = []
             print("\n{0}[INFO]{1} path{4}|{2} Attacking {3}\n".format(
-                color.RD, color.END + color.O,
+                color.RD, color.END + color.RB,
                 color.END, victim, color.END + color.RD,
             ))
             if gui:
@@ -327,7 +327,7 @@ def crawler_cookie(
             if len(cookie.keys()) < 1:
                 print("\n{0}[INFO]{1} cookie{4}|{2}{5}{3}.\n".format(
                     color.RD,
-                    color.END + color.O,
+                    color.END + color.RB,
                     color.END,
                     victim,
                     color.END + color.RD,
@@ -343,7 +343,7 @@ def crawler_cookie(
                     gui.show()
                 continue
             print("\n{0}[INFO]{1} cookie{4}|{2} Attacking {3}\n".format(
-                color.RD, color.END + color.O,
+                color.RD, color.END + color.RB,
                 color.END, victim, color.END + color.RD,
             ))
             if gui:
@@ -358,7 +358,7 @@ def crawler_cookie(
                 wrappers = []
                 if key in auth_cookie:
                     print("\n{0}[INFO]{1} cookie{4}|{2} {3}\n".format(
-                        color.RD, color.END + color.O,
+                        color.RD, color.END + color.RB,
                         color.END, "Skipping Auth Cookie",
                         color.END + color.RD,
                     ))
@@ -371,7 +371,7 @@ def crawler_cookie(
                         gui.show()
                     continue
                 print("\n{0}[INFO]{1} cookie{4}|{2} Using {3}\n".format(
-                    color.RD, color.END + color.O,
+                    color.RD, color.END + color.RB,
                     color.END, key, color.END + color.RD,
                 ))
                 if gui:
@@ -428,7 +428,7 @@ def crawler_post_plain(
             sub = {}
             paramlist = vic_info["params"]
             print("\n{0}[INFO]{1} post{4}|{2} Attacking {3}".format(
-                color.RD, color.END + color.O,
+                color.RD, color.END + color.RB,
                 color.END, victim, color.END + color.RD
             ))
             if gui:
@@ -442,7 +442,7 @@ def crawler_post_plain(
                 nullbytes = []
                 wrappers = []
                 print("\n{0}[INFO]{1} post{4}|{2} Using {3}\n".format(
-                    color.RD, color.END + color.O,
+                    color.RD, color.END + color.RB,
                     color.END, param, color.END + color.RD,
                 ))
                 if gui:
@@ -499,7 +499,7 @@ def crawler_post_json(
             sub = {}
             paramlist = vic_info["params"]
             print("\n{0}[INFO]{1} json{4}|{2} Attacking {3}".format(
-                color.RD, color.END + color.O,
+                color.RD, color.END + color.RB,
                 color.END, victim, color.END + color.RD
             ))
             if gui:
@@ -513,7 +513,7 @@ def crawler_post_json(
                 nullbytes = []
                 wrappers = []
                 print("\n{0}[INFO]{1} json{4}|{2} Using {3}\n".format(
-                    color.RD, color.END + color.O,
+                    color.RD, color.END + color.RB,
                     color.END, param, color.END + color.RD,
                 ))
                 if gui:

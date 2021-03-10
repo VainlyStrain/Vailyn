@@ -424,7 +424,7 @@ def phase1(
                             found_prefixes.append(w)
                         found = True
 
-                        out = color.RD + "[pl]" + color.END + color.O
+                        out = color.RD + "[pl]" + color.END + color.RB
                         out = out + " " + str(r.status_code) + color.END + " "
                         out = out + "{0:{1}}".format(i, maxlen) + " "
                         out = out + "{0:{1}}".format(nb, nullen) + " " + w
@@ -593,10 +593,11 @@ def phase2(
                                     vfound = True
                                     if attack in [1, 2]:
                                         print(
-                                            color.RD+"[INFO]" + color.O
+                                            color.RD+"[INFO]" + color.END
+                                            + color.RB
                                             + " leak" + color.END + "       "
                                             + color.RD + "statvs-code"
-                                            + color.END + "=" + color.O
+                                            + color.END + "=" + color.RB
                                             + str(r.status_code)
                                             + color.END + " " + color.R
                                             + "site" + color.END + "="
@@ -615,7 +616,7 @@ def phase2(
                                         if attack == 1:
                                             urls.append(
                                                 color.RD + "[pl]"
-                                                + color.END + color.O + " "
+                                                + color.END + color.RB + " "
                                                 + str(r.status_code)
                                                 + color.END + " "
                                                 + r.url.split(
@@ -628,17 +629,18 @@ def phase2(
                                             ).replace(url2, "")
                                             urls.append(
                                                 color.RD + "[pl]" + color.END
-                                                + color.O + " "
+                                                + color.RB + " "
                                                 + str(r.status_code)
                                                 + color.END + " " + vlnpath
                                             )
                                     elif attack == 3:
                                         s.cookies.set(selected, p)
                                         print(
-                                            color.RD + "[INFO]" + color.O
+                                            color.RD + "[INFO]" + color.END
+                                            + color.RB
                                             + " leak" + color.END + "       "
                                             + color.RD + "statvs-code"
-                                            + color.END + "=" + color.O
+                                            + color.END + "=" + color.RB
                                             + str(r.status_code) + color.END
                                             + " " + color.R + "cookie" +
                                             color.END + "=" + p
@@ -655,16 +657,17 @@ def phase2(
                                         found.append(dir + file)
                                         urls.append(
                                             color.RD + "[pl]" + color.END
-                                            + color.O + " "
+                                            + color.RB + " "
                                             + str(r.status_code)
                                             + color.END + " " + p
                                         )
                                     elif attack in [4, 5]:
                                         print(
-                                            color.RD + "[INFO]" + color.O
+                                            color.RD + "[INFO]" + color.END
+                                            + color.RB
                                             + " leak" + color.END + "       "
                                             + color.RD + "statvs-code"
-                                            + color.END + "=" + color.O
+                                            + color.END + "=" + color.RB
                                             + str(r.status_code) + color.END
                                             + " " + color.R + "post_data"
                                             + color.END + "=" + p
@@ -682,7 +685,7 @@ def phase2(
                                         found.append(dir + file)
                                         urls.append(
                                             color.RD + "[pl]" + color.END
-                                            + color.O + " "
+                                            + color.RB + " "
                                             + str(r.status_code)
                                             + color.END + " " + p
                                         )
@@ -723,8 +726,8 @@ def sheller(
     success = None
 
     print(
-        color.RD+"[Vailyn]" + color.O + " LFI" + color.END
-        + color.RD + "|" + color.END + "  "
+        color.RD+"[Vailyn]" + color.END + color.RB + " LFI"
+        + color.END + color.RD + "|" + color.END + "  "
         + color.RC + "" + color.END + color.RD
         + "" + str(rce[technique]) + color.END
     )
@@ -851,7 +854,7 @@ def sheller(
                     if found:
                         sys.stdout.write(
                             "{0}   {3}{2}|{1}\n".format(
-                                color.O,
+                                color.RB,
                                 color.END,
                                 color.END + color.RD,
                                 SUCCESS,
@@ -1250,7 +1253,7 @@ def sheller(
                         app.processEvents()
     else:
         sys.stdout.write("{0}   {3}{2}|{1}\n".format(
-            color.O, color.END, color.END + color.RD, FAIL
+            color.RB, color.END, color.END + color.RD, FAIL
         ))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\n")
@@ -1289,10 +1292,10 @@ def show_status(gui, timeout=False, exception=None):
     """
     if exception:
         sys.stdout.write("{0}  {3}!{2}|{1}\n".format(
-            color.O, color.END, color.END + color.RD, FAIL
+            color.RB, color.END, color.END + color.RD, FAIL
         ))
         print("{0}Exception:{1}\n{2}".format(
-            color.O, color.END, exception
+            color.RB, color.END, exception
         ))
         if gui:
             gui.crawlerResultDisplay.append(
@@ -1305,7 +1308,7 @@ def show_status(gui, timeout=False, exception=None):
             # single threaded server times out when
             # shell drops
             sys.stdout.write("{0}   {3}{2}|{1}\n".format(
-                color.O,
+                color.RB,
                 color.END,
                 color.END + color.RD,
                 SUCCESS,
@@ -1321,7 +1324,7 @@ def show_status(gui, timeout=False, exception=None):
             raise ShellPopException("pwnd")
         else:
             sys.stdout.write("{0}  {3}!{2}|{1}\n".format(
-                color.O, color.END, color.END + color.RD, FAIL
+                color.RB, color.END, color.END + color.RD, FAIL
             ))
             if gui:
                 gui.crawlerResultDisplay.append(" FAIL\nTimeout\n")
@@ -1329,7 +1332,7 @@ def show_status(gui, timeout=False, exception=None):
         return
     if check_conn():
         sys.stdout.write("{0}   {3}{2}|{1}\n".format(
-            color.O,
+            color.RB,
             color.END,
             color.END + color.RD,
             SUCCESS,
@@ -1345,7 +1348,7 @@ def show_status(gui, timeout=False, exception=None):
         raise ShellPopException("pwnd")
     else:
         sys.stdout.write("{0}   {3}{2}|{1}\n".format(
-            color.O, color.END, color.END + color.RD, FAIL
+            color.RB, color.END, color.END + color.RD, FAIL
         ))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\n")

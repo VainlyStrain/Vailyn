@@ -90,7 +90,7 @@ else:
 
 # initialize file tree
 filetree = treelib.Tree()
-filetree.create_node(color.O + "/" + color.END + color.RD, "root")
+filetree.create_node(color.RB + "/" + color.END + color.RD, "root")
 
 
 def cli_main(parser, opt, args, shell=True) -> int:
@@ -324,7 +324,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
     if variables.tor:
         print("\n{0} [TOR]{1}{6} IP{1}{0}|{1}{5} {2} {1}{4}>{1} {3}".format(
                 color.RD, color.END, variables.initip, variables.torip,
-                color.BOLD, color.CURSIVE, color.O,
+                color.BOLD, color.CURSIVE, color.RB,
             ))
 
     if args.attack == 0:
@@ -657,7 +657,7 @@ def cli_main(parser, opt, args, shell=True) -> int:
             and os.path.exists(cachedir + targetcache + "wrappers.cache")):
         choice = input(
             "{0}[?]{1}{2} Cache{1}{0}|{1} Load from".format(
-                color.RD, color.END, color.O,
+                color.RD, color.END, color.RB,
             )
             + " previous attack?\n{0} {2}{1}".format(
                 color.RD, color.END, lines.SW,

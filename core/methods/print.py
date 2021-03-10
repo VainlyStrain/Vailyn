@@ -52,7 +52,7 @@ def intro():
         color.CURSIVE,
         color.END + color.RD,
         color.RD,
-        color.END + color.O,
+        color.END + color.RB,
         color.END,
     )
 

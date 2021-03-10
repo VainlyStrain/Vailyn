@@ -104,6 +104,6 @@ def download(url, file, attack, s, cookie=None, post=None):
     loot.close()
     print("{}[LOOT]{} {}".format(
         color.RD,
-        color.END + color.O + color.CURSIVE,
+        color.END + color.RB + color.CURSIVE,
         file + color.END
     ))

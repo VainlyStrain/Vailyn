@@ -36,7 +36,7 @@ def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
         print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1}".format(
             color.RD,
             color.END,
-            color.O,
+            color.RB,
             len(payloadlist),
             len(str(len(totalpayloadlist))),
         ) + " Operative nullbytes:")
@@ -44,7 +44,7 @@ def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
         print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1}".format(
             color.RD,
             color.END,
-            color.O,
+            color.RB,
             len(payloadlist),
             len(str(len(totalpayloadlist))),
         ) + " Operative PHP wrappers:")
@@ -52,7 +52,7 @@ def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
         print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1}".format(
             color.RD,
             color.END,
-            color.O,
+            color.RB,
             len(payloadlist),
             len(str(len(totalpayloadlist))),
         ) + " Operative payloads:")
@@ -63,8 +63,8 @@ def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
         if not nosploit:
             payloads = input(
                 "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
-                    color.RD, color.END, color.CURSIVE, color.O,
-                    " Payloads", "Select indices\n", "comma-separated",
+                    color.RD, color.END, color.CURSIVE, color.RB,
+                    " Payloads", " Select indices\n", "comma-separated",
                     lines.SW,
                 )
             )
@@ -100,8 +100,8 @@ def select_techniques():
     while invalid:
         selected = input(
             "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
-                color.RD, color.END, color.CURSIVE, color.O,
-                " Techniques", "Select indices\n", "comma-separated",
+                color.RD, color.END, color.CURSIVE, color.RB,
+                " Techniques", " Select indices\n", "comma-separated",
                 lines.SW,
             )
         )
@@ -137,8 +137,8 @@ def select_vectors():
     while invalid:
         selected = input(
             "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
-                color.RD, color.END, color.CURSIVE, color.O,
-                " Vectors", "Select indices\n", "comma-separated",
+                color.RD, color.END, color.CURSIVE, color.RB,
+                " Vectors", " Select indices\n", "comma-separated",
                 lines.SW,
             )
         )

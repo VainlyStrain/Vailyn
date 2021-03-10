@@ -44,7 +44,7 @@ def replace_colors(ntag):
     """
     tag = ntag.replace(color.RD, "")
     tag = tag.replace(color.END, "")
-    tag = tag.replace(color.O, "")
+    tag = tag.replace(color.RB, "")
     tag = tag.replace(color.CURSIVE, "")
     tag = tag.replace(color.BOLD, "")
 
