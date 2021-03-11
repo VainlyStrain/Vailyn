@@ -33,28 +33,31 @@ def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
     # filter duplicates
     payloadlist = list(set(payloadlist))
     if nullbytes:
-        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1}".format(
+        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}{5}{1}".format(
             color.RD,
             color.END,
             color.RB,
             len(payloadlist),
             len(str(len(totalpayloadlist))),
+            lines.VL,
         ) + " Operative nullbytes:")
     elif wrappers:
-        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1}".format(
+        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}{5}{1}".format(
             color.RD,
             color.END,
             color.RB,
             len(payloadlist),
             len(str(len(totalpayloadlist))),
+            lines.VL,
         ) + " Operative PHP wrappers:")
     else:
-        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}|{1}".format(
+        print("\n{0}[+]{1}{2} {3:{4}}{1}{0}{5}{1}".format(
             color.RD,
             color.END,
             color.RB,
             len(payloadlist),
             len(str(len(totalpayloadlist))),
+            lines.VL,
         ) + " Operative payloads:")
 
     listprint(payloadlist, nullbytes, wrappers)
@@ -62,10 +65,10 @@ def select(payloadlist, nullbytes=False, wrappers=False, nosploit=False):
     while invalid:
         if not nosploit:
             payloads = input(
-                "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
+                "{0}[?]{1}{3}{4}{1}{0}{8}{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
                     color.RD, color.END, color.CURSIVE, color.RB,
                     " Payloads", " Select indices\n", "comma-separated",
-                    lines.SW,
+                    lines.SW, lines.VL,
                 )
             )
             try:
@@ -99,10 +102,10 @@ def select_techniques():
     print_techniques()
     while invalid:
         selected = input(
-            "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
+            "{0}[?]{1}{3}{4}{1}{0}{8}{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
                 color.RD, color.END, color.CURSIVE, color.RB,
                 " Techniques", " Select indices\n", "comma-separated",
-                lines.SW,
+                lines.SW, lines.VL,
             )
         )
         try:
@@ -136,10 +139,10 @@ def select_vectors():
     print_vectors()
     while invalid:
         selected = input(
-            "{0}[?]{1}{3}{4}{1}{0}|{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
+            "{0}[?]{1}{3}{4}{1}{0}{8}{1}{5}{0} {7}{1} {2}{6}{1} :> ".format(
                 color.RD, color.END, color.CURSIVE, color.RB,
                 " Vectors", " Select indices\n", "comma-separated",
-                lines.SW,
+                lines.SW, lines.VL,
             )
         )
         try:

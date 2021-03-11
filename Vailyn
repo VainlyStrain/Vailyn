@@ -120,8 +120,9 @@ if __name__ == "__main__":
             cli_main(parser, opt, args)
 
     except KeyboardInterrupt:
-        print("\n\n{0}[INFO]{2}{1}  {3}{2}{0}|{2}".format(
+        print("\n\n{0}[INFO]{2}{1}  {3}{2}{0}{4}{2}".format(
             color.RD, color.RB, color.END, FAIL,
+            lines.VL,
         ))
 
         print("{0} {2} Alvida!{1}\n".format(

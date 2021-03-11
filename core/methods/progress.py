@@ -20,7 +20,7 @@ _____, ___
 import sys
 import shutil
 
-from core.colors import color
+from core.colors import color, lines
 from core.variables import is_windows
 
 
@@ -42,7 +42,7 @@ def progress(iteration, total, prefix="", suffix="", decimals=1):
     erase()
     sys.stdout.write("%s %s%5s%%%s %s" % (
         prefix, color.RB, percent,
-        color.END + color.RD + "|" + color.END,
+        color.END + color.RD + lines.VL + color.END,
         suffix,
     ))
     sys.stdout.flush()

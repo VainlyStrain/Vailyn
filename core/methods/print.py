@@ -46,7 +46,7 @@ def intro():
                      '     ':;, '    '
             {2}o{1}                '          {2}.   :{1}        {1}
                                            {2}*{1}
-                         |{3} Vailyn {1}|
+                         {5}{3} Vailyn {1}{5}
                       [ VainlyStrain ]{4}
     """.format(
         color.CURSIVE,
@@ -54,6 +54,7 @@ def intro():
         color.RD,
         color.END + color.RB,
         color.END,
+        lines.VL,
     )
 
     banners = [stealth]
@@ -90,21 +91,27 @@ and result output
 def listprint2(plist, nullbytes, wrappers):
     pstr = ""
     for i in range(0, len(plist)):
-        pstr = pstr + "{0}{1:{5}}{2}|{3}  {4}\n".format(
-            "", i, "", "", plist[i], len(str(len(payloadlist)))
+        pstr = pstr + "{0}{1:{5}}{2}{6}{3}  {4}\n".format(
+            "", i, "", "", plist[i],
+            len(str(len(payloadlist))), lines.VL,
         )
-    pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "  A", "", "ALL")
+    pstr = pstr + "{0}{1}{4}{2}  {3}\n".format(
+        "", "  A", "", "ALL", lines.VL,
+    )
     if nullbytes or wrappers:
-        pstr = pstr + "{0}{1}|{2}  {3}\n".format("", "  N", "", "NONE")
+        pstr = pstr + "{0}{1}{4}{2}  {3}\n".format(
+            "", "  N", "", "NONE", lines.VL,
+        )
     return pstr
 
 
 def listprint(plist, nullbytes, wrappers):
     tmplist = []
     for i in range(0, len(plist)):
-        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(
+        tmpstr = "{0}{1:{5}}{2}{6}{3}  {4}".format(
             color.RB, i, color.END + color.RD, color.END,
-            plist[i], len(str(len(payloadlist)))
+            plist[i], len(str(len(payloadlist))),
+            lines.VL,
         )
         tmplist.append(tmpstr)
     maxlen = len(max(tmplist, key=len))
@@ -131,16 +138,16 @@ def listdisplay(gen, maxlen, nb, wrappers):
     space = ""
     for i in range(0, len(str(len(payloadlist))) - 1):
         space += " "
-    print("{0}{1}|{2}  {3}".format(
+    print("{0}{1}{4}{2}  {3}".format(
         color.RB,
         space + "A" + color.END + color.RD,
-        color.END, "ALL"
+        color.END, "ALL", lines.VL,
     ))
     if nb or wrappers:
-        print("{0}{1}|{2}  {3}".format(
+        print("{0}{1}{4}{2}  {3}".format(
             color.RB,
             space + "N" + color.END + color.RD,
-            color.END, "NONE"
+            color.END, "NONE", lines.VL,
         ))
     print()
 
@@ -168,10 +175,14 @@ def print_techniques_gui():
     tstr = ""
     items = rce.keys()
     for i in items:
-        tstr = tstr + "{0}{1:{5}}{2}|{3}  {4}\n".format(
-            "", i, "", "", rce[i], max(3, len(str(len(items)))),
+        tstr = tstr + "{0}{1:{5}}{2}{6}{3}  {4}\n".format(
+            "", i, "", "", rce[i],
+            max(3, len(str(len(items)))),
+            lines.VL,
         )
-    tstr = tstr + "{0}{1}|{2}  {3}\n".format("", "  A", "", "ALL")
+    tstr = tstr + "{0}{1}{4}{2}  {3}\n".format(
+        "", "  A", "", "ALL", lines.VL,
+    )
     return tstr
 
 
@@ -179,9 +190,10 @@ def print_techniques():
     tmplist = []
     items = rce.keys()
     for i in items:
-        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(
+        tmpstr = "{0}{1:{5}}{2}{6}{3}  {4}".format(
             color.RB, i, color.END + color.RD, color.END,
             rce[i], max(3, len(str(len(items)))),
+            lines.VL,
         )
         tmplist.append(tmpstr)
     maxlen = len(max(tmplist, key=len))
@@ -195,10 +207,14 @@ def print_vectors_gui():
     vstr = ""
     items = vector_dict.keys()
     for i in items:
-        vstr = vstr + "{0}{1:{5}}{2}|{3}  {4}\n".format(
-            "", i, "", "", vector_dict[i], max(3, len(str(len(items)))),
+        vstr = vstr + "{0}{1:{5}}{2}{6}{3}  {4}\n".format(
+            "", i, "", "", vector_dict[i],
+            max(3, len(str(len(items)))),
+            lines.VL,
         )
-    vstr = vstr + "{0}{1}|{2}  {3}\n".format("", "  A", "", "ALL")
+    vstr = vstr + "{0}{1}{4}{2}  {3}\n".format(
+        "", "  A", "", "ALL", lines.VL,
+    )
     return vstr
 
 
@@ -206,9 +222,10 @@ def print_vectors():
     tmplist = []
     items = vector_dict.keys()
     for i in items:
-        tmpstr = "{0}{1:{5}}{2}|{3}  {4}".format(
+        tmpstr = "{0}{1:{5}}{2}{6}{3}  {4}".format(
             color.RB, i, color.END + color.RD, color.END,
             vector_dict[i], max(3, len(str(len(items)))),
+            lines.VL,
         )
         tmplist.append(tmpstr)
     maxlen = len(max(tmplist, key=len))

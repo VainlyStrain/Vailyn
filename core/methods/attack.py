@@ -432,10 +432,16 @@ def phase1(
                         print(out)
                 if verbose and not found:
                     if attack in [1, 2]:
-                        print(color.END + "{}|: ".format(r.status_code) + r.url)
+                        print(
+                            color.END + "{0}{1}: ".format(
+                                r.status_code, lines.VL,
+                            ) + r.url
+                        )
                     elif attack in [3, 4, 5]:
-                        print(color.END + "{}|: ".format(
-                            r.status_code) + r.url + " : " + p
+                        print(
+                            color.END + "{0}{1}: ".format(
+                                r.status_code, lines.VL,
+                            ) + r.url + " : " + p
                         )
 
             if found:
@@ -692,12 +698,16 @@ def phase2(
 
                             if verbose and not vfound:
                                 if attack in [1, 2]:
-                                    print(color.END + "{}|: ".format(
-                                        r.status_code) + r.url,
+                                    print(
+                                        color.END + "{0}{1}: ".format(
+                                            r.status_code, lines.VL,
+                                        ) + r.url,
                                     )
                                 elif attack in [3, 4, 5]:
-                                    print(color.END + "{}|: ".format(
-                                        r.status_code) + r.url + " : " + p
+                                    print(
+                                        color.END + "{0}{1}: ".format(
+                                            r.status_code, lines.VL,
+                                        ) + r.url + " : " + p
                                     )
                     d += 1
         return (found, urls)
@@ -727,14 +737,14 @@ def sheller(
 
     print(
         color.RD+"[Vailyn]" + color.END + color.RB + " LFI"
-        + color.END + color.RD + "|" + color.END + "  "
+        + color.END + color.RD + lines.VL + color.END + "  "
         + color.RC + "" + color.END + color.RD
         + "" + str(rce[technique]) + color.END
     )
     if gui:
         gui.crawlerResultDisplay.append(
-            "[Info] RCE|  Technique: {}".format(
-                str(rce[technique])
+            "[Info] RCE{1}  Technique: {0}".format(
+                str(rce[technique]), lines.VL,
             )
         )
         gui.show()
@@ -843,21 +853,26 @@ def sheller(
                                 break
                         if verbose:
                             if attack in [1, 2]:
-                                print(color.END + "{}|: ".format(
-                                    r.status_code) + r.url
+                                print(
+                                    color.END + "{0}{1}: ".format(
+                                        r.status_code, lines.VL,
+                                    ) + r.url
                                 )
                             elif attack in [3, 4, 5]:
-                                print(color.END + "{}|: ".format(
-                                    r.status_code)+r.url + " : " + p
+                                print(
+                                    color.END + "{0}{1}: ".format(
+                                        r.status_code, lines.VL,
+                                    ) + r.url + " : " + p
                                 )
                     d += 1
                     if found:
                         sys.stdout.write(
-                            "{0}   {3}{2}|{1}\n".format(
+                            "{0}   {3}{2}{4}{1}\n".format(
                                 color.RB,
                                 color.END,
                                 color.END + color.RD,
                                 SUCCESS,
+                                lines.VL,
                             )
                         )
                         file = candidate
@@ -1252,8 +1267,9 @@ def sheller(
                     if app:
                         app.processEvents()
     else:
-        sys.stdout.write("{0}   {3}{2}|{1}\n".format(
-            color.RB, color.END, color.END + color.RD, FAIL
+        sys.stdout.write("{0}   {3}{2}{4}{1}\n".format(
+            color.RB, color.END, color.END + color.RD,
+            FAIL, lines.VL,
         ))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\n")
@@ -1291,8 +1307,9 @@ def show_status(gui, timeout=False, exception=None):
     print status of RCE probe
     """
     if exception:
-        sys.stdout.write("{0}  {3}!{2}|{1}\n".format(
-            color.RB, color.END, color.END + color.RD, FAIL
+        sys.stdout.write("{0}  {3}!{2}{4}{1}\n".format(
+            color.RB, color.END, color.END + color.RD,
+            FAIL, lines.VL,
         ))
         print("{0}Exception:{1}\n{2}".format(
             color.RB, color.END, exception
@@ -1307,11 +1324,12 @@ def show_status(gui, timeout=False, exception=None):
         if check_conn():
             # single threaded server times out when
             # shell drops
-            sys.stdout.write("{0}   {3}{2}|{1}\n".format(
+            sys.stdout.write("{0}   {3}{2}{4}{1}\n".format(
                 color.RB,
                 color.END,
                 color.END + color.RD,
                 SUCCESS,
+                lines.VL,
             ))
             notify(
                 "Reverse Shell arrived on Port {}.".format(
@@ -1323,19 +1341,21 @@ def show_status(gui, timeout=False, exception=None):
                 gui.show()
             raise ShellPopException("pwnd")
         else:
-            sys.stdout.write("{0}  {3}!{2}|{1}\n".format(
-                color.RB, color.END, color.END + color.RD, FAIL
+            sys.stdout.write("{0}  {3}!{2}{4}{1}\n".format(
+                color.RB, color.END, color.END + color.RD,
+                FAIL, lines.VL,
             ))
             if gui:
                 gui.crawlerResultDisplay.append(" FAIL\nTimeout\n")
                 gui.show()
         return
     if check_conn():
-        sys.stdout.write("{0}   {3}{2}|{1}\n".format(
+        sys.stdout.write("{0}   {3}{2}{4}{1}\n".format(
             color.RB,
             color.END,
             color.END + color.RD,
             SUCCESS,
+            lines.VL,
         ))
         notify(
             "Reverse Shell arrived on Port {}.".format(
@@ -1347,8 +1367,9 @@ def show_status(gui, timeout=False, exception=None):
             gui.show()
         raise ShellPopException("pwnd")
     else:
-        sys.stdout.write("{0}   {3}{2}|{1}\n".format(
-            color.RB, color.END, color.END + color.RD, FAIL
+        sys.stdout.write("{0}   {3}{2}{4}{1}\n".format(
+            color.RB, color.END, color.END + color.RD,
+            FAIL, lines.VL,
         ))
         if gui:
             gui.crawlerResultDisplay.append(" FAIL\n")

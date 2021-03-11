@@ -173,32 +173,35 @@ def cli_main(parser, opt, args, shell=True) -> int:
                 + color.RD + "[HINT]" + color.END
                 + " -p mandatory for -a 1"
             )
-        print("{0}[Vailyn]{1} PARAM{2}|{3}".format(
+        print("{0}[Vailyn]{1} PARAM{2}{4}{3}".format(
             color.RD,
             color.END + color.RB,
             color.END + color.RD,
             color.END,
+            lines.VL,
         ))
         param = args.param
     elif args.attack.strip() == "2":
         """
         path mode (scan URL Path)
         """
-        print("{0}[Vailyn]{1} PATH{2}|{3}".format(
+        print("{0}[Vailyn]{1} PATH{2}{4}{3}".format(
             color.RD,
             color.END + color.RB,
             color.END + color.RD,
             color.END,
+            lines.VL,
         ))
     elif args.attack.strip() == "3":
         """
         cookie mode (scan HTTP cookie)
         """
-        print("{0}[Vailyn]{1} COOKIE{2}|{3}".format(
+        print("{0}[Vailyn]{1} COOKIE{2}{4}{3}".format(
             color.RD,
             color.END + color.RB,
             color.END + color.RD,
             color.END,
+            lines.VL,
         ))
     elif args.attack.strip() == "4":
         """
@@ -214,11 +217,12 @@ def cli_main(parser, opt, args, shell=True) -> int:
                 + color.END + "\n" + color.RD + "[HINT]" + color.END
                 + " -p mandatory for -a 4"
             )
-        print("{0}[Vailyn]{1} POST{2}|{3}".format(
+        print("{0}[Vailyn]{1} POST{2}{4}{3}".format(
             color.RD,
             color.END + color.RB,
             color.END + color.RD,
             color.END,
+            lines.VL,
         ))
 
         # is the POST string specified sytactically correct?
@@ -255,11 +259,12 @@ def cli_main(parser, opt, args, shell=True) -> int:
                 + color.END + "\n" + color.RD + "[HINT]" + color.END
                 + " -p mandatory for -a 5"
             )
-        print("{0}[Vailyn]{1} POST{2}|{3}".format(
+        print("{0}[Vailyn]{1} POST{2}{4}{3}".format(
             color.RD,
             color.END + color.RB,
             color.END + color.RD,
             color.END,
+            lines.VL,
         ))
 
         # is the POST string specified sytactically correct?
@@ -277,22 +282,24 @@ def cli_main(parser, opt, args, shell=True) -> int:
         """
         crawler mode (scan every URL belonging to target with every vector)
         """
-        print("{0}[Vailyn]{1}  ALL{2}|{3}".format(
+        print("{0}[Vailyn]{1}  ALL{2}{4}{3}".format(
             color.RD,
             color.END + color.RB,
             color.END + color.RD,
             color.END,
+            lines.VL,
         ))
     elif args.attack.strip().lower() == "p":
         """
         custom crawler mode (scan every URL belonging to target with
         selected vectors)
         """
-        print("{0}[Vailyn]{1}  ALL{2}|{3}".format(
+        print("{0}[Vailyn]{1}  ALL{2}{4}{3}".format(
             color.RD,
             color.END + color.RB,
             color.END + color.RD,
             color.END,
+            lines.VL,
         ))
         crawler_all = False
     else:
@@ -322,9 +329,9 @@ def cli_main(parser, opt, args, shell=True) -> int:
 
     # print current and original IP if using Tor
     if variables.tor:
-        print("\n{0} [TOR]{1}{6} IP{1}{0}|{1}{5} {2} {1}{4}>{1} {3}".format(
+        print("\n{0}{7}{1}{6} IP{1}{0}{8}{1}{5} {2} {1}{4}>{1} {3}".format(
                 color.RD, color.END, variables.initip, variables.torip,
-                color.BOLD, color.CURSIVE, color.RB,
+                color.BOLD, color.CURSIVE, color.RB, " [TOR]", lines.VL,
             ))
 
     if args.attack == 0:
@@ -538,13 +545,14 @@ def cli_main(parser, opt, args, shell=True) -> int:
         """
         Format & print results as tables
         """
-        print("\n\n{0}[Vailyn]{1} SCAN{2}|{4} Finished in {5}{3}\n".format(
+        print("\n\n{0}[Vailyn]{1} SCAN{2}{6}{4} Finished in {5}{3}\n".format(
             color.RD,
             color.END + color.RB,
             color.END + color.RD,
             color.END,
             color.END + color.RC,
             readable_time,
+            lines.VL,
         ))
 
         DATA = [table_print(
@@ -656,8 +664,8 @@ def cli_main(parser, opt, args, shell=True) -> int:
             and os.path.exists(cachedir + targetcache + "nullbytes.cache")
             and os.path.exists(cachedir + targetcache + "wrappers.cache")):
         choice = input(
-            "{0}[?]{1}{2} Cache{1}{0}|{1} Load from".format(
-                color.RD, color.END, color.RB,
+            "{0}[?]{1}{2} Cache{1}{0}{3}{1} Load from".format(
+                color.RD, color.END, color.RB, lines.VL,
             )
             + " previous attack?\n{0} {2}{1}".format(
                 color.RD, color.END, lines.SW,

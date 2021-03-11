@@ -46,3 +46,4 @@ class lines:
     SWL = "'---" if ASCII_ONLY else "└──╼"
     NW = ".-" if ASCII_ONLY else "┌─"
     OL = " " if ASCII_ONLY else "‾"
+    VL = "|" if ASCII_ONLY else "│"

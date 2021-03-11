@@ -40,7 +40,7 @@ from core.variables import (
     payloadlist,
 )
 
-from core.colors import color
+from core.colors import color, lines
 from core.methods.attack import phase1, reset_counter
 from core.methods.cache import parse_url
 from core.methods.cookie import fetch_cookie
@@ -93,12 +93,13 @@ class UrlSpider(scrapy.Spider):
             if link.url not in self.start_urls:
                 self.start_urls.append(link.url)
                 if variables.verbose:
-                    print("{0}[INFO]{1} found{4}|{2} {3}".format(
+                    print("{0}[INFO]{1} found{4}{5}{2} {3}".format(
                         color.RD,
                         color.END + color.RB,
                         color.END,
                         link.url,
                         color.END + color.RD,
+                        lines.VL,
                     ))
             yield Request(
                 link.url,
@@ -184,13 +185,16 @@ def crawler_query(
         for victim, vic_info in site_params.items():
             sub = {}
             paramlist = vic_info["params"]
-            print("\n{0}[INFO]{1} param{4}|{2} Attacking {3}".format(
+            print("\n{0}[INFO]{1} param{4}{5}{2} Attacking {3}".format(
                 color.RD, color.END + color.RB,
-                color.END, victim, color.END + color.RD
+                color.END, victim, color.END + color.RD,
+                lines.VL,
             ))
             if gui:
                 gui.crawlerResultDisplay.append(
-                    "\n[Info] param| Attacking {}".format(victim)
+                    "\n[Info] param{1} Attacking {0}".format(
+                        victim, lines.VL,
+                    )
                 )
                 gui.show()
             time.sleep(0.5)
@@ -202,13 +206,16 @@ def crawler_query(
                     payloadlist,
                     round(len(payloadlist)/processes),
                 )
-                print("\n{0}[INFO]{1} param{4}|{2} Using {3}\n".format(
+                print("\n{0}[INFO]{1} param{4}{5}{2} Using {3}\n".format(
                     color.RD, color.END + color.RB,
                     color.END, param, color.END + color.RD,
+                    lines.VL,
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "[Info] param| Using {}".format(param),
+                        "[Info] param{1} Using {0}".format(
+                            param, lines.VL,
+                        ),
                     )
                     gui.show()
                 time.sleep(1.0)
@@ -270,13 +277,16 @@ def crawler_path(victim2, verbose, depth, file, auth_cookie, gui=None):
             payloads = []
             nullbytes = []
             wrappers = []
-            print("\n{0}[INFO]{1} path{4}|{2} Attacking {3}\n".format(
+            print("\n{0}[INFO]{1} path{4}{5}{2} Attacking {3}\n".format(
                 color.RD, color.END + color.RB,
                 color.END, victim, color.END + color.RD,
+                lines.VL,
             ))
             if gui:
                 gui.crawlerResultDisplay.append(
-                    "\n[Info] path| Attacking {}".format(victim),
+                    "\n[Info] path{1} Attacking {0}".format(
+                        victim, lines.VL,
+                    ),
                 )
                 gui.show()
             time.sleep(1.0)
@@ -328,30 +338,35 @@ def crawler_cookie(
             sub = {}
             cookie = fetch_cookie(victim, auth_cookie=auth_cookie)
             if len(cookie.keys()) < 1:
-                print("\n{0}[INFO]{1} cookie{4}|{2}{5}{3}.\n".format(
+                print("\n{0}[INFO]{1} cookie{4}{6}{2}{5}{3}.\n".format(
                     color.RD,
                     color.END + color.RB,
                     color.END,
                     victim,
                     color.END + color.RD,
                     " No cookies available for ",
+                    lines.VL,
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "\n[Info] cookie| {1}{0}".format(
+                        "\n[Info] cookie{2} {1}{0}".format(
                             victim,
                             "No cookies available for ",
+                            lines.VL,
                         )
                     )
                     gui.show()
                 continue
-            print("\n{0}[INFO]{1} cookie{4}|{2} Attacking {3}\n".format(
+            print("\n{0}[INFO]{1} cookie{4}{5}{2} Attacking {3}\n".format(
                 color.RD, color.END + color.RB,
                 color.END, victim, color.END + color.RD,
+                lines.VL,
             ))
             if gui:
                 gui.crawlerResultDisplay.append(
-                    "\n[Info] cookie| Attacking {}".format(victim)
+                    "\n[Info] cookie{1} Attacking {0}".format(
+                        victim, lines.VL,
+                    )
                 )
                 gui.show()
             time.sleep(0.5)
@@ -360,26 +375,30 @@ def crawler_cookie(
                 nullbytes = []
                 wrappers = []
                 if key in auth_cookie:
-                    print("\n{0}[INFO]{1} cookie{4}|{2} {3}\n".format(
+                    print("\n{0}[INFO]{1} cookie{4}{5}{2} {3}\n".format(
                         color.RD, color.END + color.RB,
                         color.END, "Skipping Auth Cookie",
-                        color.END + color.RD,
+                        color.END + color.RD, lines.VL,
                     ))
                     if gui:
                         gui.crawlerResultDisplay.append(
-                            "[Info] cookie| {}".format(
-                                "Skipping Auth Cookie"
+                            "[Info] cookie{1} {0}".format(
+                                "Skipping Auth Cookie",
+                                lines.VL,
                             )
                         )
                         gui.show()
                     continue
-                print("\n{0}[INFO]{1} cookie{4}|{2} Using {3}\n".format(
+                print("\n{0}[INFO]{1} cookie{4}{5}{2} Using {3}\n".format(
                     color.RD, color.END + color.RB,
                     color.END, key, color.END + color.RD,
+                    lines.VL,
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "[Info] cookie| Using {}".format(key)
+                        "[Info] cookie{1} Using {0}".format(
+                            key, lines.VL,
+                        )
                     )
                     gui.show()
                 time.sleep(1.0)
@@ -430,13 +449,16 @@ def crawler_post_plain(
         for victim, vic_info in site_params.items():
             sub = {}
             paramlist = vic_info["params"]
-            print("\n{0}[INFO]{1} post{4}|{2} Attacking {3}".format(
+            print("\n{0}[INFO]{1} post{4}{5}{2} Attacking {3}".format(
                 color.RD, color.END + color.RB,
-                color.END, victim, color.END + color.RD
+                color.END, victim, color.END + color.RD,
+                lines.VL,
             ))
             if gui:
                 gui.crawlerResultDisplay.append(
-                    "\n[Info] post| Attacking {}".format(victim)
+                    "\n[Info] post{1} Attacking {0}".format(
+                        victim, lines.VL,
+                    )
                 )
                 gui.show()
             time.sleep(0.5)
@@ -444,13 +466,16 @@ def crawler_post_plain(
                 payloads = []
                 nullbytes = []
                 wrappers = []
-                print("\n{0}[INFO]{1} post{4}|{2} Using {3}\n".format(
+                print("\n{0}[INFO]{1} post{4}{5}{2} Using {3}\n".format(
                     color.RD, color.END + color.RB,
                     color.END, param, color.END + color.RD,
+                    lines.VL,
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "\n[Info] post| Using {}".format(param)
+                        "\n[Info] post{1} Using {0}".format(
+                            param, lines.VL,
+                        )
                     )
                     gui.show()
                 time.sleep(1.0)
@@ -501,13 +526,16 @@ def crawler_post_json(
         for victim, vic_info in site_params.items():
             sub = {}
             paramlist = vic_info["params"]
-            print("\n{0}[INFO]{1} json{4}|{2} Attacking {3}".format(
+            print("\n{0}[INFO]{1} json{4}{5}{2} Attacking {3}".format(
                 color.RD, color.END + color.RB,
-                color.END, victim, color.END + color.RD
+                color.END, victim, color.END + color.RD,
+                lines.VL,
             ))
             if gui:
                 gui.crawlerResultDisplay.append(
-                    "\n[Info] json| Attacking {}".format(victim)
+                    "\n[Info] json{1} Attacking {0}".format(
+                        victim, lines.VL,
+                    )
                 )
                 gui.show()
             time.sleep(0.5)
@@ -515,13 +543,16 @@ def crawler_post_json(
                 payloads = []
                 nullbytes = []
                 wrappers = []
-                print("\n{0}[INFO]{1} json{4}|{2} Using {3}\n".format(
+                print("\n{0}[INFO]{1} json{4}{5}{2} Using {3}\n".format(
                     color.RD, color.END + color.RB,
                     color.END, param, color.END + color.RD,
+                    lines.VL,
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "\n[Info] json| Using {}".format(param)
+                        "\n[Info] json{1} Using {0}".format(
+                            param, lines.VL,
+                        )
                     )
                     gui.show()
                 time.sleep(1.0)
