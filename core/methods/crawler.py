@@ -128,17 +128,17 @@ def crawler_arjun(post=False, jpost=False, cookie_header=None):
     ]
     if post:
         command += [
-            "-o", cachedir + subdir + "spider-phase5.json",
+            "-oJ", cachedir + subdir + "spider-phase5.json",
             "-m", "POST",
         ]
     elif jpost:
         command += [
-            "-o", cachedir + subdir + "spider-phase7.json",
+            "-oJ", cachedir + subdir + "spider-phase7.json",
             "-m", "JSON",
         ]
     else:
         command += [
-            "-o", cachedir + subdir + "spider-phase1.json",
+            "-oJ", cachedir + subdir + "spider-phase1.json",
             "-m", "GET",
         ]
 
@@ -146,6 +146,9 @@ def crawler_arjun(post=False, jpost=False, cookie_header=None):
         command += ["--stable"]
     else:
         command += ["-t", str(processes)]
+
+    if variables.timeout:
+        command += ["-T", str(variables.timeout)]
 
     if cookie_header:
         command += ["--headers", "Cookie: {}".format(cookie_header)]
