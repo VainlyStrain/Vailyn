@@ -19,7 +19,8 @@ _____, ___
 
 
 from core.colors import (
-    color, lines, FAIL, FAIL2, SUCCESS, TRI_1, TRI_2,
+    color, lines, FAIL, FAIL2, SUCCESS,
+    TRI_1, TRI_2, TO,
 )
 from core.config import ASCII_ONLY
 from core.variables import version
@@ -98,12 +99,17 @@ class VailynShell(Cmd):
     def info(self):
         print("foo")
 
-    def error(self, msg, cmd):
-        print("{0}[{3}]{2}{1}  {5}{2}{0}{4}{2} {6}".format(
-            color.RD, color.RB, color.END,
-            color.BOLD + FAIL2 + color.END + color.RD,
-            lines.VL, cmd, msg,
-        ))
+    def error(self, msg1, msg2):
+        print("""
+{3} {0} {1}
+ -- {2}{4}
+        """.format(FAIL2, msg1, msg2, color.END, color.END))
+
+    def success(self, msg1, msg2):
+        print("""
+{3} {0} {1}
+ -- {2}{4}
+        """.format(SUCCESS, msg1, msg2, color.END, color.END))
 
     def cmdloop(self, intro=None):
         while True:
@@ -164,6 +170,17 @@ the list of accepted commands."""
     def help_intro(self):
         help_formatter("intro", "Display Vailyn's asciiart.")
 
+    def set_assertions(self, param, value):
+        if param == "VICTIM":
+            if "://" not in value:
+                self.error(
+                    "Error setting option parameter:",
+                    "Illegal parameter value: {}".format(value)
+                    + " (protocol scheme is missing)",
+                )
+                return False
+        return True
+
     def do_set(self, inp):
         listed = inp.split(" ")
         if len(listed) != 2:
@@ -173,17 +190,18 @@ the list of accepted commands."""
             value = listed[1].strip()
             if param not in self.attack_config.keys():
                 self.error(
-                    "Option {} not defined.".format(param),
-                    "set()",
+                    "Error setting option parameter:",
+                    "Unrecognized option parameter: {}.".format(param),
                 )
-                self.do_list("OPTIONS")
                 return
             else:
+                if not self.set_assertions(param, value):
+                    return
                 self.attack_config[param][0] = value
-                print("{0}{1}{2}{3}{2}{4}{5}{2}{6}{2}".format(
-                    color.END + color.RB, param, color.END, TRI_2,
-                    color.G, value, TRI_1,
-                ))
+                self.success(
+                    "Successfully updated option parameter:",
+                    "{} {} {}".format(param, TO, value)
+                )
                 victim = "n/a"
                 vector = "n/a"
                 if self.attack_config["VICTIM"][0]:

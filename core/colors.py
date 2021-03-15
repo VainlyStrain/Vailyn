@@ -49,6 +49,7 @@ TRI_2 = ":" if ASCII_ONLY else "\033[0m\033[48;2;225;214;225m\033[38;2;42;35;42m
 BLC = "" if ASCII_ONLY else "▛╱"
 INFO = "*" if ASCII_ONLY else "▹"  # ▸
 ENUM = "*" if ASCII_ONLY else "•"
+TO = ">" if ASCII_ONLY else "▸"
 
 
 class lines:
