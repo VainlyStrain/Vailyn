@@ -38,7 +38,10 @@ import sys
 def update_prompt(target="n/a", vector="n/a"):
     prompt = ""
     if ASCII_ONLY:
-        prompt = "Vailyn v{} > ".format(version)
+        prompt = "Vailyn v{}".format(version)
+        if target != "n/a" or vector != "n/a":
+            prompt += "({}:{})".format(target, vector)
+        prompt += " > "
     else:
         prompt += "{} # {} ".format(color.RBC, color.INP)
         prompt += "Vailyn{}".format(version)
@@ -178,7 +181,7 @@ the list of accepted commands."""
             else:
                 self.attack_config[param][0] = value
                 print("{0}{1}{2}{3}{2}{4}{5}{2}{6}{2}".format(
-                    color.RB, param, color.END, TRI_2,
+                    color.END + color.RB, param, color.END, TRI_2,
                     color.G, value, TRI_1,
                 ))
                 victim = "n/a"
