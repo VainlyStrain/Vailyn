@@ -22,6 +22,7 @@ from core.methods.version import check_version
 from core.methods.print import intro, ldis
 from core.methods.parser import parser
 
+from core.Shell import shell_main
 from core.Cli import cli_main
 from core.App import app_main
 from core.config import (
@@ -58,8 +59,8 @@ if __name__ == "__main__":
 
         # parse commandline arguments
         parser = parser()
-        opt = vars(parser.parse_args())
         args = parser.parse_args()
+        opt = vars(args)
 
         # print legal disclaimer
         ldis()
@@ -116,6 +117,8 @@ if __name__ == "__main__":
 
         if opt["app"]:
             app_main()
+        elif not opt["victim"]:
+            shell_main()
         else:
             cli_main(parser, opt, args)
 

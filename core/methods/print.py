@@ -23,13 +23,15 @@ import shutil
 import math
 import random
 
-from core.colors import color, lines
+from terminaltables import SingleTable, AsciiTable
+
+from core.colors import color, lines, INFO, ENUM, TRI
 from core.variables import CLEAR_CMD, payloadlist, rce, vector_dict
 from core.methods.list import listsplit
 from core.config import ASCII_ONLY, NO_CLEAR, SHOW_WARNING
 
 
-def intro():
+def intro(shell=False):
     """
     prints asciiart when starting the tool
     """
@@ -57,12 +59,105 @@ def intro():
         lines.VL,
     )
 
+    shell_inf = """ {3}{0}{0}{0}{2} {4} Vailyn Interactive Shell  {2}{3}{5}{2}
+ {3}{0}{0}{0}{2} {4} {1}?{2}{4} for help and {1}q{2}{4} to close {2}{3}{5}{2}
+    """.format(
+        INFO, color.BOLD, color.END, color.RFD,
+        color.CURSIVE + color.RB, lines.VL,
+    )
+
     banners = [stealth]
-    if not NO_CLEAR:
+    if not NO_CLEAR and not shell:
         subprocess.run(CLEAR_CMD)
 
-    if not ASCII_ONLY:
+    if shell:
+        print(shell_inf)
+    elif not ASCII_ONLY:
         print(banners[random.randrange(0, len(banners))])
+
+
+def help_formatter(
+    cmd, msg, args={}, syntax="", examples=[], further=[],
+):
+    """
+    formats the help message for the interactive shell.
+    """
+    DATA = []
+    for line in msg.split("\n"):
+        line = line.strip()
+        if line:
+            DATA.append(table_print([line]))
+    if ASCII_ONLY:
+        table = AsciiTable(DATA, "[ {0}{2}{1} ]".format(
+            color.END + color.BOLD,
+            color.END + color.RD,
+            cmd,
+        ))
+    else:
+        table = SingleTable(DATA, "[ {0}{2}{1} ]".format(
+            color.END + color.BOLD,
+            color.END + color.RD,
+            cmd,
+        ))
+    table.inner_heading_row_border = False
+    print("\n" + color.RD + table.table)
+    # print("\n{0} -- {1}{2}{0} --\n".format(
+    #     color.END, color.BOLD, cmd,
+    # ))
+    # for line in msg.split("\n"):
+    #     print("  " + line)
+    if args:
+        print("{0}\n  ::  {1}Command Syntax{0}  ::".format(
+            color.END, color.BOLD,
+        ))
+        if syntax:
+            formatted = syntax_formatter(syntax.split(" "))
+            print("\n  {}".format(formatted))
+        dict_formatter(args)
+    if examples:
+        print("{0}\n  ::  {1}Examples{0}  ::".format(
+            color.END, color.BOLD,
+        ))
+        list_formatter(examples)
+    if further:
+        print("{0}\n  ::  {1}See Also{0}  ::".format(
+            color.END, color.BOLD,
+        ))
+        list_formatter(further)
+    if not (args or examples or further):
+        print()
+
+
+def syntax_formatter(splitted):
+    """
+    Formats command syntax strings for the shell help
+    menu.
+    """
+    result = color.RBB + splitted[0] + color.END + color.RB
+    for i in range(1, len(splitted)):
+        result = result + " " + splitted[i]
+    result = result + TRI + color.END
+    return result
+
+
+def list_formatter(outlist):
+    """
+    Formats lists for display in the shell.
+    """
+    for elem in outlist:
+        print("{0}   {1} {2}".format(color.END, ENUM, elem))
+    print()
+
+
+def dict_formatter(outdict):
+    """
+    Formats dicts for display in the shell.
+    """
+    for key in outdict.keys():
+        print("{0}   {1} {2}{3}{0}: {4}".format(
+            color.END, ENUM, color.BOLD, key, outdict[key],
+        ))
+    print()
 
 
 def ldis():
