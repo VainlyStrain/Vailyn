@@ -23,7 +23,7 @@ from core.colors import (
     TRI_1, TRI_2, TO,
 )
 from core.config import ASCII_ONLY
-from core.variables import version
+from core.variables import version, CLEAR_CMD
 
 from core.methods.print import (
     intro, help_formatter, dict_formatter, table_print,
@@ -34,6 +34,7 @@ from cmd import Cmd
 from terminaltables import AsciiTable, SingleTable
 
 import sys
+import subprocess
 
 
 def update_prompt(target="n/a", vector="n/a"):
@@ -118,7 +119,7 @@ class VailynShell(Cmd):
                 break
             except KeyboardInterrupt:
                 print("^C")
-                sys.exit(0)
+                return self.do_q("")
 
     def do_help(self, arg):
         """
@@ -155,10 +156,30 @@ the list of accepted commands."""
         )
 
     def do_q(self, inp):
+        print("\n\n{0}[INFO]{2}{1}  {3}{2}{0}{4}{2}".format(
+            color.RD, color.RB, color.END, FAIL,
+            lines.VL,
+        ))
+        print("{0} {2} Alvida!{1}\n".format(
+            color.RD, color.END, lines.SW,
+        ))
         return True
 
     def help_q(self):
         help_formatter("q", "Quit Application.")
+
+    def do_cmd(self, inp):
+        command = inp.split(" ")
+        try:
+            subprocess.run(command)
+        except OSError as e:
+            self.error(
+                "Error running command:",
+                e,
+            )
+
+    def help_cmd(self):
+        help_formatter("cmd", "Execute shell command (e.g. clear or ifconfig)")
 
     def emptyline(self):
         pass
@@ -175,23 +196,94 @@ the list of accepted commands."""
             if "://" not in value:
                 self.error(
                     "Error setting option parameter:",
-                    "Illegal parameter value: {}".format(value)
+                    "Illegal parameter value: '{}'".format(value)
                     + " (protocol scheme is missing)",
+                )
+                return False
+        elif param == "ATTACK":
+            if value.upper() not in self.vector_list.keys():
+                self.error(
+                    "Error setting option parameter:",
+                    "Illegal parameter value: '{}'".format(value)
+                    + " (no such attack vector)",
+                )
+                return False
+        elif param == "DEPTHS":
+            depths = value.split(" ")
+            if len(depths) != 3:
+                self.error(
+                    "Error setting option parameter:",
+                    "Illegal parameter value: '{}'".format(value)
+                    + " (not matching format <P1> <P2> <PL>)",
+                )
+                return False
+            for depth in depths:
+                try:
+                    int(depth)
+                except ValueError:
+                    self.error(
+                        "Error setting option parameter:",
+                        "Illegal parameter value: '{}'".format(value)
+                        + " (depths must be integer values)",
+                    )
+                    return False
+        elif param == "PHASE2":
+            parsed = value.split(" ")
+            keys = []
+            for key in self.sploit_list.keys():
+                keys.append(key.split(" ")[0])
+            if parsed[0].upper() not in keys:
+                self.error(
+                    "Error setting option parameter:",
+                    "Illegal parameter value: '{}'".format(value)
+                    + " (no such exploitation module)",
+                )
+                return False
+            if (
+                parsed[0].upper() != "NOSPLOIT" and len(parsed) != 3
+            ):
+                self.error(
+                    "Error setting option parameter:",
+                    "Illegal parameter value: '{}'".format(value)
+                    + " (incorrect amount of arguments for module)",
+                )
+                return False
+        elif param in ["LOOT", "PRECISE", "FILTER"]:
+            if value not in ["0", "1"]:
+                self.error(
+                    "Error setting option parameter:",
+                    "Illegal parameter value: '{}'".format(value)
+                    + " (neither 0 nor 1)",
+                )
+                return False
+        elif param == "COOKIE":
+            if "COOKIE:" in value.upper():
+                self.error(
+                    "Error setting option parameter:",
+                    "Illegal parameter value: '{}'".format(value)
+                    + " (omit Cookie: from start)",
+                )
+                return False
+            if "=" not in value:
+                self.error(
+                    "Error setting option parameter:",
+                    "Illegal parameter value: '{}'".format(value)
+                    + " (cookie not in header format)",
                 )
                 return False
         return True
 
     def do_set(self, inp):
         listed = inp.split(" ")
-        if len(listed) != 2:
+        if len(listed) < 2:
             self.help_set()
         else:
             param = listed[0].strip().upper()
-            value = listed[1].strip()
+            value = " ".join(i for i in listed[1::]).strip()
             if param not in self.attack_config.keys():
                 self.error(
                     "Error setting option parameter:",
-                    "Unrecognized option parameter: {}.".format(param),
+                    "Unrecognized option parameter: '{}'".format(param),
                 )
                 return
             else:
@@ -200,7 +292,7 @@ the list of accepted commands."""
                 self.attack_config[param][0] = value
                 self.success(
                     "Successfully updated option parameter:",
-                    "{} {} {}".format(param, TO, value)
+                    "{} {} '{}'".format(param, TO, value)
                 )
                 victim = "n/a"
                 vector = "n/a"
