@@ -24,6 +24,7 @@ from core.colors import (
 )
 from core.config import ASCII_ONLY
 from core.variables import version, CLEAR_CMD
+from core.Cli import cli_main
 
 from core.methods.print import (
     intro, help_formatter, dict_formatter, table_print,
@@ -77,6 +78,8 @@ class VailynShell(Cmd):
         "CONFIG": "Vailyn Core configuration options.",
         "OPTIONS": "Vailyn Attack configuration options.",
         "PHASE2": "All supported options for the exploitation phase.",
+        "SESSIONS": "Available target connection sessions.",
+        "SESSION_CMDS": "Commands to interact with a session.",
         "VECTORS": "All supported vectors for Options.ATTACK.",
     }
 
@@ -96,6 +99,10 @@ class VailynShell(Cmd):
         "IMPLANT <Source File> <Server Destination>": "Use upload path traversal to replace files.",
         "NOSPLOIT": "Skip Phase 2.",
     }
+
+    sessions = {}
+
+    session_cmds = {}
 
     def info(self):
         print("foo")
@@ -156,7 +163,7 @@ the list of accepted commands."""
         )
 
     def do_q(self, inp):
-        print("\n\n{0}[INFO]{2}{1}  {3}{2}{0}{4}{2}".format(
+        print("\n{0}[INFO]{2}{1}  {3}{2}{0}{4}{2}".format(
             color.RD, color.RB, color.END, FAIL,
             lines.VL,
         ))
@@ -437,6 +444,53 @@ config sets."""
 target."""
         further = ["{}set{} OPT VAL".format(color.BOLD, color.END)]
         help_formatter(title, description, further=further)
+
+    def do_load(self, inp):
+        pass
+
+    def help_load(self):
+        title = "load"
+        description = """Set option values by parsing a given configuration
+file."""
+        syntax = "load FILE"
+        args = {"FILE": "Value File to load."}
+        further = ["stash"]
+        help_formatter(
+            title, description, syntax=syntax, args=args,
+            further=further,
+        )
+
+    def do_stash(self, inp):
+        pass
+
+    def help_stash(self):
+        title = "stash"
+        description = """Save current option values to a configuration
+file."""
+        syntax = "stash FILE"
+        args = {"FILE": "Name of the file to write to."}
+        further = ["load"]
+        help_formatter(
+            title, description, syntax=syntax, args=args,
+            further=further,
+        )
+
+    def do_sessions(self, inp):
+        pass
+
+    def help_sessions(self):
+        title = "sessions"
+        description = """Interact with open target sessions."""
+        syntax = "sessions -i ID CMD"
+        args = {
+            "-i ID": "Identifier of session to interact with.",
+            "CMD": "Command sent to the session handler.",
+        }
+        further = ["list SESSIONS", "list SESSION_CMDS"]
+        help_formatter(
+            title, description, syntax=syntax, args=args,
+            further=further,
+        )
 
 
 def shell_main():
