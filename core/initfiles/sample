@@ -1,0 +1,7 @@
+VICTIM --> http://localhost:8000/level1.php
+ATTACK --> query
+PHASE2 --> inject 127.0.0.1 5555
+LOOT --> 0
+DEPTHS --> 8 8 1
+PRECISE --> 0
+FILTER --> 0

@@ -146,6 +146,13 @@ cachedir = SEPARATOR.join([
     "",
 ])
 
+stashdir = SEPARATOR.join([
+    os.path.dirname(os.path.realpath("__main__")),
+    "core",
+    "initfiles",
+    "",
+])
+
 verbose = False
 
 version = ""

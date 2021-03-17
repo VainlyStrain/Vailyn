@@ -23,7 +23,9 @@ from core.colors import (
     TRI_1, TRI_2, TO,
 )
 from core.config import ASCII_ONLY
-from core.variables import version, CLEAR_CMD
+from core.variables import (
+    version, CLEAR_CMD, stashdir,
+)
 from core.Cli import cli_main
 
 from core.methods.print import (
@@ -446,7 +448,31 @@ target."""
         help_formatter(title, description, further=further)
 
     def do_load(self, inp):
-        pass
+        filename = inp.strip()
+        try:
+            with open(stashdir + filename, "r") as cfile:
+                for line in cfile:
+                    try:
+                        if line.strip():
+                            parsed = line.split("-->")
+                            option = parsed[0].strip()
+                            value = parsed[1].strip()
+                            self.do_set("{} {}".format(
+                                option, value,
+                            ))
+                    except IndexError:
+                        self.error(
+                            "Error reading init file:",
+                            "Encountered invalid line.",
+                        )
+                        continue
+        except FileNotFoundError:
+            self.error(
+                "Error reading init file:",
+                "Specified file does not exist: {}".format(
+                    stashdir + filename,
+                ),
+            )
 
     def help_load(self):
         title = "load"
@@ -461,7 +487,21 @@ file."""
         )
 
     def do_stash(self, inp):
-        pass
+        filename = inp.strip()
+        try:
+            with open(stashdir + filename, "w") as cfile:
+                for (option, pair) in self.attack_config.items():
+                    if pair[0]:
+                        cfile.write(
+                            option + " --> " + pair[0] + "\n",
+                        )
+        except Exception as e:
+            self.error("Error writing init file:", e,)
+            return
+        self.success(
+            "Successfully stashed option state in file:",
+            stashdir + filename,
+        )
 
     def help_stash(self):
         title = "stash"
