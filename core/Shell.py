@@ -532,6 +532,19 @@ file."""
             further=further,
         )
 
+    def do_tor(self, inp):
+        pass
+
+    def help_tor(self):
+        title = "tor"
+        description = """Activate or deactivate Tor piping for
+attack requests."""
+        syntax = "tor CMD"
+        args = {"CMD": "'ON' to activate, 'OFF' to deactivate."}
+        help_formatter(
+            title, description, syntax=syntax, args=args,
+        )
+
 
 def shell_main():
     intro(shell=True)
