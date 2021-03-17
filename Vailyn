@@ -62,9 +62,6 @@ if __name__ == "__main__":
         args = parser.parse_args()
         opt = vars(args)
 
-        # print legal disclaimer
-        ldis()
-
         if opt["notmain"]:
             variables.adv_li = False
 
@@ -116,10 +113,12 @@ if __name__ == "__main__":
                 assert variables.implant
 
         if opt["app"]:
+            ldis()
             app_main()
         elif not opt["victim"]:
             shell_main()
         else:
+            ldis()
             cli_main(parser, opt, args)
 
     except KeyboardInterrupt:

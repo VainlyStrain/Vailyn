@@ -29,7 +29,8 @@ from core.variables import (
 from core.Cli import cli_main
 
 from core.methods.print import (
-    intro, help_formatter, dict_formatter, table_print,
+    intro, help_formatter, dict_formatter,
+    table_print, ldis,
 )
 
 from cmd import Cmd
@@ -438,7 +439,7 @@ config sets."""
         )
 
     def do_attack(self, inp):
-        pass
+        ldis()
 
     def help_attack(self):
         title = "attack"
