@@ -149,6 +149,39 @@ def list_formatter(outlist):
     print()
 
 
+def list_formatter_columns(inlist, space=True):
+    """
+    Formats lists in columns in the shell.
+    """
+    tmplist = []
+    for elem in inlist:
+        tmpstr = "{0}    {1} {2}".format(
+            color.END, ENUM, elem,
+        )
+        tmplist.append(tmpstr)
+    maxlen = len(max(tmplist, key=len))
+    termwidth = shutil.get_terminal_size()[0]
+    column_number = math.floor(
+        len(inlist) / (termwidth / ((maxlen + 4))),
+    )
+    columns = listsplit(tmplist, column_number)
+    listlist = []
+    for elem in columns:
+        listlist.append(elem)
+    maxlen2 = len(max(listlist, key=len))
+    for sublist in listlist:
+        while len(sublist) < maxlen2:
+            sublist.append("")
+    if space:
+        print()
+    for row in zip(*listlist):
+        tstr = ""
+        for i in row:
+            tstr = tstr + "{0:{1}}".format(i, maxlen) + "  "
+        print(tstr)
+    print()
+
+
 def dict_formatter(outdict):
     """
     Formats dicts for display in the shell.

@@ -30,7 +30,7 @@ from core.Cli import cli_main
 
 from core.methods.print import (
     intro, help_formatter, dict_formatter,
-    table_print, ldis,
+    table_print, ldis, list_formatter_columns,
 )
 
 from cmd import Cmd
@@ -107,8 +107,22 @@ class VailynShell(Cmd):
 
     session_cmds = {}
 
-    def info(self):
-        print("foo")
+    def show_commands(self):
+        names = self.get_names()
+        names.sort()
+        commands = []
+        line1 = "Avail. Commands:"
+        line2 = " (? CMD for docs)"
+        prevname = ""
+        for name in names:
+            if name[:3] == 'do_':
+                if name == prevname:
+                    continue
+                prevname = name
+                cmd = name[3:]
+                commands.append(cmd)
+        self.success(line1, line2)
+        list_formatter_columns(commands, space=False)
 
     def error(self, msg1, msg2):
         print("""
@@ -151,7 +165,7 @@ class VailynShell(Cmd):
                 return
             func()
         else:
-            self.info()
+            self.show_commands()
 
     def help_help(self):
         title = "?, help"
