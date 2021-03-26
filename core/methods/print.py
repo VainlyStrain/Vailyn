@@ -177,7 +177,7 @@ def list_formatter_columns(inlist, space=True):
     for row in zip(*listlist):
         tstr = ""
         for i in row:
-            tstr = tstr + "{0:{1}}".format(i, maxlen) + "  "
+            tstr = tstr + "{0:{1}}".format(i, maxlen)  # + "  "
         print(tstr)
     print()
 
