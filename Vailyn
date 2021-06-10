@@ -116,7 +116,8 @@ if __name__ == "__main__":
             ldis()
             app_main()
         elif not opt["victim"]:
-            shell_main()
+            # shell_main()
+            cli_main(parser, opt, args)
         else:
             ldis()
             cli_main(parser, opt, args)
