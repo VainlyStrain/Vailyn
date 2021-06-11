@@ -309,13 +309,25 @@ def phase1(
     global request_count
     precise = vars.precise
 
+    if depth == 0:
+        """
+        absolute path & RFI attack
+        traditional payloads & nullbytes do not matter
+        set payload list to length 1 for only 1 main iteration
+        """
+        paylist = [vars.SEPARATOR]
+        global nullchars
+        nullchars = []
+        global payloadlist
+        payloadlist = [vars.SEPARATOR]
+
     prefixes = [""]
     if vars.lfi:
         prefixes += phase1_wrappers
 
     total_requests = len(payloadlist) * (len(nullchars) + 1) * len(prefixes)
-    if not precise:
-        total_requests = total_requests * (depth)
+    if not precise and depth != 0:
+        total_requests = total_requests * depth
     timeout = vars.timeout
     if gui:
         lock.acquire()
@@ -343,7 +355,7 @@ def phase1(
     con2, con3 = initial_ping(s, attack, url, url2, keyword, timeout)
 
     for i in paylist:
-        if precise:
+        if precise or depth == 0:
             layers = [depth]
         else:
             layers = list(range(1, depth + 1))
@@ -355,6 +367,10 @@ def phase1(
             while j <= d:
                 traverse += i
                 j += 1
+            
+            if depth == 0:
+                # ensure absolute path
+                traverse = vars.SEPARATOR
 
             # send attack requests - no nullbyte injection
             requestlist = []
@@ -430,7 +446,7 @@ def phase1(
                         out = out + "{0:{1}}".format(nb, nullen) + " " + w
 
                         print(out)
-                if verbose and not found:
+                if verbose:
                     if attack in [1, 2]:
                         print(
                             color.END + "{0}{1}: ".format(
@@ -482,12 +498,15 @@ def phase2(
     global request_count
     timeout = vars.timeout
     fileslen = sum(1 for dummy in filegen(filespath))
+
     if len(selected_nullbytes) == 0:
-        total_requests = len(selected_payloads) * fileslen * dirlen * depth
+        total_requests = len(selected_payloads) * fileslen * dirlen
     else:
         total_requests = len(selected_payloads) * len(selected_nullbytes)
-        total_requests = total_requests * fileslen * dirlen * depth
+        total_requests = total_requests * fileslen * dirlen
     total_requests *= len(selected_prefixes)
+    if depth != 0:
+        total_requests *= depth
 
     if gui:
         lock.acquire()
@@ -513,11 +532,14 @@ def phase2(
 
     con2, con3 = initial_ping(s, attack, url, url2, keyword, timeout)
 
+    if depth == 0:
+        dirs = [""]
+
     try:
         for dir in dirs:
             files = filegen(filespath)
             for file in files:
-                d = 1
+                d = 0 if depth == 0 else 1
                 while d <= depth:
                     for i in selected_payloads:
                         traverse = ""
@@ -526,6 +548,10 @@ def phase2(
                         while j <= d:
                             traverse += i
                             j += 1
+                        
+                        if depth == 0:
+                            # ensure absolute path
+                            traverse = vars.SEPARATOR
 
                         # send attack requests - with or without
                         # nullbyte injection
@@ -696,7 +722,7 @@ def phase2(
                                             + color.END + " " + p
                                         )
 
-                            if verbose and not vfound:
+                            if verbose:
                                 if attack in [1, 2]:
                                     print(
                                         color.END + "{0}{1}: ".format(
