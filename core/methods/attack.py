@@ -315,11 +315,15 @@ def phase1(
         traditional payloads & nullbytes do not matter
         set payload list to length 1 for only 1 main iteration
         """
-        paylist = [vars.SEPARATOR]
-        global nullchars
-        nullchars = []
-        global payloadlist
-        payloadlist = [vars.SEPARATOR]
+        lock.acquire()
+        try:
+            paylist = [vars.SEPARATOR]
+            global nullchars
+            nullchars = []
+            global payloadlist
+            payloadlist = [vars.SEPARATOR]
+        finally:
+            lock.release()
 
     prefixes = [""]
     if vars.lfi:
