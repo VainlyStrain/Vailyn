@@ -136,6 +136,10 @@ develop:
   --debug               Display every path tried, even 404s.
   --version             Print program version and exit.
   --notmain             Avoid notify2 crash in subprocess call.
+
+Info:
+  to leak files using absolute paths: -d 0 0 0
+  to get a shell using absolute paths: -d 0 X 0
 ```
 
 Vailyn currently supports 5 attack vectors, and provides a crawler to automate all of them. The attack performed is identified by the `-a INT` argument.
@@ -165,12 +169,15 @@ This is the analysis phase, where working payloads are separated from the others
 
 By default, `/etc/passwd` is looked up. If the server is not running Linux, you can specify a custom file by `-i FILENAME`. Note that you must **include subdirectories in FILENAME**.
 You can modify the lookup depth with the first value of `-d` (default=8).
+If you want to use absolute paths, set the first depth to 0.
 
 #### Phase 2
 
 This is the exploitation phase, where Vailyn will try to leak as much files as possible, or gain a reverse shell using various techniques.
 
 The depth of lookup in phase 2 (the maximal number of layers traversed back) is specified by the second value of the `-d` argument. The level of subdirectory permutation is set by the third value of `-d`.
+
+If you attack with absolute paths and perform the leak attack, set all depths to 0. If you want to gain a reverse shell, make sure that the second depth is greater than 0.
 
 By specifying `-l`, Vailyn will not only display files on the terminal, but also download and save the files into the loot folder.
 
