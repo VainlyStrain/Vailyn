@@ -20,16 +20,15 @@ _____, ___
 
 from core.colors import (
     color, lines, FAIL, FAIL2, SUCCESS,
-    TRI_1, TRI_2, TO,
+    TO,
 )
 from core.config import ASCII_ONLY
 from core.variables import (
-    version, CLEAR_CMD, stashdir,
+    version, stashdir,
 )
-from core.Cli import cli_main
 
 from core.methods.print import (
-    intro, help_formatter, dict_formatter,
+    intro, help_formatter,
     table_print, ldis, list_formatter_columns,
 )
 
@@ -37,7 +36,6 @@ from cmd import Cmd
 
 from terminaltables import AsciiTable, SingleTable
 
-import sys
 import subprocess
 
 

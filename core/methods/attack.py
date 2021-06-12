@@ -368,7 +368,7 @@ def phase1(
             while j <= d:
                 traverse += i
                 j += 1
-            
+
             if depth == 0:
                 # ensure absolute path
                 traverse = vars.SEPARATOR
@@ -549,7 +549,7 @@ def phase2(
                         while j <= d:
                             traverse += i
                             j += 1
-                        
+
                         if depth == 0:
                             # ensure absolute path
                             traverse = vars.SEPARATOR
@@ -615,7 +615,6 @@ def phase2(
                             finally:
                                 lock.release()
 
-                            vfound = False
                             if str(r.status_code).startswith("2"):
                                 if (
                                     filecheck(r, con2, con3, p)
@@ -623,7 +622,7 @@ def phase2(
                                     or filecheck(r, con2, con3, p, post=True)
                                     and attack in [4, 5]
                                 ):
-                                    vfound = True
+
                                     if attack in [1, 2]:
                                         print(
                                             color.RD+"[INFO]" + color.END
