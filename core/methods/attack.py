@@ -309,27 +309,24 @@ def phase1(
     global request_count
     precise = vars.precise
 
+    total_payloads = payloadlist
+    all_nullchars = nullchars
+
     if depth == 0:
         """
         absolute path & RFI attack
         traditional payloads & nullbytes do not matter
         set payload list to length 1 for only 1 main iteration
         """
-        lock.acquire()
-        try:
-            paylist = [vars.SEPARATOR]
-            global nullchars
-            nullchars = []
-            global payloadlist
-            payloadlist = [vars.SEPARATOR]
-        finally:
-            lock.release()
+        paylist = [vars.SEPARATOR]
+        all_nullchars = []
+        total_payloads = [vars.SEPARATOR]
 
     prefixes = [""]
     if vars.lfi:
         prefixes += phase1_wrappers
 
-    total_requests = len(payloadlist) * (len(nullchars) + 1) * len(prefixes)
+    total_requests = len(total_payloads) * (len(all_nullchars) + 1) * len(prefixes)
     if not precise and depth != 0:
         total_requests = total_requests * depth
     timeout = vars.timeout
@@ -393,7 +390,7 @@ def phase1(
                     print("Timeout reached for " + url)
 
                 # repeat for nullbytes
-                for nb in nullchars:
+                for nb in all_nullchars:
                     try:
                         requestlist += attack_request(
                             s, attack, url, url2, keyword, selected,
