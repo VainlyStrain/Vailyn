@@ -97,8 +97,8 @@ class ArgumentParser(argparse.ArgumentParser):
   --notmain             {0}Avoid notify2 crash in subprocess call.{1}
 
 {5}Info{6}{1}
-  to leak files using absolute paths: -d 0 0 0
-  to get a shell using absolute paths: -d 0 X 0""".format(
+  to leak files using absolute paths: {5}-d 0 0 0{1}
+  reverse shell using absolute paths: {5}-d 0 X 0{1}""".format(
             color.RC, color.END, color.RB, color.RD, table,
             color.RBB, TRI, lines.VL,
         ))
