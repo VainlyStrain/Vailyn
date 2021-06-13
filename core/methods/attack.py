@@ -30,7 +30,7 @@ import os
 
 import core.variables as vars
 
-from core.colors import color, SUCCESS, FAIL, lines
+from core.colors import color, SUCCESS, FAIL, FAIL2, lines
 
 from core.variables import (
     payloadlist,
@@ -769,8 +769,8 @@ def sheller(
     )
     if gui:
         gui.crawlerResultDisplay.append(
-            "[Info] RCE{1}  Technique: {0}".format(
-                str(rce[technique]), lines.VL,
+            "[i] Technique:\n {1}{0}".format(
+                str(rce[technique]), lines.SW,
             )
         )
         gui.show()
@@ -948,7 +948,7 @@ def sheller(
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "  : Trying {}".format(name)
+                        "  [+] Trying {}".format(name)
                     )
                     gui.show()
                     app.processEvents()
@@ -980,7 +980,7 @@ def sheller(
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "  : Trying {}".format(name),
+                        "  [+] Trying {}".format(name),
                     )
                     gui.show()
                     app.processEvents()
@@ -1019,7 +1019,7 @@ def sheller(
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "  : Trying {}".format(ssht[i])
+                        "  [+] Trying {}".format(ssht[i])
                     )
                     gui.show()
                     app.processEvents()
@@ -1097,7 +1097,7 @@ def sheller(
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "  : Trying {}".format(topict[i])
+                        "  [+] Trying {}".format(topict[i])
                     )
                     gui.show()
                     app.processEvents()
@@ -1177,7 +1177,7 @@ def sheller(
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "  : {}".format(namesPart1[i])
+                        "  [+] Trying {}".format(namesPart1[i])
                     )
                     gui.show()
                     app.processEvents()
@@ -1244,7 +1244,7 @@ def sheller(
                 ))
                 if gui:
                     gui.crawlerResultDisplay.append(
-                        "  : Trying {}".format(names[i])
+                        "  [+] Trying {}".format(names[i])
                     )
                     gui.show()
                     app.processEvents()
@@ -1298,7 +1298,9 @@ def sheller(
             FAIL, lines.VL,
         ))
         if gui:
-            gui.crawlerResultDisplay.append(" FAIL\n")
+            gui.crawlerResultDisplay.append(
+                "   {0} {1}\n".format(lines.SW, FAIL2),
+            )
             gui.show()
             app.processEvents()
 
@@ -1342,7 +1344,9 @@ def show_status(gui, timeout=False, exception=None):
         ))
         if gui:
             gui.crawlerResultDisplay.append(
-                " FAIL\nException:\n{}\n".format(exception)
+                "   {0} {1}\n{2}\n".format(
+                    lines.SW, FAIL2, exception,
+                ),
             )
             gui.show()
         return
@@ -1363,7 +1367,9 @@ def show_status(gui, timeout=False, exception=None):
                 )
             )
             if gui:
-                gui.crawlerResultDisplay.append(" PWN\n")
+                gui.crawlerResultDisplay.append(
+                    "   {0} {1}\n".format(lines.SW, SUCCESS),
+                )
                 gui.show()
             raise ShellPopException("pwnd")
         else:
@@ -1372,7 +1378,9 @@ def show_status(gui, timeout=False, exception=None):
                 FAIL, lines.VL,
             ))
             if gui:
-                gui.crawlerResultDisplay.append(" FAIL\nTimeout\n")
+                gui.crawlerResultDisplay.append(
+                    "   {0} {1}\nTimeout.\n".format(lines.SW, FAIL2),
+                )
                 gui.show()
         return
     if check_conn():
@@ -1389,7 +1397,9 @@ def show_status(gui, timeout=False, exception=None):
             )
         )
         if gui:
-            gui.crawlerResultDisplay.append(" PWN\n")
+            gui.crawlerResultDisplay.append(
+                "   {0} {1}\n".format(lines.SW, SUCCESS),
+            )
             gui.show()
         raise ShellPopException("pwnd")
     else:
@@ -1398,7 +1408,9 @@ def show_status(gui, timeout=False, exception=None):
             FAIL, lines.VL,
         ))
         if gui:
-            gui.crawlerResultDisplay.append(" FAIL\n")
+            gui.crawlerResultDisplay.append(
+                "   {0} {1}\n".format(lines.SW, FAIL2),
+            )
             gui.show()
 
 
