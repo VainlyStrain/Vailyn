@@ -1058,11 +1058,16 @@ class VailynApp(QtWidgets.QDialog):
         if self.foundfiles:
             self.gui_tree(readable_time)
 
-        self.show_info(
-            "Attack done. Found {} files in {}.".format(
-                len(self.foundfiles) - 1, readable_time,
+        if variables.revshell:
+            self.show_info("Attack done in {}.".format(
+                readable_time,
+            ))
+        else:
+            self.show_info(
+                "Attack done. Found {} files in {}.".format(
+                    len(self.foundfiles) - 1, readable_time,
+                )
             )
-        )
 
         if self.tor and self.unix:
             stop = self.show_question(
