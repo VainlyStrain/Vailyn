@@ -20,7 +20,7 @@
 
 ### About
 
-Vailyn is a multi-phased vulnerability analysis and exploitation tool for path traversal/directory climbing vulnerabilities. It is built to make it as performant as possible, and to offer a wide arsenal of filter evasion techniques.
+Vailyn is a multi-phased vulnerability analysis and exploitation tool for path traversal and file inclusion vulnerabilities. It is built to make it as performant as possible, and to offer a wide arsenal of filter evasion techniques.
 
 ### How does it work?
 
@@ -30,7 +30,7 @@ Now, the user can choose freely which payloads to use. Only these payloads will 
 
 The second phase is the exploitation phase. Now, it tries to leak all possible files from the server using a file and a directory dictionary. The search depth and the directory permutation level can be adapted via arguments. Optionally, it can download found files, and save them in its loot folder. Alternatively, it will try to obtain a reverse shell on the system, letting the attacker gain full control over the server.
 
-Right now, it supports multiple attack vectors: injection via query, path, cookie and post data.
+Right now, it supports multiple attack vectors: injection via query, path, cookie and POST data.
 
 ### Why the phase separation?
 
@@ -64,7 +64,7 @@ If twisted fails to install, there is an unofficial version available [here](htt
 
 #### Final Steps
 
-If you want to fully use the reverse shell module, you'll need to have `sshpass`, `ncat` and `konsole` installed. Package names vary by Linux distribution. On Windows, you'll need to start the listener manually beforehand. If you prefer a different terminal emulator, you can specify it in `core/config.py`.
+If you want to fully use the reverse shell module, you'll need to have `sshpass`, `ncat` and `konsole` installed. Package names vary by Linux distribution. On Windows, you'll need to start the listener manually beforehand. If you don't like `konsole`, you can specify a different terminal emulator in `core/config.py`.
 
 That's it! Fire Vailyn up by moving to its installation directory and performing
 
@@ -152,7 +152,8 @@ INT        attack
 3          cookie-based attack (will grab the cookies for you)
 4          plain post data     (ELEM1=VAL1&ELEM2=../../../)
 5          json post data      ({"file": "../../../"})
-A          spider automation   fetch + analyze all URLs from site with all vectors
+A          spider              fetch + analyze all URLs from site using all vectors
+P          partial spider      fetch + analyze all URLs from site using only selected vectors
 ```
 
 You also must specify a target to attack. This is done via `-v VIC` and `-Pi VIC2`, where -v is the part before the injection point, and -Pi the rest.
@@ -193,7 +194,7 @@ To gain a reverse shell by code injection, you can use `-p2 inject IP PORT`, whe
 
 > **WARNING**
 >
-> Vailyn employs Log Poisoning techniques. Therefore, YOUR IP WILL BE VISIBLE IN THE SERVER LOGS.
+> Vailyn employs Log Poisoning techniques. Therefore, YOUR SPECIFIED IP WILL BE VISIBLE IN THE SERVER LOGS.
 
 The techniques (only work for LFI inclusions):
 
@@ -271,11 +272,11 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 
 ### Code of Conduct
 
-> Vailyn is provided as an offensive web application audit tool. It has built-in functionalities which can reveal potential vulnerabilities in web applications, which could possibly be exploited maliciously.
+> Vailyn is provided as an offensive web application audit tool. It has built-in functionalities which can reveal potential vulnerabilities in web applications, which could be exploited maliciously.
 >
 > **THEREFORE, NEITHER THE AUTHOR NOR THE CONTRIBUTORS ARE RESPONSIBLE FOR ANY MISUSE OR DAMAGE DUE TO THIS TOOLKIT.**
 >
-> By using this software, the user obliges to follow their local laws, to not attack someone else's system without explicit permission from the owner, or with malicious intend.
+> By using this software, the user obliges to follow their local laws, to not attack someone else's system without explicit permission from the owner, or with malicious intent.
 >
 > In case of an infringement, only the end user who committed it is accountable for their actions.
 
@@ -285,4 +286,4 @@ Found some false positives/negatives (or want to point out other bugs/improvemen
 >
 > Arjun:  Copyright © <a href="https://github.com/s0md3v">s0md3v</a>
 
-**Arjun is no longer distributed with Vailyn. Install its latest version via pip.**
+Arjun is no longer distributed with Vailyn. Install its latest version via pip.
