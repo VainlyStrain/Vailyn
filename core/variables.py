@@ -23,9 +23,10 @@ import os
 
 # is user running Windows?
 is_windows = sys.platform.lower().startswith("win")
+is_macos = sys.platform.lower().startswith("darwin")
 
 # can user run notify2?
-adv_li = not is_windows
+adv_li = not is_windows and not is_macos
 
 
 def generatePayloads():
