@@ -26,7 +26,10 @@ from core.config import DESKTOP_NOTIFY
 from core.variables import SEPARATOR
 
 if variables.adv_li and DESKTOP_NOTIFY:
-    import notify2
+    try:
+        import notify2
+    except ModuleNotFoundError:
+        pass
 
 
 def notify(message):
@@ -48,10 +51,13 @@ def notify(message):
             "tid.png",
         ])
 
-        notification = notify2.Notification(
-            "Vailyn",
-            message=message,
-            icon=icon,
-        )
+        try:
+            notification = notify2.Notification(
+                "Vailyn",
+                message=message,
+                icon=icon,
+            )
 
-        notification.show()
+            notification.show()
+        except NameError:
+            pass

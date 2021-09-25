@@ -40,7 +40,10 @@ import sys
 
 if adv_li:
     import setproctitle
-    import notify2
+    try:
+        import notify2
+    except ModuleNotFoundError:
+        pass
 
 
 # initialize colorama
@@ -67,7 +70,10 @@ if __name__ == "__main__":
 
         if variables.adv_li and DESKTOP_NOTIFY:
             # initialize notifications
-            notify2.init("Vailyn")
+            try:
+                notify2.init("Vailyn")
+            except NameError:
+                pass
 
         # set global variables and determine
         # main method
